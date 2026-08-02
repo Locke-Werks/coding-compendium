@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lockewerks.dev/compendium/language.schema.json",
+  "title": "Language fingerprint card",
+  "description": "Read by two consumers: the reader renders the prose, and tools/build compiles `tells`, `rules_out`, and `project_fingerprint` into the identifier's scoring table. The card is the single source of truth for both, so a change to a tell changes the classifier.",
+  "type": "object",
+  "allOf": [{ "$ref": "common.schema.json#/$defs/base" }],
+  "required": [
+    "id", "title", "type", "verified", "volatility",
+    "name", "family", "tells", "rules_out", "project_fingerprint",
+    "shape", "confusable_with", "what_agents_get_wrong", "meet_it_when"
+  ],
+  "properties": {
+    "type": { "const": "language" },
+
+    "name": {
+      "type": "string",
+      "description": "Display name as practitioners write it. 'C#', not 'C Sharp'."
+    },
+    "aka": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Alternate names and the wrong-but-common ones. Feeds search. e.g. rustlang, rs, golang, csharp, dotnet."
+    },
+    "family": {
+      "enum": ["compiled", "interpreted", "bytecode", "markup", "config", "query", "shell"],
+      "description": "Drives the deck filter. `config` and `markup` matter because beginners hit YAML and JSON constantly without knowing they are not code."
+    },
+    "likelihood": {
+      "enum": ["certain", "likely", "possible", "unlikely"],
+      "description": "How probably Nyx meets this. Drives the deck's 'you will meet this' filter and breaks classifier ties toward the common answer, which is the right prior for a beginner."
+    },
+    "extensions": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^\\.[A-Za-z0-9.]+$" },
+      "minItems": 1,
+      "description": "File extensions, primary first. Leading dot required."
+    },
+
+    "tells": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 8,
+      "description": "The dead giveaways. Every note MUST state the tell against its nearest neighbor: not 'fn declares a function' but 'only Rust uses exactly fn; Go uses func, Kotlin uses fun, Python uses def'. That contrast is what teaches recognition, and it is also what the reader displays as evidence.",
+      "items": {
+        "type": "object",
+        "required": ["pattern", "weight", "note"],
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "description": "Literal token or regex, per `kind`. Matched against the pasted snippet."
+          },
+          "kind": {
+            "enum": ["token", "regex", "operator", "sigil", "line_start"],
+            "default": "token",
+            "description": "token matches on word boundaries. sigil and operator skip word boundaries so $, ::, and <- match. line_start anchors per line, for shebangs and directives."
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 10,
+            "description": "10 is decisive on its own (`<?php`, `Cargo.toml`). 5 is strong. 2 is corroborating. Reserve 9 and 10 for tokens that appear in no other covered language."
+          },
+          "note": {
+            "type": "string",
+            "minLength": 20,
+            "description": "The prose shown as evidence in the identifier. Must contrast against a neighbor language."
+          }
+        }
+      }
+    },
+
+    "rules_out": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Negative evidence. Seeing any of these means it is NOT this language, which resolves confusable pairs faster than positive evidence can.",
+      "items": {
+        "type": "object",
+        "required": ["pattern", "because"],
+        "properties": {
+          "pattern": { "type": "string" },
+          "kind": { "enum": ["token", "regex", "operator", "sigil", "line_start"], "default": "token" },
+          "because": { "type": "string", "description": "Which language this token points at instead." }
+        }
+      }
+    },
+
+    "project_fingerprint": {
+      "type": "object",
+      "description": "Often the fastest identification of all, and the only one that works on a folder rather than a snippet. Feeds both the identifier and Project Scan.",
+      "required": ["manifests"],
+      "properties": {
+        "manifests": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["file", "note"],
+            "properties": {
+              "file": { "type": "string", "description": "Exact filename or glob. Cargo.toml, package.json, *.csproj." },
+              "decisive": { "type": "boolean", "default": false, "description": "True when this file alone settles it. Cargo.toml is decisive; package.json is not, because it does not distinguish JS from TS." },
+              "note": { "type": "string" }
+            }
+          }
+        },
+        "lockfiles": { "type": "array", "items": { "type": "string" } },
+        "build_dirs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Generated output. Large, git-ignored, safe to delete, will be rebuilt. Nyx asks this constantly."
+        },
+        "entry_points": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "shape": {
+      "type": "object",
+      "description": "Structural profile. Renders as prose and feeds the classifier's punctuation scoring.",
+      "required": ["blocks", "statement_end", "comment_line"],
+      "properties": {
+        "blocks": { "enum": ["braces", "indentation", "keyword", "tags", "none"] },
+        "statement_end": { "enum": ["semicolon", "newline", "optional_semicolon", "none"] },
+        "comment_line": { "type": "string" },
+        "comment_block": { "type": "string" },
+        "string_quotes": { "type": "string" },
+        "naming": { "type": "string", "description": "e.g. snake_case functions, CamelCase types, SCREAMING_SNAKE constants" },
+        "import_keyword": { "type": "string", "description": "The word it uses. Rust says use, Python says import, C says #include. Cheap and highly discriminating." }
+      }
+    },
+
+    "tooling": {
+      "type": "object",
+      "properties": {
+        "package_manager": { "type": "string" },
+        "registry": { "type": "string" },
+        "runtime": { "type": "string" },
+        "install_command": { "type": "string" },
+        "run_command": { "type": "string" },
+        "test_command": { "type": "string" }
+      }
+    },
+
+    "confusable_with": {
+      "type": "array",
+      "description": "The pairs that actually trip people: Java/C#, JS/TS, C/C++, Rust/Go, Python/Ruby. Each settle_it must be a decision she can make in two seconds by looking at the snippet.",
+      "items": {
+        "type": "object",
+        "required": ["language", "settle_it"],
+        "properties": {
+          "language": { "$ref": "common.schema.json#/$defs/cardRef" },
+          "settle_it": { "type": "string", "minLength": 30 },
+          "tiebreak": {
+            "type": "object",
+            "description": "Machine-readable form of settle_it. When both languages score within the ambiguity band, presence of `pattern` decides for `favors`.",
+            "required": ["pattern", "favors"],
+            "properties": {
+              "pattern": { "type": "string" },
+              "kind": { "enum": ["token", "regex", "operator", "sigil", "line_start"], "default": "token" },
+              "favors": { "$ref": "common.schema.json#/$defs/cardRef" }
+            }
+          }
+        }
+      }
+    },
+
+    "errors_look_like": {
+      "type": "object",
+      "description": "How to recognize this language from its failure output alone, which is often all Nyx has.",
+      "properties": {
+        "sample": { "type": "string" },
+        "recognize_by": { "type": "string" },
+        "patterns": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Regexes the identifier uses to route a pasted stack trace to this language."
+        }
+      }
+    },
+
+    "meet_it_when": {
+      "type": "string",
+      "minLength": 40,
+      "description": "The concrete situations Nyx encounters it: an agent picks it, she clones a tool to build, she reads the source of something misbehaving."
+    },
+
+    "what_agents_get_wrong": {
+      "type": "string",
+      "minLength": 60,
+      "description": "Required. What an agent produces in this language that looks fine and is not, and the specific thing to watch for in a diff. This is the field that makes the deck useful to a vibe coder rather than to a student."
+    },
+
+    "version_landscape": {
+      "type": "string",
+      "description": "Whether an answer found online from three years ago still applies. Python 2 vs 3 and Rust editions are opposite ends of this."
+    },
+
+    "joke": {
+      "type": "string",
+      "description": "Reserved for the 'you will not meet these' sidebar. Fortran, COBOL, Perl. At the technology's expense, never at Nyx's, and once only."
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lockewerks.dev/compendium/common.schema.json",
+  "title": "Shared frontmatter definitions",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "Stable kebab-case identifier. Unique across the whole corpus. Never renamed once shipped, because links and search history point at it."
+    },
+    "cardRef": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "A reference to another card's id. The linter fails the build if it does not resolve."
+    },
+    "isoDate": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "volatility": {
+      "enum": ["low", "quarterly", "weekly"],
+      "description": "How fast this card's claims rot. Drives the stale badge, which only appears once a card passes its own budget. low: data models, language syntax. quarterly: file layouts, conventions. weekly: install commands, model names, agent CLI flags."
+    },
+    "track": {
+      "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+      "description": "A orientation, B setup, C how code runs, D git and GitHub, E working with agents, F reading failure, G the supply chain, H proving it works, I shipping, J recognition"
+    },
+    "base": {
+      "type": "object",
+      "required": ["id", "title", "type", "verified", "volatility"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 80
+        },
+        "type": {
+          "enum": ["section", "language", "error", "command", "intent", "glossary", "panic"]
+        },
+        "verified": { "$ref": "#/$defs/isoDate" },
+        "volatility": { "$ref": "#/$defs/volatility" },
+        "verify": {
+          "type": "string",
+          "description": "A command Nyx can run to test this card's central claim herself. Required by the linter on any card containing an install command. Generalizes the seed doc's 'if it prints a version number, you are done'."
+        },
+        "see_also": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/cardRef" },
+          "maxItems": 8,
+          "description": "Neighbors, not everything related. Eight is already a lot."
+        },
+        "keywords": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Extra lexical search terms that do not appear in the prose. Spellings, plurals, and the wrong-but-common name for the thing."
+        },
+        "danger": {
+          "type": "string",
+          "description": "Required by the linter when the card contains a destructive command. States what is destroyed and names the safe alternative."
+        }
+      }
+    }
+  }
+}

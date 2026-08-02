@@ -1,0 +1,34 @@
+# secrets
+.env
+.env.*
+*.key
+*.pem
+
+# rust / tauri build output
+target/
+src-tauri/target/
+src-tauri/gen/
+
+# node
+node_modules/
+dist/
+.vite/
+
+# build artifacts: content.db is compiled from content/, never edited by hand,
+# and never committed. Rebuild it with `pnpm build:content`.
+build/
+*.db
+*.db-shm
+*.db-wal
+
+# vendored binaries and model weights, fetched by scripts/fetch-vendor.ps1.
+# Too large for git and reproducible from a pinned manifest.
+src-tauri/vendor/
+src-tauri/models/
+*.onnx
+*.gguf
+
+# operating system clutter
+Thumbs.db
+desktop.ini
+.DS_Store
