@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lockewerks.dev/compendium/command.schema.json",
+  "title": "Command card",
+  "description": "One terminal command, explained flag by flag. She will paste it without reading it, so it has to be correct standing alone.",
+  "type": "object",
+  "allOf": [{ "$ref": "common.schema.json#/$defs/base" }],
+  "required": ["id", "title", "type", "verified", "volatility", "command", "shell", "does"],
+  "properties": {
+    "type": { "const": "command" },
+    "command": {
+      "type": "string",
+      "description": "The command as typed. Mark anything she must substitute with angle brackets, e.g. <branch-name>, so it is never pasted literally by mistake."
+    },
+    "shell": { "enum": ["powershell", "bash", "cmd", "any"] },
+    "tool": {
+      "type": "string",
+      "description": "git, gh, cargo, npm, pnpm, claude, codex, winget"
+    },
+    "does": { "type": "string", "minLength": 20 },
+    "flags": {
+      "type": "array",
+      "description": "Every flag that is not self-evident. Nyx does not know what -u does, and nobody ever tells her.",
+      "items": {
+        "type": "object",
+        "required": ["flag", "means"],
+        "properties": {
+          "flag": { "type": "string" },
+          "means": { "type": "string" }
+        }
+      }
+    },
+    "destructive": {
+      "type": "boolean",
+      "default": false,
+      "description": "True for anything that can lose work: reset --hard, push --force, clean, rm, checkout --. The linter requires `danger`, `destroys`, and `safer_first` whenever this is true."
+    },
+    "destroys": {
+      "type": "string",
+      "description": "Exactly what is lost, and whether it is recoverable. 'There is no undo' when there is no undo."
+    },
+    "safer_first": {
+      "type": "string",
+      "description": "The command to run before this one to make it survivable. Usually `git stash` or a backup branch."
+    },
+    "undo": {
+      "type": "string",
+      "description": "How to reverse it, or the honest statement that you cannot."
+    },
+    "expect": {
+      "type": "string",
+      "description": "What success prints. Following rule 4 of the authoring guide: every instruction gets a verification step."
+    }
+  }
+}

@@ -115,6 +115,14 @@ the remote." Allowed when it means "only this one thing": "just close and reopen
 terminal." The seed doc uses it correctly both times it appears. "Simply" is always banned
 because it only ever carries the first meaning.
 
+**US spelling throughout.** behavior, favor, capitalization, recognize, organize, color.
+The corpus is Windows-first and American, and a card that drifts into British spelling reads
+as though a different person wrote it, which is exactly the failure this guide exists to
+prevent. The linter enforces this.
+
+The first draft of the three exemplars in this repo violated two of the rules above,
+including one written on the same day. Run the linter. Do not assume you are the exception.
+
 ---
 
 ## 4. The three-tier structure

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lockewerks.dev/compendium/error.schema.json",
+  "title": "Error card",
+  "description": "One error message Nyx is likely to hit. Reached by pasting the error into Identify, so `patterns` is what makes the card findable and must match real terminal output rather than an idealized version of it.",
+  "type": "object",
+  "allOf": [{ "$ref": "common.schema.json#/$defs/base" }],
+  "required": ["id", "title", "type", "verified", "volatility", "patterns", "means", "fix_ladder"],
+  "properties": {
+    "type": { "const": "error" },
+    "language": {
+      "$ref": "common.schema.json#/$defs/cardRef",
+      "description": "The language or tool that emits it. Omit for shell and git errors that belong to no language."
+    },
+    "sample": {
+      "type": "string",
+      "description": "The real message, copied verbatim from a real terminal including surrounding noise. Idealized samples do not match what she pastes."
+    },
+    "patterns": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "Regexes matched against pasted text. Anchor on the stable part: the error class and the fixed wording. Never match on paths, line numbers, or version strings, which vary per machine."
+    },
+    "means": {
+      "type": "string",
+      "minLength": 30,
+      "description": "What actually went wrong, in plain language, without the fix. Separated from the fix on purpose: understanding the cause is what stops it recurring."
+    },
+    "category": {
+      "enum": ["not-found", "broke-at-runtime", "wont-compile", "permission", "network", "conflict", "config"],
+      "description": "not-found errors (command not found, No module named, ENOENT) mean something is missing or a path is wrong, and are cheap. broke-at-runtime errors mean the code hit a case it did not expect, and need an actual change. Nyx should learn to sort them at a glance."
+    },
+    "fix_ladder": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Ordered cheapest-and-most-likely first. She works down until it stops.",
+      "items": {
+        "type": "object",
+        "required": ["try", "why"],
+        "properties": {
+          "try": { "type": "string" },
+          "command": { "type": "string" },
+          "shell": { "enum": ["powershell", "bash", "cmd"] },
+          "why": { "type": "string", "description": "What this step assumes the cause is. She should know which hypothesis she just tested." }
+        }
+      }
+    },
+    "if_none_worked": {
+      "type": "string",
+      "description": "What to paste into the agent, and what to include that she would otherwise trim off. The parts she would trim are the parts the agent uses."
+    }
+  }
+}

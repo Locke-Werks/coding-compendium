@@ -1,0 +1,880 @@
+# Frozen section list.
+#
+# Every id here exists before anyone writes a word, so cross-references resolve
+# from the first draft and the linter can fail an unresolvable link.
+#
+# `owns` is the anti-duplication mechanism and the most important field in this
+# file. Everything touches git, so without ownership every author explains a
+# branch slightly differently and the corpus reads like forty people wrote it.
+# If a concept is not in your `owns`, you link to whoever owns it. You do not
+# re-explain it, no matter how briefly you think you could.
+#
+# `brief` is the assignment. It says what the section covers and, where it
+# matters, what it deliberately does not.
+#
+# Renaming an id after ship breaks links and search history. Add, do not rename.
+
+meta:
+  count: 76
+  tracks:
+    A: Orientation
+    B: Setup
+    C: How code actually runs
+    D: Git and GitHub
+    E: Working with agents
+    F: Reading failure
+    G: The supply chain
+    H: Proving it works
+    I: Shipping
+    J: Recognition
+
+sections:
+
+  # ---------------------------------------------------------------- A
+  - id: a1-what-vibe-coding-is
+    title: What vibe coding actually is
+    track: A
+    order: 10
+    owns: [vibe coding, the term's origin]
+    brief: >
+      Karpathy's term, the fun version, stated plainly. Describe what you want,
+      let the agent write and run it, focus on outcome over every line. Short.
+      The honest correction is a2 and must not be pre-empted here.
+    see_also: [a2-the-honest-version, a4-the-loop]
+
+  - id: a2-the-honest-version
+    title: The honest version, and what keeps you out of trouble
+    track: A
+    order: 20
+    owns: [why scaffolding matters, the safety net argument]
+    brief: >
+      The AI is fast and confident and wrong often enough that you cannot trust
+      it blindly. What makes this safe is not the AI, it is version control,
+      tests, and small reviewable steps. This is the thesis of the whole
+      compendium. Earn it.
+    see_also: [a4-the-loop, h1-what-a-test-is, d10-undo-everything]
+
+  - id: a3-the-three-pieces
+    title: The agent, the repo, and the cloud copy
+    track: A
+    order: 30
+    owns: [the three-piece mental model]
+    brief: >
+      Agent takes actions on your machine. Code lives in a folder git tracks.
+      GitHub stores a copy. Just the mental model. d1 owns what git stores and
+      e1 owns what an agent is.
+    see_also: [e1-what-an-agent-is, d1-what-git-actually-stores]
+
+  - id: a4-the-loop
+    title: The loop: describe, review, test, checkpoint
+    track: A
+    order: 40
+    owns: [the core working rhythm]
+    brief: >
+      The rhythm every other workflow section is an elaboration of. You will not
+      read every line. You will read enough, and lean on tests and git to catch
+      the rest.
+    see_also: [d4-commit-well, h3-reviewing-a-diff-you-cannot-fully-read]
+
+  - id: a5-what-you-still-have-to-know
+    title: What you still have to know yourself
+    track: A
+    order: 50
+    owns: [the irreducible minimum]
+    brief: >
+      Honest scoping. You do not need to write a for loop from memory. You do
+      need to recognize when something is wrong, read a diff well enough to spot
+      scope creep, and know how to undo. Sets expectations for the whole corpus.
+    see_also: [h3-reviewing-a-diff-you-cannot-fully-read, e7-agent-failure-modes]
+
+  - id: a6-how-to-use-this-app
+    title: How to use this app
+    track: A
+    order: 60
+    owns: [the app's own surfaces]
+    brief: >
+      The hotkey, the paste-to-identify box, the panic button, the sidecar. Also
+      the honest note that content ages and what the stale badge means. Volatility
+      weekly: this describes shipping software that changes.
+    see_also: [j1-how-to-recognize-a-language]
+
+  # ---------------------------------------------------------------- B
+  - id: b1-terminal-shell-command-line
+    title: Terminal, shell, and command line
+    track: B
+    order: 10
+    owns: [terminal, shell, PowerShell vs CMD vs Git Bash, telling them apart]
+    brief: >
+      Same neighborhood, different words. How to tell PowerShell from Command
+      Prompt by the prompt itself. Why some commands only work in one. Every
+      other card that says "run this in PowerShell" depends on this one.
+    see_also: [c4-path-and-command-not-found]
+
+  - id: b2-install-git
+    title: Install Git for Windows
+    track: B
+    order: 20
+    owns: [installing git]
+    brief: >
+      Git is the program, GitHub is the website. Installer defaults are fine.
+      Ships Git Bash, which Claude Code prefers.
+    see_also: [b1-terminal-shell-command-line, d1-what-git-actually-stores]
+
+  - id: b3-tell-git-who-you-are
+    title: Tell Git who you are
+    track: B
+    order: 30
+    owns: [git config identity, default branch name]
+    brief: >
+      Name, email, init.defaultBranch main, pull.rebase false. Every commit is
+      stamped. Include the read-back commands.
+    see_also: [d4-commit-well]
+
+  - id: b4-github-and-gh
+    title: Your GitHub account and the gh tool
+    track: B
+    order: 40
+    owns: [gh cli, gh auth login, winget]
+    brief: >
+      winget install GitHub.cli, gh auth login, gh auth status. This is what
+      lets the agents open pull requests as you.
+    see_also: [b5-ssh-vs-https, d8-pull-requests]
+
+  - id: b5-ssh-vs-https
+    title: SSH and HTTPS, and which to pick
+    track: B
+    order: 50
+    owns: [SSH keys, HTTPS tokens, authentication to GitHub]
+    brief: >
+      Two ways to prove your machine is allowed to push. Key pair vs token. SSH
+      once and never again, which is why it is the default recommendation.
+    see_also: [g6-secrets-and-what-never-to-commit]
+
+  - id: b6-install-claude-code
+    title: Install and sign in to Claude Code
+    track: B
+    order: 60
+    owns: [claude code installation, the native installer]
+    brief: >
+      Native PowerShell installer, auto-updates. The three snags: irm in CMD,
+      execution policy, PATH not reloaded. Volatility weekly.
+    see_also: [b1-terminal-shell-command-line, e4-claude-md-and-agents-md]
+
+  - id: b7-install-codex
+    title: Install and sign in to Codex
+    track: B
+    order: 70
+    owns: [codex installation, sandbox_mode, approval_policy]
+    brief: >
+      Install, sign in with ChatGPT. config.toml. The two knobs people mix up:
+      sandbox_mode is what it can do, approval_policy is when it asks. Volatility
+      weekly, model names especially.
+    see_also: [e4-claude-md-and-agents-md]
+
+  - id: b8-turn-off-ai-attribution
+    title: Turn off AI attribution
+    track: B
+    order: 80
+    owns: [attribution settings, the commit-msg hook]
+    brief: >
+      The attribution block in settings.json, commit_attribution in config.toml,
+      the Desktop preference, and the git hook as the guarantee below every tool.
+      Volatility weekly: this setting has already changed once.
+    see_also: [d4-commit-well]
+
+  - id: b9-where-settings-live
+    title: Where each tool keeps its settings
+    track: B
+    order: 90
+    owns: [settings.json levels, config.toml location, precedence]
+    brief: >
+      User, project, and local levels, and that narrower wins. JSON and TOML
+      explained as formats, since this is where she meets both.
+    see_also: [j2-the-config-formats-nobody-explains]
+
+  # ---------------------------------------------------------------- C
+  - id: c1-what-a-program-is
+    title: What a program actually is
+    track: C
+    order: 10
+    owns: [source code vs executable, the basic model]
+    brief: >
+      Text you write, something that turns it into instructions, a process that
+      runs. Foundation for the whole track. No language specifics.
+    see_also: [c2-compiled-vs-interpreted]
+
+  - id: c2-compiled-vs-interpreted
+    title: Compiled, interpreted, and the middle ground
+    track: C
+    order: 20
+    owns: [compiler, interpreter, bytecode, JIT, runtime]
+    brief: >
+      Why Rust makes a .exe and Python needs Python installed. Bytecode and the
+      JVM as the middle. This is what makes the language cards' tooling field
+      make sense.
+    see_also: [j1-how-to-recognize-a-language, g2-package-managers]
+
+  - id: c3-what-running-means
+    title: What "run it" actually means
+    track: C
+    order: 30
+    owns: [entry points, the run command per ecosystem]
+    brief: >
+      cargo run, npm run dev, python main.py. Why there is no universal "run"
+      button and why the answer is always in the project's manifest.
+    see_also: [j3-project-layouts, c2-compiled-vs-interpreted]
+
+  - id: c4-path-and-command-not-found
+    title: PATH, and why a command you just installed is not found
+    track: C
+    order: 40
+    owns: [PATH, reopening the terminal, where executables live]
+    brief: >
+      The single most common beginner confusion on Windows. The fix is almost
+      always "close and reopen the terminal" and she should know why that works.
+    see_also: [b1-terminal-shell-command-line, f1-how-to-read-an-error-message]
+
+  - id: c5-processes-and-killing-them
+    title: Processes, and how to kill one that will not stop
+    track: C
+    order: 50
+    owns: [processes, Ctrl+C, Task Manager, taskkill]
+    brief: >
+      What a running program is from the OS side. Ctrl+C first, then the port
+      already in use case, then taskkill. Marked destructive where it is.
+    see_also: [c6-ports-and-localhost]
+
+  - id: c6-ports-and-localhost
+    title: Ports, localhost, and "address already in use"
+    track: C
+    order: 60
+    owns: [ports, localhost, 127.0.0.1, EADDRINUSE]
+    brief: >
+      Why the dev server is at localhost:3000 and what to do when the port is
+      taken. She will hit EADDRINUSE within a week of starting.
+    see_also: [c5-processes-and-killing-them, j6-web-basics]
+
+  - id: c7-files-folders-and-paths
+    title: Paths on Windows, and why the slashes keep changing
+    track: C
+    order: 70
+    owns: [absolute vs relative paths, backslash vs forward slash, ~, spaces in paths]
+    brief: >
+      Backslash in Windows, forward slash everywhere else, both work in
+      PowerShell. Why a path with a space breaks things and how to quote it.
+    see_also: [b1-terminal-shell-command-line]
+
+  - id: c8-line-endings-and-encoding
+    title: Line endings and text encoding
+    track: C
+    order: 80
+    owns: [CRLF vs LF, UTF-8, BOM, .gitattributes]
+    brief: >
+      Why git warns about LF being replaced by CRLF, why a diff sometimes shows
+      every line changed, and what .gitattributes does about it. Windows-specific
+      and genuinely confusing.
+    see_also: [d9-reading-a-diff]
+
+  # ---------------------------------------------------------------- D
+  - id: d1-what-git-actually-stores
+    title: What git actually stores
+    track: D
+    order: 10
+    owns: [commits as snapshots, the history graph, git vs GitHub]
+    brief: >
+      The canonical git explanation for the entire corpus. Snapshots, not diffs,
+      even though it shows you diffs. Every other author links here rather than
+      re-explaining. Get this one right.
+    see_also: [d3-the-three-places, d5-branches]
+
+  - id: d2-repo-remote-clone-origin
+    title: Repo, remote, clone, origin
+    track: D
+    order: 20
+    owns: [repository, remote, origin, clone, fork]
+    brief: >
+      The vocabulary of "where does this code live." Origin is a nickname, not a
+      law. Fork vs clone.
+    see_also: [d1-what-git-actually-stores]
+
+  - id: d3-the-three-places
+    title: The three places your work can be
+    track: D
+    order: 30
+    owns: [working directory, staging area, index, HEAD, git status]
+    brief: >
+      Working folder, staging area, committed history. Reading git status as the
+      answer to "where am I." This is the model that makes every undo command
+      make sense, so d10 depends on it heavily.
+    see_also: [d10-undo-everything, d4-commit-well]
+
+  - id: d4-commit-well
+    title: Committing, and what makes a good commit
+    track: D
+    order: 40
+    owns: [commit, conventional commits, commit message style]
+    brief: >
+      add then commit. Conventional commit prefixes. Small and frequent beats
+      large and rare, because the checkpoint is the safety net.
+    see_also: [d3-the-three-places, a4-the-loop]
+
+  - id: d5-branches
+    title: Branches
+    track: D
+    order: 50
+    owns: [branch, main, switch, checkout, branch naming]
+    brief: >
+      A parallel line of work. switch is the modern command, checkout is the old
+      one that does more and is therefore more dangerous.
+    see_also: [d6-merge-and-rebase, d8-pull-requests]
+
+  - id: d6-merge-and-rebase
+    title: Merge and rebase
+    track: D
+    order: 60
+    owns: [merge, rebase, fast-forward, squash]
+    brief: >
+      Two ways to combine work and why the history looks different after each.
+      Rebase rewrites history, which is the thing to understand before using it.
+    see_also: [d7-merge-conflicts, d8-pull-requests]
+
+  - id: d7-merge-conflicts
+    title: Merge conflicts, and how to resolve one
+    track: D
+    order: 70
+    owns: [merge conflict, conflict markers, abort]
+    brief: >
+      What the <<<<<<< markers mean, how to pick, and that aborting is always
+      available. Include what to hand the agent and what to decide yourself.
+    see_also: [d6-merge-and-rebase, d10-undo-everything]
+
+  - id: d8-pull-requests
+    title: Pull requests, even when you work alone
+    track: D
+    order: 80
+    owns: [pull request, PR review, gh pr create, squash merge]
+    brief: >
+      A proposal with a before-and-after view. Worth it solo for the review
+      surface and the record.
+    see_also: [d9-reading-a-diff, h3-reviewing-a-diff-you-cannot-fully-read]
+
+  - id: d9-reading-a-diff
+    title: Reading a diff
+    track: D
+    order: 90
+    owns: [diff, hunk, plus and minus lines, staged vs unstaged diff]
+    brief: >
+      The mechanics only: what the symbols mean, what git diff vs git diff
+      --staged shows. h3 owns the judgment question of what to look for.
+    see_also: [h3-reviewing-a-diff-you-cannot-fully-read, c8-line-endings-and-encoding]
+
+  - id: d10-undo-everything
+    title: Undoing things, ranked by how much they destroy
+    track: D
+    order: 100
+    owns: [restore, revert, reset, stash, reflog, the undo decision]
+    brief: >
+      The hub for every undo. Organized by what you want back, then by cost.
+      revert is safe, reset is sharp, reflog is the thing nobody tells beginners
+      exists and it recovers almost everything. Every command here is marked
+      destructive with its cost stated. The panic trees route into this.
+    see_also: [d3-the-three-places, d11-when-you-lose-work]
+
+  - id: d11-when-you-lose-work
+    title: When you think you lost work
+    track: D
+    order: 110
+    owns: [reflog recovery, dangling commits, the recovery mindset]
+    brief: >
+      Almost nothing committed is ever truly gone. reflog, fsck, and the honest
+      exception: uncommitted changes overwritten by reset --hard are gone. The
+      argument for committing often lands here.
+    see_also: [d10-undo-everything, d4-commit-well]
+
+  - id: d12-gitignore-and-what-not-to-commit
+    title: .gitignore, and what must never be committed
+    track: D
+    order: 120
+    owns: [gitignore, build output, node_modules]
+    brief: >
+      Secrets, dependencies, build junk. g6 owns the secrets-specific danger; this
+      one owns the mechanism and the ordinary cases.
+    see_also: [g6-secrets-and-what-never-to-commit]
+
+  - id: d13-tags-releases-and-history
+    title: Tags, releases, and reading history
+    track: D
+    order: 130
+    owns: [tag, release, git log, blame]
+    brief: >
+      Marking a version, and how to answer "when did this break and who changed
+      it." git log and blame as investigation tools.
+    see_also: [i4-releases-and-versioning]
+
+  # ---------------------------------------------------------------- E
+  - id: e1-what-an-agent-is
+    title: What an agent is, and how it differs from a chatbot
+    track: E
+    order: 10
+    owns: [agent, tool use, the action loop]
+    brief: >
+      It reads files, writes files, runs commands. That is the whole difference
+      and it is the whole risk.
+    see_also: [e7-agent-failure-modes, a3-the-three-pieces]
+
+  - id: e2-context-windows
+    title: Context windows, and why long sessions get worse
+    track: E
+    order: 20
+    owns: [context window, context rot, tokens as a unit]
+    brief: >
+      What the model can hold at once. Why a session that started sharp is dull
+      by hour three, and that this is mechanical rather than the model being
+      tired.
+    see_also: [e6-when-to-reset-context, e8-tokens-and-cost]
+
+  - id: e3-plan-mode
+    title: Plan mode, and why to use it constantly
+    track: E
+    order: 30
+    owns: [plan mode]
+    brief: >
+      Think first, show the plan, then execute. The single best habit, because it
+      catches a bad idea before it becomes bad code and reading a plan is much
+      cheaper than reading a diff.
+    see_also: [e5-prompting-that-works, a4-the-loop]
+
+  - id: e4-claude-md-and-agents-md
+    title: CLAUDE.md and AGENTS.md
+    track: E
+    order: 40
+    owns: [project instruction files, /init]
+    brief: >
+      Standing instructions the agent reads every session. What belongs in them,
+      what does not, and that they are living documents you edit as the project
+      teaches you what to say.
+    see_also: [e5-prompting-that-works, b9-where-settings-live]
+
+  - id: e5-prompting-that-works
+    title: Asking for what you actually want
+    track: E
+    order: 50
+    owns: [prompting technique, specificity, providing context]
+    brief: >
+      Concrete over vague. Name the file. State the constraint. Say what done
+      looks like. Give it the error verbatim. Practical and example-heavy.
+    see_also: [e3-plan-mode, f5-what-to-paste-and-what-not-to]
+
+  - id: e6-when-to-reset-context
+    title: When to start a fresh session
+    track: E
+    order: 60
+    owns: [clearing context, session hygiene, handoff notes]
+    brief: >
+      The signs: it forgets a decision, it reintroduces a fixed bug, it argues
+      with itself. How to hand off cleanly so a reset costs nothing.
+    see_also: [e2-context-windows, e4-claude-md-and-agents-md]
+
+  - id: e7-agent-failure-modes
+    title: How agents fail, specifically
+    track: E
+    order: 70
+    owns: [hallucinated APIs, confident-wrong, scope creep, silent rewrites, sycophancy]
+    brief: >
+      The named catalogue. Invented library functions, confident wrongness,
+      changes you did not ask for, quietly deleting a test to make it pass,
+      agreeing with a wrong correction. Each with the tell that catches it.
+      One of the highest-value sections in the corpus.
+    see_also: [h3-reviewing-a-diff-you-cannot-fully-read, h6-when-tests-lie]
+
+  - id: e8-tokens-and-cost
+    title: Tokens, and what you are actually paying for
+    track: E
+    order: 80
+    owns: [token, pricing model, why long context costs more]
+    brief: >
+      Tokens as the unit of both memory and money. Why a long session is
+      expensive and slow. Volatility weekly on any concrete price.
+    see_also: [e2-context-windows]
+
+  - id: e9-mcp
+    title: MCP, and what connecting a tool actually does
+    track: E
+    order: 90
+    owns: [MCP, servers, tool permissions]
+    brief: >
+      An open standard letting the agent reach outside itself. What granting
+      access means, and the honest security framing.
+    see_also: [g8-what-never-to-paste-into-a-chat]
+
+  - id: e10-using-two-agents
+    title: Using two agents against each other
+    track: E
+    order: 100
+    owns: [cross-review between tools]
+    brief: >
+      Build with one, review with the other. A second engine catches what the
+      first is blind to. Concrete prompts for the review direction.
+    see_also: [h3-reviewing-a-diff-you-cannot-fully-read]
+
+  - id: e11-what-to-never-let-an-agent-do
+    title: What to never let an agent do unsupervised
+    track: E
+    order: 110
+    owns: [the unsupervised blocklist]
+    brief: >
+      force push, history rewrite, deleting branches, touching production,
+      rotating credentials, bulk file deletion, dependency upgrades across a
+      whole project. Each with why. Practical, not paranoid.
+    see_also: [d10-undo-everything, g7-dependency-risk]
+
+  # ---------------------------------------------------------------- F
+  - id: f1-how-to-read-an-error-message
+    title: How to read an error message
+    track: F
+    order: 10
+    owns: [error anatomy, reading bottom-up, my-code-vs-library, cannot-find vs broke]
+    brief: >
+      Type, message, location. Read the last line first. Find the first path
+      inside your own project. Sort cannot-find from found-it-and-broke, because
+      those need completely different responses. The exemplar section for the
+      whole corpus.
+    see_also: [f2-stack-traces, f5-what-to-paste-and-what-not-to]
+
+  - id: f2-stack-traces
+    title: Stack traces
+    track: F
+    order: 20
+    owns: [stack trace, call stack, reading order per language]
+    brief: >
+      A stack of who-called-whom. Python prints oldest first, JavaScript prints
+      newest first, and knowing which end to read is most of the skill.
+    see_also: [f1-how-to-read-an-error-message, j1-how-to-recognize-a-language]
+
+  - id: f3-exit-codes-and-streams
+    title: Exit codes, stdout, and stderr
+    track: F
+    order: 30
+    owns: [exit code, stdout, stderr, redirection]
+    brief: >
+      Zero means success. Why redirecting output sometimes hides the error. Why
+      CI says a step failed when nothing looked wrong.
+    see_also: [h5-ci-cd]
+
+  - id: f4-logs
+    title: Logs, and where to find them
+    track: F
+    order: 40
+    owns: [log levels, log locations, tailing]
+    brief: >
+      Levels, where each tool writes them on Windows, and how to watch one live.
+    see_also: [f3-exit-codes-and-streams]
+
+  - id: f5-what-to-paste-and-what-not-to
+    title: What to paste into the agent, and what to strip first
+    track: F
+    order: 50
+    owns: [pasting errors, redaction before pasting]
+    brief: >
+      Paste the error whole and unedited plus the command you ran. The parts you
+      would trim are the parts it uses. The exception is credentials, which g8
+      owns and which this section must point at rather than duplicate.
+    see_also: [g8-what-never-to-paste-into-a-chat, e5-prompting-that-works]
+
+  - id: f6-when-the-agent-loops
+    title: When the agent is stuck in a loop
+    track: F
+    order: 60
+    owns: [breaking a fix-fail-fix cycle]
+    brief: >
+      Three "try this instead" attempts without a stated diagnosis means it is
+      guessing. Stop it, make it state what it now thinks the cause is, or reset.
+    see_also: [e6-when-to-reset-context, e7-agent-failure-modes]
+
+  - id: f7-reproducing-a-bug
+    title: Reproducing a bug on purpose
+    track: F
+    order: 70
+    owns: [reproduction steps, minimal case, intermittent bugs]
+    brief: >
+      A bug you can trigger on command is nearly solved. How to narrow one down
+      and why "it happens sometimes" is the hardest possible report.
+    see_also: [h1-what-a-test-is]
+
+  # ---------------------------------------------------------------- G
+  - id: g1-what-a-dependency-is
+    title: What a dependency is
+    track: G
+    order: 10
+    owns: [dependency, library, transitive dependency]
+    brief: >
+      Someone else's code your code needs. Why node_modules is enormous, and
+      that this is normal rather than a mistake.
+    see_also: [g2-package-managers, g3-lockfiles]
+
+  - id: g2-package-managers
+    title: Package managers, one per ecosystem
+    track: G
+    order: 20
+    owns: [package manager, registry, install vs add]
+    brief: >
+      cargo, npm, pnpm, pip, uv, nuget, gem. Same job, different words. The table
+      that makes the language cards' tooling field legible.
+    see_also: [j1-how-to-recognize-a-language, g3-lockfiles]
+
+  - id: g3-lockfiles
+    title: Lockfiles, and why you commit them
+    track: G
+    order: 30
+    owns: [lockfile, exact versions, reproducible installs]
+    brief: >
+      The manifest says roughly what you want, the lockfile says exactly what you
+      got. Commit it, never edit it by hand.
+    see_also: [g2-package-managers, d12-gitignore-and-what-not-to-commit]
+
+  - id: g4-environments-and-isolation
+    title: Isolated environments
+    track: G
+    order: 40
+    owns: [virtual environment, per-project dependencies, global installs]
+    brief: >
+      Why Python needs a venv and Rust does not. Why installing globally causes
+      the "works on my machine" problem.
+    see_also: [g2-package-managers, c4-path-and-command-not-found]
+
+  - id: g5-environment-variables
+    title: Environment variables and .env files
+    track: G
+    order: 50
+    owns: [environment variable, .env, setx, session vs permanent]
+    brief: >
+      Configuration outside the code. $env: for this session, setx to persist,
+      and why a new terminal is needed after setx.
+    see_also: [g6-secrets-and-what-never-to-commit, c4-path-and-command-not-found]
+
+  - id: g6-secrets-and-what-never-to-commit
+    title: Secrets, and what must never reach GitHub
+    track: G
+    order: 60
+    owns: [API keys, credential hygiene, what to do after leaking one]
+    brief: >
+      The rule, the .gitignore mechanics, and the part everyone gets wrong:
+      deleting a committed secret does not remove it from history. Rotate it,
+      always, immediately. Assume it is compromised the moment it is pushed.
+    see_also: [d12-gitignore-and-what-not-to-commit, g8-what-never-to-paste-into-a-chat]
+
+  - id: g7-dependency-risk
+    title: Dependency risk, in proportion
+    track: G
+    order: 70
+    owns: [supply chain risk, typosquatting, audit tooling, hallucinated packages]
+    brief: >
+      Not paranoia. The specific realistic risks: a typosquatted package name, an
+      abandoned library, and the agent-specific one where it invents a package
+      name that an attacker has since registered. Practical checks.
+    see_also: [e7-agent-failure-modes, g2-package-managers]
+
+  - id: g8-what-never-to-paste-into-a-chat
+    title: What never to paste into any AI chat
+    track: G
+    order: 80
+    owns: [redaction before sending, the paste blocklist]
+    brief: >
+      Keys, tokens, connection strings, customer data, private keys, .env
+      contents. How to redact and still get useful help. Short, blunt,
+      memorable.
+    see_also: [f5-what-to-paste-and-what-not-to, g6-secrets-and-what-never-to-commit]
+
+  # ---------------------------------------------------------------- H
+  - id: h1-what-a-test-is
+    title: What a test actually is
+    track: H
+    order: 10
+    owns: [test, assertion, test runner, pass and fail]
+    brief: >
+      Code that runs your code and complains if the answer is wrong. Demystify
+      it completely: it is not a special kind of magic, it is an if statement
+      with a report.
+    see_also: [h2-kinds-of-tests, a2-the-honest-version]
+
+  - id: h2-kinds-of-tests
+    title: Unit, integration, and end-to-end
+    track: H
+    order: 20
+    owns: [unit test, integration test, e2e test, the tradeoff between them]
+    brief: >
+      What each covers, what each costs, and which to ask for in which
+      situation.
+    see_also: [h1-what-a-test-is, h6-when-tests-lie]
+
+  - id: h3-reviewing-a-diff-you-cannot-fully-read
+    title: Reviewing a diff when you cannot read every line
+    track: H
+    order: 30
+    owns: [review heuristics, scope checking, the review checklist]
+    brief: >
+      The most practically valuable section for a vibe coder. You are not
+      auditing syntax. You are checking: is this the file I expected, is the
+      change the size I expected, did it touch anything I did not ask about, did
+      it delete a test, are there new dependencies, are there secrets. Checklist
+      form. d9 owns the mechanics of reading diff syntax.
+    see_also: [d9-reading-a-diff, e7-agent-failure-modes, h4-what-good-looks-like]
+
+  - id: h4-what-good-looks-like
+    title: What good looks like in generated code
+    track: H
+    order: 40
+    owns: [code smell recognition for non-coders]
+    brief: >
+      Recognition-level only. Suspiciously long functions, copy-pasted blocks,
+      swallowed errors, commented-out code, magic numbers, TODO left behind.
+      Each with what to ask about it rather than how to fix it.
+    see_also: [h3-reviewing-a-diff-you-cannot-fully-read]
+
+  - id: h5-ci-cd
+    title: CI, and what the green check means
+    track: H
+    order: 50
+    owns: [CI, CD, GitHub Actions, reading a failed run]
+    brief: >
+      Automation that runs your tests when you push. How to read a failed run
+      and find the actual error inside a long log.
+    see_also: [f3-exit-codes-and-streams, d8-pull-requests]
+
+  - id: h6-when-tests-lie
+    title: When tests pass and the thing is still broken
+    track: H
+    order: 60
+    owns: [false confidence, tests that assert nothing, deleted tests, flakiness]
+    brief: >
+      Tests asserting nothing useful, tests the agent weakened to get green,
+      tests that pass for the wrong reason, flaky tests. Directly serves the
+      "working software you cannot verify is a rumor" thesis.
+    see_also: [e7-agent-failure-modes, h1-what-a-test-is]
+
+  # ---------------------------------------------------------------- I
+  - id: i1-what-deployment-means
+    title: What deployment actually means
+    track: I
+    order: 10
+    owns: [deployment, environments, local vs production]
+    brief: >
+      Getting it off your machine and onto one other people reach. Why "it works
+      locally" is not evidence of anything.
+    see_also: [i2-servers-and-hosting]
+
+  - id: i2-servers-and-hosting
+    title: Servers, hosting, and domains
+    track: I
+    order: 20
+    owns: [server, hosting, domain, DNS at a glance]
+    brief: >
+      Recognition level. What the words mean and roughly what each kind of
+      hosting is for. Not a how-to.
+    see_also: [j6-web-basics, i1-what-deployment-means]
+
+  - id: i3-builds-and-artifacts
+    title: Builds and artifacts
+    track: I
+    order: 30
+    owns: [build, artifact, build directory]
+    brief: >
+      What a build step produces, why the output is git-ignored, and why
+      deleting it is always safe.
+    see_also: [c2-compiled-vs-interpreted, d12-gitignore-and-what-not-to-commit]
+
+  - id: i4-releases-and-versioning
+    title: Releases and version numbers
+    track: I
+    order: 40
+    owns: [semantic versioning, release, changelog]
+    brief: >
+      What 2.1.3 means and what a bump in each position promises. Tags into
+      releases.
+    see_also: [d13-tags-releases-and-history]
+
+  - id: i5-shipping-a-desktop-app
+    title: Shipping something someone can install
+    track: I
+    order: 50
+    owns: [installers, code signing at a glance, SmartScreen]
+    brief: >
+      Windows-specific. Why an unsigned installer gets a scary blue warning and
+      what signing costs. This app is itself the worked example.
+    see_also: [i3-builds-and-artifacts]
+
+  # ---------------------------------------------------------------- J
+  - id: j1-how-to-recognize-a-language
+    title: How to tell what language you are looking at
+    track: J
+    order: 10
+    owns: [the recognition method, the identification order]
+    brief: >
+      The method, not any single language. Check the filename, then the manifest
+      in the folder, then the block delimiters, then the function keyword, then
+      the import syntax. Ordered by how decisive each signal is. This is the
+      section the Deck and the identifier both hang off.
+    see_also: [j2-the-config-formats-nobody-explains, j3-project-layouts]
+
+  - id: j2-the-config-formats-nobody-explains
+    title: JSON, YAML, TOML, and friends
+    track: J
+    order: 20
+    owns: [config formats as a family, why there are several]
+    brief: >
+      She hits these constantly and nobody tells her they are not code. What
+      each looks like, where each is used, and the gotchas: YAML indentation,
+      JSON trailing commas, JSON having no comments.
+    see_also: [b9-where-settings-live, j1-how-to-recognize-a-language]
+
+  - id: j3-project-layouts
+    title: What the folders in a project mean
+    track: J
+    order: 30
+    owns: [src, tests, docs, dist, build, dotfiles, the standard shape]
+    brief: >
+      The conventional shape and what each folder is for. Which are safe to
+      delete. Which are generated. Feeds Project Scan directly.
+    see_also: [j4-reading-a-repo-you-did-not-write, i3-builds-and-artifacts]
+
+  - id: j4-reading-a-repo-you-did-not-write
+    title: Walking into a repo you did not write
+    track: J
+    order: 40
+    owns: [orientation procedure for unfamiliar code]
+    brief: >
+      An ordered procedure: README, the manifest, the entry point, the test
+      folder, recent git log. Twenty minutes to a working mental model without
+      reading the code.
+    see_also: [j3-project-layouts, d13-tags-releases-and-history]
+
+  - id: j5-databases-at-a-glance
+    title: Databases, at a recognition level
+    track: J
+    order: 50
+    owns: [table, row, query, SQL vs NoSQL, migration]
+    brief: >
+      Enough to recognize what she is looking at and what a migration is. Not a
+      SQL tutorial. The SQL language card handles syntax.
+    see_also: [j1-how-to-recognize-a-language]
+
+  - id: j6-web-basics
+    title: How the web fits together
+    track: J
+    order: 60
+    owns: [HTTP, client and server, request and response, API, REST, status codes]
+    brief: >
+      The vocabulary underneath every web-adjacent error she will see. 404 and
+      500 explained as a category, not a list.
+    see_also: [c6-ports-and-localhost, j2-the-config-formats-nobody-explains]
+
+  - id: j7-the-ones-you-will-not-meet
+    title: The ones you will not meet
+    track: J
+    order: 70
+    owns: [the legacy language sidebar]
+    brief: >
+      Fortran, COBOL, Perl, Visual Basic. Why they still exist, why she will not
+      touch them, and one joke each. This is the only place in the corpus where
+      the joke is the point. Keep it short and keep it dry.
+    see_also: [j1-how-to-recognize-a-language]

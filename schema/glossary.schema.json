@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lockewerks.dev/compendium/glossary.schema.json",
+  "title": "Glossary term",
+  "description": "One word, defined once. The build script auto-links the first occurrence of every term in every card to its definition, so this file is the only place the word gets defined and every other author links instead of redefining.",
+  "type": "object",
+  "allOf": [{ "$ref": "common.schema.json#/$defs/base" }],
+  "required": ["id", "title", "type", "verified", "volatility", "term", "short_def"],
+  "properties": {
+    "type": { "const": "glossary" },
+    "term": {
+      "type": "string",
+      "description": "The word as it appears in prose. Capitalized as it is normally written."
+    },
+    "expansion": {
+      "type": "string",
+      "description": "For acronyms: what the letters stand for. CLI becomes 'Command-Line Interface'. Feeds the linter's acronym contract, which requires an expansion on first use per card."
+    },
+    "aliases": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Plurals, alternate spellings, and the wrong-but-common name. All of them auto-link to this definition and all of them are searchable."
+    },
+    "short_def": {
+      "type": "string",
+      "minLength": 15,
+      "maxLength": 220,
+      "description": "One sentence. This is what the hover popover shows, so it has to be complete and useful with no surrounding context. A term with no short_def is not auto-linked, which is deliberate: partial definitions in a popover are worse than none."
+    },
+    "not_to_be_confused_with": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/cardRef" },
+      "description": "The pairs that actually cause trouble: git and GitHub, merge and rebase, fetch and pull, terminal and shell."
+    },
+    "canonical_section": {
+      "$ref": "common.schema.json#/$defs/cardRef",
+      "description": "The section that explains this properly. The popover's 'read more' target."
+    }
+  }
+}

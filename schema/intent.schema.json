@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lockewerks.dev/compendium/intent.schema.json",
+  "title": "Task intent",
+  "description": "A plain-language goal pointing at the card that answers it. These exist because a beginner does not know the topic word to search for: she knows she wants to undo something, not that the word is `revert`. Intents are the bridge from her vocabulary to the corpus vocabulary, and they are the single highest-leverage retrieval artifact in the project.",
+  "type": "object",
+  "allOf": [{ "$ref": "common.schema.json#/$defs/base" }],
+  "required": ["id", "title", "type", "verified", "volatility", "goal", "phrasings", "target"],
+  "properties": {
+    "type": { "const": "intent" },
+    "goal": {
+      "type": "string",
+      "description": "Stated as she would state it, first person, plain. 'I want to undo my last commit but keep the changes.'"
+    },
+    "phrasings": {
+      "type": "array",
+      "minItems": 4,
+      "items": { "type": "string" },
+      "description": "Every way she might ask, including the panicked and ungrammatical ones. 'oops', 'i wrecked it', 'go back', 'undo', 'take it back'. Be generous: these are cheap to write and each one is a query that now lands correctly. Include the wrong technical word she might reach for, since half of getting unstuck is not knowing the right one."
+    },
+    "target": {
+      "$ref": "common.schema.json#/$defs/cardRef",
+      "description": "The card that actually answers it."
+    },
+    "urgency": {
+      "enum": ["calm", "stuck", "panic"],
+      "default": "calm",
+      "description": "panic routes straight into the Panic surface rather than the reader. Something is broken and she does not want a lecture."
+    }
+  }
+}

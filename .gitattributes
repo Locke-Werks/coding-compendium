@@ -1,0 +1,16 @@
+# Normalize line endings in the repo to LF, check out native on Windows.
+# Without this, every file authored on Windows shows as fully rewritten in a
+# diff and code review becomes useless.
+* text=auto
+
+# These are read by tooling that is picky about line endings.
+*.sh text eol=lf
+*.ps1 text eol=crlf
+
+# Binary, never diffed, never normalized.
+*.png binary
+*.ico binary
+*.icns binary
+*.onnx binary
+*.gguf binary
+*.db binary

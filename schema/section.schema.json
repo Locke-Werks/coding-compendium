@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lockewerks.dev/compendium/section.schema.json",
+  "title": "Prose section",
+  "description": "A long-form explanation, written in three depth tiers so the reader picks how much she wants. `answer` lives in frontmatter because the palette renders it without opening the file. `more` and `full` are H2 sections in the body, split by the compiler on those exact headings.",
+  "type": "object",
+  "allOf": [{ "$ref": "common.schema.json#/$defs/base" }],
+  "required": ["id", "title", "type", "verified", "volatility", "track", "answer"],
+  "properties": {
+    "type": { "const": "section" },
+    "track": { "$ref": "common.schema.json#/$defs/track" },
+    "order": {
+      "type": "integer",
+      "description": "Position within the track, for the reader's rail. Gaps are fine and are preferable to renumbering."
+    },
+    "answer": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 320,
+      "description": "One sentence, under 45 words, enforced by the linter on word count rather than characters. Written LAST, after `full` exists. A distillation written afterward sounds like a distillation; an opening statement written first sounds like a thesis, and forty authors writing thesis statements produce forty voices. Must stand alone: someone who reads only this gets something correct and useful, not a teaser."
+    },
+    "owns": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Concepts this section is the canonical explanation for. The anti-duplication mechanism: if a concept is not in your `owns`, you link to whoever owns it instead of re-explaining. Everything touches git, so without this every author explains a branch slightly differently."
+    }
+  }
+}
