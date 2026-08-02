@@ -1,0 +1,91 @@
+# Frozen language list.
+#
+# Same contract as sections.yml: every id exists here before any card is written,
+# so `confusable_with` and `see_also` resolve from the first draft. A language
+# card is nearly useless without its neighbors, since every tell is stated as a
+# contrast, so this file has to be complete before authoring starts.
+#
+# `batch` is the assignment for the six parallel authors in phase 3. Batches are
+# grouped by confusability rather than by popularity: whoever writes Java also
+# writes C#, because the settle-it rule between them has to be written once by
+# one person or the two cards will contradict each other.
+
+meta:
+  full_cards: 24
+  short_cards: 16
+  exemplar: rust
+
+# Full fingerprint cards. Every field in language.schema.json, ~700 words.
+full:
+  # -- batch 1: the curly-brace systems languages ---------------------------
+  - { id: rust,       name: Rust,         batch: 1, likelihood: likely,   status: done }
+  - { id: c,          name: C,            batch: 1, likelihood: possible }
+  - { id: cpp,        name: C++,          batch: 1, likelihood: possible }
+  - { id: go,         name: Go,           batch: 1, likelihood: likely }
+  - { id: zig,        name: Zig,          batch: 1, likelihood: unlikely }
+
+  # -- batch 2: the managed-runtime pair, plus their relatives --------------
+  # Java and C# go to one author on purpose. They are the single most confusable
+  # pair in the deck and the settle-it rule must be written once.
+  - { id: java,       name: Java,         batch: 2, likelihood: likely }
+  - { id: csharp,     name: "C#",         batch: 2, likelihood: likely }
+  - { id: kotlin,     name: Kotlin,       batch: 2, likelihood: possible }
+  - { id: swift,      name: Swift,        batch: 2, likelihood: possible }
+
+  # -- batch 3: the JavaScript family --------------------------------------
+  # JS and TS to one author for the same reason: TypeScript is JavaScript plus
+  # annotations, so the boundary between the cards is the whole point.
+  - { id: javascript, name: JavaScript,   batch: 3, likelihood: certain }
+  - { id: typescript, name: TypeScript,   batch: 3, likelihood: certain }
+  - { id: html,       name: HTML,         batch: 3, likelihood: certain }
+  - { id: css,        name: CSS,          batch: 3, likelihood: certain }
+
+  # -- batch 4: the dynamic languages --------------------------------------
+  - { id: python,     name: Python,       batch: 4, likelihood: certain }
+  - { id: ruby,       name: Ruby,         batch: 4, likelihood: possible }
+  - { id: php,        name: PHP,          batch: 4, likelihood: possible }
+
+  # -- batch 5: the shells and the query language --------------------------
+  # She is on Windows, so PowerShell is `certain` and bash is close behind
+  # because every instruction on the internet is written for it.
+  - { id: powershell, name: PowerShell,   batch: 5, likelihood: certain }
+  - { id: bash,       name: Bash,         batch: 5, likelihood: certain }
+  - { id: sql,        name: SQL,          batch: 5, likelihood: likely }
+
+  # -- batch 6: the ones that are not code, which nobody tells her ---------
+  # The highest-value batch in the deck. She meets these constantly, gets
+  # confused by them constantly, and every existing tutorial skips them because
+  # they are "obvious".
+  - { id: json,       name: JSON,         batch: 6, likelihood: certain }
+  - { id: yaml,       name: YAML,         batch: 6, likelihood: certain }
+  - { id: toml,       name: TOML,         batch: 6, likelihood: certain }
+  - { id: markdown,   name: Markdown,     batch: 6, likelihood: certain }
+  - { id: dockerfile, name: Dockerfile,   batch: 6, likelihood: likely }
+
+# Short cards. Tells, project fingerprint, confusable_with, and one snippet.
+# ~180 words. Enough to answer "what is this" and nothing more.
+short:
+  - { id: xml,          name: XML,            batch: 6 }
+  - { id: ini,          name: "INI and .env", batch: 6 }
+  - { id: makefile,     name: Makefile,       batch: 6 }
+  - { id: gitignore,    name: .gitignore,     batch: 6 }
+  - { id: graphql,      name: GraphQL,        batch: 5 }
+  - { id: terraform,    name: "Terraform (HCL)", batch: 5 }
+  - { id: protobuf,     name: Protocol Buffers, batch: 5 }
+  - { id: batch-script, name: Batch (.bat),   batch: 5 }
+  - { id: lua,          name: Lua,            batch: 4 }
+  - { id: r,            name: R,              batch: 4 }
+  - { id: dart,         name: Dart,           batch: 3 }
+  - { id: scala,        name: Scala,          batch: 2 }
+  - { id: elixir,       name: Elixir,         batch: 4 }
+  - { id: haskell,      name: Haskell,        batch: 1 }
+  - { id: objective-c,  name: Objective-C,    batch: 2 }
+  - { id: assembly,     name: Assembly,       batch: 1 }
+
+# Named only in j7-the-ones-you-will-not-meet, one joke each, no cards.
+# The `joke` field on the language schema exists for these and nothing else.
+retired:
+  - { id: fortran,     name: Fortran }
+  - { id: cobol,       name: COBOL }
+  - { id: perl,        name: Perl }
+  - { id: visualbasic, name: Visual Basic }

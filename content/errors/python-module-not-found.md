@@ -8,6 +8,10 @@ volatility: low
 language: python
 category: not-found
 
+# Run this after any fix in the ladder below. Silence means it worked: Python
+# only prints something when an import fails.
+verify: python -c "import requests; print(requests.__version__)"
+
 sample: |
   Traceback (most recent call last):
     File "C:\Users\nyx\dev\scraper\main.py", line 1, in <module>

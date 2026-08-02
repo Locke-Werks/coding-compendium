@@ -1,0 +1,27 @@
+{
+  "name": "coding-compendium",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Offline Windows reference app for software development in the age of coding agents",
+  "author": "Locke Werks",
+  "scripts": {
+    "lint:content": "tsx tools/lint/index.ts",
+    "lint:selftest": "tsx tools/lint/selftest.ts",
+    "check": "tsc --noEmit && pnpm lint:selftest && pnpm lint:content",
+    "build:content": "cargo run --manifest-path src-tauri/Cargo.toml --bin compile-content",
+    "fetch:vendor": "pwsh -File scripts/fetch-vendor.ps1",
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "gray-matter": "^4.0.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "yaml": "^2.6.1"
+  }
+}

@@ -55,8 +55,8 @@ inside a library but was almost certainly caused by how your code called it. Sca
 list for the first path inside your own project. That line is usually the real culprit.
 
 **Is this "cannot find" or "found it and it broke"?** Cannot-find errors (`command not
-found`, `No module named`, `Cannot find module`, `ENOENT`) mean something is not installed
-or a path is wrong. Those are cheap, and [c4](#c4-path-and-command-not-found) solves a large
+found`, `No module named`, `Cannot find module`, and `ENOENT`, which is how Node spells "no
+such file or directory") mean something is not installed or a path is wrong. Those are cheap, and [c4](#c4-path-and-command-not-found) solves a large
 share of them by itself. Found-it-and-broke errors (`TypeError`,
 `NullReferenceException`, `panic:`) mean the code ran and hit a case it did not expect.
 Those need an actual change.
@@ -83,7 +83,7 @@ know whether you have uncommitted work. Fixes go faster when you can throw the a
 
 Here is a real one, with the parts labelled:
 
-```
+```text
 Traceback (most recent call last):
   File "C:\Users\nyx\dev\scraper\main.py", line 12, in <module>
     import requests
@@ -109,8 +109,9 @@ the terminal only shows it if you ask:
 $LASTEXITCODE
 ```
 
-This matters in two situations. The first is CI, which decides a step failed purely on that
-number, so a build can go red while the log looks fine. The second is the genuinely
+This matters in two situations. The first is CI (Continuous Integration), the automation that
+runs your tests when you push. It decides a step failed purely on that number, so a build can
+go red while the log looks fine. The second is the genuinely
 maddening case where a command fails and prints nothing at all. A non-zero exit code with no
 output means the program died without explaining itself, which is not your fault and is
 usually a crash rather than a rejection.
@@ -161,7 +162,7 @@ concluding something is wrong. [b1](#b1-terminal-shell-command-line) tells them 
 
 You run the dev server and get this:
 
-```
+```text
 Error: listen EADDRINUSE: address already in use :::3000
     at Server.setupListenHandle [as _listen2] (node:net:1817:16)
     at listenInCluster (node:net:1865:12)

@@ -1,0 +1,63 @@
+# Acronyms and all-caps tokens the linter will not demand an expansion for.
+#
+# Keep this list SHORT and argue for every addition. The seed document expands
+# almost everything, including AI, API, CLI, JSON, and SSH, and that habit is a
+# large part of why it works for someone starting cold. The default answer to
+# "should I add this" is no: write the expansion in your card instead.
+#
+# The linter flattens every list below into one set, so the groupings are for
+# human readers and each entry lives in exactly one place. An earlier version of
+# this file kept a separate flat copy that had to be updated in parallel, which
+# lasted about four minutes before the two disagreed.
+#
+# Three categories qualify, and only three.
+
+# 1. Not actually acronyms. Literal identifiers she will type or read on screen,
+#    where spelling them out would be wrong rather than helpful. PATH is an
+#    environment variable name. HEAD is a git pointer. Neither stands for
+#    anything.
+identifiers:
+  - PATH
+  - HEAD
+  - TODO
+  - FIXME
+  - NOTE
+  - README
+  - LICENSE
+  - MAIN
+  - NUL
+  - UTF
+  - ASCII
+  - ANSWER
+  - MORE
+  - FULL
+
+# 2. Error constants. Same category as PATH: a literal string she reads on
+#    screen. ENOENT technically abbreviates "error, no entry", but nobody has
+#    ever said that out loud and printing it would confuse rather than help.
+#    Gloss them in prose instead ("ENOENT, which is how Node spells 'no such
+#    file or directory'"). Their own error cards carry the real explanation.
+error_constants:
+  - ENOENT
+  - EACCES
+  - EADDRINUSE
+  - ECONNREFUSED
+  - ENOTFOUND
+  - EPERM
+  - ETIMEDOUT
+
+# 3. Universal outside software entirely. Someone who has never opened a
+#    terminal already knows these, so expanding them reads as condescension.
+universal:
+  - OK
+  - US
+  - USA
+  - PC
+  - TV
+  - USB
+  - PDF
+  - RAM
+  - CPU
+  - GPU
+  - AM
+  - PM
