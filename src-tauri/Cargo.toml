@@ -1,0 +1,57 @@
+[package]
+name = "coding-compendium"
+version = "0.1.0"
+description = "Offline reference for software development in the age of coding agents"
+authors = ["Locke Werks"]
+edition = "2021"
+default-run = "coding-compendium"
+
+[lib]
+# The `_lib` suffix looks redundant and is not: without it the library and the
+# binary share a name, which fails to link on Windows.
+# https://github.com/rust-lang/cargo/issues/8519
+name = "compendium_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "coding-compendium"
+path = "src/main.rs"
+
+# Compiles content/ into the SQLite database the app searches. A separate binary
+# rather than a build script, because it is slow, it is run deliberately, and it
+# will later need the same embedding model the app uses. Sharing that model
+# through the library is what keeps the two from drifting into different vector
+# spaces.
+[[bin]]
+name = "compile-content"
+path = "src/bin/compile_content.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# serde_yaml is unmaintained. serde_yaml_ng is the maintained fork.
+serde_yaml_ng = "0.10"
+
+# `bundled` compiles SQLite from source rather than linking whatever the system
+# has, which on Windows is nothing. The bundled amalgamation is built with
+# SQLITE_ENABLE_FTS5, which is the entire lexical half of this app; a system
+# SQLite may well lack it, so bundling is a correctness requirement here rather
+# than a convenience.
+rusqlite = { version = "0.40", features = ["bundled", "functions"] }
+
+walkdir = "2.5"
+anyhow = "1"
+thiserror = "2"
+
+[profile.release]
+# The app ships a ~380 MB model, so a few seconds of extra link time to shave
+# the binary is worth it.
+codegen-units = 1
+lto = true
+strip = true

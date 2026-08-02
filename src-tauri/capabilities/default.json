@@ -1,0 +1,10 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permissions for the main window. Deliberately small: this app reads a local database and renders text. It has no reason to reach the network, the shell, or arbitrary files, so those permissions are absent rather than merely unused.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "opener:allow-open-url"
+  ]
+}
