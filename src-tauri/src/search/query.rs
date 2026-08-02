@@ -36,6 +36,31 @@
 //! is quoted literally. That single difference is what makes the search feel live
 //! rather than laggy.
 
+/// English function words, dropped before searching.
+///
+/// Nyx types questions, not keywords: "how do i know if this is python", not
+/// "python identification". Every word in that question except the last is a
+/// function word that appears in half the corpus, contributes nothing to
+/// relevance, and actively hurts when terms are combined.
+///
+/// Deliberately short. A long stopword list starts eating meaningful terms, and
+/// several near-misses were left in on purpose: "not" matters in "not found",
+/// "no" matters in "no such file", and "can" matters in "cannot". BM25 already
+/// discounts common words through inverse document frequency, so this list only
+/// needs to remove the ones that are pure noise.
+const STOPWORDS: &[&str] = &[
+    "a", "am", "an", "and", "any", "are", "as", "at", "be", "been", "but", "by", "did", "do",
+    "does", "for", "from", "had", "has", "have", "how", "i", "if", "in", "into", "is", "it",
+    "its", "me", "my", "of", "on", "or", "should", "so", "some", "than", "that", "the", "their",
+    "them", "then", "there", "these", "they", "this", "to", "was", "were", "what", "when",
+    "where", "which", "who", "why", "will", "with", "would", "you", "your",
+];
+
+fn is_stopword(token: &str) -> bool {
+    let lower = token.to_ascii_lowercase();
+    STOPWORDS.binary_search(&lower.as_str()).is_ok()
+}
+
 /// A token lifted out of the user's raw input.
 #[derive(Debug, PartialEq, Eq)]
 struct Token<'a> {
@@ -112,6 +137,21 @@ fn sanitize(token: &str) -> String {
     out.trim().to_string()
 }
 
+/// The meaningful words in a query, lowercased, with function words removed.
+///
+/// Used for the title boost in [`crate::search::Index::lexical`]. BM25 alone
+/// ranks by term statistics and has no notion that a card *is about* the thing
+/// named in its title, which is the difference between "python" returning the
+/// Python card and returning whichever card happens to mention it most.
+pub fn content_tokens(raw: &str) -> Vec<String> {
+    tokenize(raw)
+        .iter()
+        .filter(|t| t.quoted || !is_stopword(t.text))
+        .map(|t| sanitize(t.text).to_lowercase())
+        .filter(|t| !t.is_empty())
+        .collect()
+}
+
 /// Build an FTS5 MATCH expression from raw user input.
 ///
 /// Returns `None` when there is nothing searchable, which is a normal state (an
@@ -122,10 +162,16 @@ fn sanitize(token: &str) -> String {
 /// has committed to the query, for example by pressing Enter. A committed query
 /// wants exact matching; a live one wants the trailing word to expand.
 pub fn to_match_expression(raw: &str, prefix_last: bool) -> Option<String> {
-    let tokens = tokenize(raw);
-    if tokens.is_empty() {
+    let all = tokenize(raw);
+    if all.is_empty() {
         return None;
     }
+
+    // Drop function words, but never everything. Someone searching for the
+    // literal word "the" gets to search for it, and dropping the only token
+    // would turn a real query into an empty result list.
+    let kept: Vec<&Token<'_>> = all.iter().filter(|t| t.quoted || !is_stopword(t.text)).collect();
+    let tokens: Vec<&Token<'_>> = if kept.is_empty() { all.iter().collect() } else { kept };
 
     let mut parts: Vec<String> = Vec::with_capacity(tokens.len());
     let last = tokens.len() - 1;
@@ -155,51 +201,111 @@ pub fn to_match_expression(raw: &str, prefix_last: bool) -> Option<String> {
         return None;
     }
 
-    // Space-separated terms are an implicit AND in FTS5. Every word has to
-    // appear somewhere in the card, which is the behavior people expect from a
-    // search box.
-    Some(parts.join(" "))
+    // OR, not AND.
+    //
+    // Space-separated terms are an implicit AND in FTS5, and AND is wrong for
+    // this audience. Nyx types "how do i know if this is python", and requiring
+    // every word to appear in one card returns nothing at all, which reads as
+    // the app being broken rather than the query being conversational.
+    //
+    // OR cannot fail that way, and it is not the loose free-for-all it sounds
+    // like: BM25 ranks a card matching three query terms above one matching a
+    // single term, and its inverse-document-frequency weighting means a rare
+    // word like "python" counts for far more than a common one like "file". The
+    // result is that the specific words in a question drive the ranking and the
+    // filler words quietly stop mattering.
+    //
+    // Someone who genuinely wants every word can quote the phrase.
+    Some(parts.join(" OR "))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    /// `binary_search` returns nonsense on an unsorted slice, and it fails
+    /// silently: the list would just stop recognizing some stopwords.
+    #[test]
+    fn the_stopword_list_is_sorted() {
+        let mut sorted = STOPWORDS.to_vec();
+        sorted.sort_unstable();
+        assert_eq!(STOPWORDS, sorted.as_slice(), "STOPWORDS must stay alphabetical");
+    }
+
     #[test]
     fn plain_words_are_quoted_and_last_is_prefixed() {
-        assert_eq!(to_match_expression("git branch", true).unwrap(), r#""git" "branch"*"#);
+        assert_eq!(to_match_expression("git branch", true).unwrap(), r#""git" OR "branch"*"#);
     }
 
     #[test]
     fn without_prefix_every_token_is_literal() {
-        assert_eq!(to_match_expression("git branch", false).unwrap(), r#""git" "branch""#);
+        assert_eq!(to_match_expression("git branch", false).unwrap(), r#""git" OR "branch""#);
     }
 
-    /// The bug this whole module exists to prevent. Unquoted, FTS5 reads `NOT`
-    /// as an operator and silently excludes results instead of finding them.
+    /// The failure that made this necessary. Under AND semantics this returned
+    /// nothing at all, because no card contains every one of those words. That
+    /// reads as the app being broken rather than the question being casual, and
+    /// casual questions are the entire audience.
+    #[test]
+    fn a_natural_language_question_keeps_only_its_content_words() {
+        assert_eq!(
+            to_match_expression("how do i know if this is python", false).unwrap(),
+            r#""know" OR "python""#
+        );
+    }
+
+    #[test]
+    fn stopwords_are_dropped() {
+        assert_eq!(to_match_expression("what is a branch", false).unwrap(), r#""branch""#);
+        assert_eq!(to_match_expression("how do I undo the last commit", false).unwrap(),
+                   r#""undo" OR "last" OR "commit""#);
+    }
+
+    /// Dropping every token would turn a real query into an empty result list,
+    /// so a query made entirely of function words searches for them literally.
+    #[test]
+    fn a_query_of_only_stopwords_is_not_erased() {
+        assert_eq!(to_match_expression("what is it", false).unwrap(), r#""what" OR "is" OR "it""#);
+    }
+
+    /// Words that look like stopwords and are not. "not found", "no such file",
+    /// and "cannot" are all real search terms in this corpus.
+    #[test]
+    fn negations_survive_because_error_messages_need_them() {
+        let out = to_match_expression("command not found", false).unwrap();
+        assert!(out.contains(r#""not""#), "'not' matters in 'not found': {out}");
+        assert!(out.contains(r#""found""#));
+    }
+
+    /// The bug this whole module exists to prevent. Unquoted, FTS5 reads these
+    /// as operators and either errors or silently changes what the query means.
     #[test]
     fn fts5_operators_are_defused() {
-        assert_eq!(to_match_expression("this NOT that", false).unwrap(), r#""this" "NOT" "that""#);
-        assert_eq!(to_match_expression("a OR b", false).unwrap(), r#""a" "OR" "b""#);
-        assert_eq!(to_match_expression("x AND y", false).unwrap(), r#""x" "AND" "y""#);
-        // The parenthesis is stripped as punctuation, so this splits on
-        // whitespace into "NEAR a" and "b". Both are quoted literals, which is
-        // the property that matters: NEAR is no longer an operator.
-        assert_eq!(to_match_expression("NEAR(a b)", false).unwrap(), r#""NEAR a" "b""#);
+        // Every one of these is a quoted literal in the output, so FTS5 reads
+        // them as words to find rather than as instructions.
+        assert_eq!(to_match_expression("branch NOT merge", false).unwrap(),
+                   r#""branch" OR "NOT" OR "merge""#);
+        assert_eq!(to_match_expression("NEAR(a b)", false).unwrap(), r#""NEAR a" OR "b""#);
+
+        // "and" is also a stopword, so it is dropped before it can ever reach
+        // FTS5. Defused by removal rather than by quoting, which is equally
+        // safe and slightly faster.
+        assert_eq!(to_match_expression("x AND y", false).unwrap(), r#""x" OR "y""#);
     }
 
     /// A real query someone would type while panicking. The dashes would be a
     /// parse error raw, and they carry no meaning to the tokenizer regardless.
     #[test]
     fn punctuation_is_stripped_not_escaped() {
-        assert_eq!(to_match_expression("git reset --hard", false).unwrap(), r#""git" "reset" "hard""#);
+        assert_eq!(to_match_expression("git reset --hard", false).unwrap(),
+                   r#""git" OR "reset" OR "hard""#);
     }
 
     /// A quote in the middle of a word opens a phrase, so this splits into two
     /// tokens rather than producing one with an embedded quote.
     #[test]
     fn a_mid_word_quote_starts_a_phrase() {
-        assert_eq!(to_match_expression(r#"say"hi"#, false).unwrap(), r#""say" "hi""#);
+        assert_eq!(to_match_expression(r#"say"hi"#, false).unwrap(), r#""say" OR "hi""#);
     }
 
     /// The doubling in `sanitize` is currently unreachable through
@@ -225,7 +331,7 @@ mod tests {
     fn phrase_plus_trailing_word() {
         assert_eq!(
             to_match_expression(r#""detached head" recov"#, true).unwrap(),
-            r#""detached head" "recov"*"#
+            r#""detached head" OR "recov"*"#
         );
     }
 

@@ -105,6 +105,46 @@ pub fn fuse(rankings: &[Ranking]) -> Vec<(String, f64)> {
     out
 }
 
+/// Extra score for a card whose title matches a query term.
+///
+/// BM25 ranks purely on term statistics: how often a word appears here, how rare
+/// it is across the corpus, how long the document is. It has no notion that a
+/// card *is about* the thing its title names.
+///
+/// That gap is visible the moment you use it. Searching "how do i know if this
+/// is python" returned the C card first, because C's card mentions Python
+/// several times while comparing itself to it, and mentions are all BM25 counts.
+/// The card actually titled "Python" was nowhere near the top.
+///
+/// The boost is deliberately large. It is not a nudge among equals: a title
+/// match is a categorically different kind of evidence from a body mention, and
+/// treating it as merely one more signal is what produced the wrong answer.
+fn title_boost(title: &str, terms: &[String]) -> f64 {
+    if terms.is_empty() {
+        return 0.0;
+    }
+    let lower = title.to_lowercase();
+
+    // The whole query is the title, e.g. "merge conflicts". Nothing outranks it.
+    if terms.len() > 1 && lower == terms.join(" ") {
+        return 40.0;
+    }
+
+    let title_words: Vec<&str> = lower.split_whitespace().collect();
+    let mut boost = 0.0;
+
+    for term in terms {
+        if lower == *term {
+            // A single-word query naming the card exactly: "python", "rust".
+            boost += 30.0;
+        } else if title_words.contains(&term.as_str()) {
+            // The term is one word of a multi-word title.
+            boost += 12.0;
+        }
+    }
+    boost
+}
+
 /// A handle to the compiled corpus.
 pub struct Index {
     conn: Connection,
@@ -146,7 +186,7 @@ impl Index {
         // sign is flipped here so callers can treat larger as better throughout.
         let mut stmt = self.conn.prepare_cached(
             r#"
-            SELECT c.id, -bm25(cards_fts, 10.0, 5.0, 1.0, 3.0) AS score
+            SELECT c.id, c.title, -bm25(cards_fts, 10.0, 5.0, 1.0, 3.0) AS score
             FROM cards_fts
             JOIN cards c ON c.rowid = cards_fts.rowid
             WHERE cards_fts MATCH ?1
@@ -161,11 +201,24 @@ impl Index {
         // regression obvious rather than mysterious.
         let rows = stmt
             .query_map(rusqlite::params![expr, limit as i64], |r| {
-                Ok((r.get::<_, String>(0)?, r.get::<_, f64>(1)?))
+                Ok((r.get::<_, String>(0)?, r.get::<_, String>(1)?, r.get::<_, f64>(2)?))
             })
             .with_context(|| format!("FTS5 rejected a generated expression: {expr}"))?;
 
-        rows.collect::<rusqlite::Result<Vec<_>>>().context("reading lexical results")
+        let mut scored: Vec<(String, f64)> = Vec::new();
+        let terms = query::content_tokens(raw);
+
+        for row in rows {
+            let (id, title, score) = row.context("reading lexical results")?;
+            scored.push((id, score + title_boost(&title, &terms)));
+        }
+
+        // The boost changes the order, so re-sort. The id tiebreak keeps the
+        // result stable across identical queries.
+        scored.sort_by(|a, b| {
+            b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal).then_with(|| a.0.cmp(&b.0))
+        });
+        Ok(scored)
     }
 
     /// Fetch the display fields for a set of ids, preserving the given order.
@@ -271,5 +324,38 @@ mod tests {
     fn empty_input_is_not_an_error() {
         assert!(fuse(&[]).is_empty());
         assert!(fuse(&[vec![]]).is_empty());
+    }
+
+    fn terms(s: &str) -> Vec<String> {
+        query::content_tokens(s)
+    }
+
+    /// The exact failure that motivated the boost: "python" ranked the C card
+    /// first, because C's card compares itself to Python repeatedly and BM25
+    /// counts mentions.
+    #[test]
+    fn a_card_named_by_the_query_outranks_one_merely_mentioning_it() {
+        let t = terms("how do i know if this is python");
+        assert!(
+            title_boost("Python", &t) > title_boost("C language", &t),
+            "the card titled Python must beat one that only discusses it"
+        );
+    }
+
+    #[test]
+    fn the_whole_query_matching_a_title_beats_a_single_word_match() {
+        let t = terms("merge conflicts");
+        assert!(title_boost("Merge conflicts", &t) > title_boost("Merge and rebase", &t));
+    }
+
+    #[test]
+    fn title_matching_ignores_case_and_function_words() {
+        assert!(title_boost("PowerShell", &terms("what is powershell")) > 0.0);
+    }
+
+    #[test]
+    fn an_unrelated_title_gets_no_boost() {
+        assert_eq!(title_boost("Merge conflicts", &terms("python")), 0.0);
+        assert_eq!(title_boost("Python", &[]), 0.0);
     }
 }

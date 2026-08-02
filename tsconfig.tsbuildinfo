@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/api.ts","./src/main.tsx","./src/components/resultlist.tsx","./tools/lint/index.ts","./tools/lint/rules.ts","./tools/lint/selftest.ts"],"version":"5.9.3"}

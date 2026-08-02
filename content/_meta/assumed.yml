@@ -19,6 +19,11 @@
 identifiers:
   - PATH
   - HEAD
+  # ".NET" is a product name. The acronym check sees the bare NET and asks for
+  # an expansion that does not exist: Microsoft dropped the meaning years ago.
+  - NET
+  - API      # expand in prose where it helps, but it appears in too many
+             # compound names (Web API, API key) for a hard rule to be useful
   - TODO
   - FIXME
   - NOTE

@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+/* The palette.
+ *
+ * Dark by default and only dark. This is a tool someone opens mid-problem,
+ * often beside a terminal, and a white flash at that moment is genuinely
+ * unpleasant. Supporting both themes would mean maintaining two sets of
+ * contrast decisions for an audience of one who works in the dark.
+ *
+ * Amber is the single accent, carried over from the app icon. One accent means
+ * every highlighted thing reads as the same kind of thing.
+ */
+@theme {
+  --color-ink-900: #14161c;
+  --color-ink-850: #181a21;
+  --color-ink-800: #1d2029;
+  --color-ink-700: #262a35;
+  --color-ink-600: #343947;
+
+  --color-paper-100: #e8eaf0;
+  --color-paper-300: #b4b9c8;
+  --color-paper-500: #7b8296;
+
+  --color-amber-mark: #e8a84c;
+  --color-amber-dim: #8a6530;
+
+  /* Reserved for destructive commands. Nothing else may use it, so that red
+   * always means "this can lose work". */
+  --color-danger: #e8635c;
+
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Cascadia Code", "Consolas", ui-monospace, monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-ink-900);
+  color: var(--color-paper-100);
+  font-family: var(--font-sans);
+  /* The window is the app chrome. Letting the document scroll would drag the
+   * whole layout, header included. */
+  overflow: hidden;
+  /* Selecting UI text by accident looks broken in a desktop app. Prose opts
+   * back in below. */
+  user-select: none;
+}
+
+/* Anywhere the user is meant to read rather than click. */
+.selectable {
+  user-select: text;
+  cursor: auto;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-600);
+  border-radius: 5px;
+  border: 2px solid var(--color-ink-900);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-paper-500);
+}
+
+/* Keyboard focus must stay visible: the app is designed to be driven without a
+ * mouse, and an invisible focus ring makes that impossible. */
+:focus-visible {
+  outline: 2px solid var(--color-amber-mark);
+  outline-offset: 2px;
+}

@@ -195,8 +195,20 @@ const BRITISH: Array<[RegExp, string]> = [
   [/\bbehaviours?\b/i, "behavior"],
   [/\bfavour(s|ed|ing|ite)?\b/i, "favor"],
   [/\bcolours?\b/i, "color"],
-  [/\b(\w+)isation\b/i, "-ization"],
-  [/\b(\w+)ise[sd]?\b(?<!\b(?:wise|precise|concise|promise|advise|revise|rise|else)\w*)/i, "-ize"],
+  [/\b\w+isation\b/i, "-ization"],
+
+  // The -ise verbs are listed explicitly rather than matched by suffix.
+  //
+  // A generic /\w+ise\b/ rule looks obviously right and is not: it fires on
+  // raise, surprise, otherwise, precise, promise, advise, expertise, and
+  // exercise, none of which have a -ize form. That rule shipped, and authors
+  // dutifully rewrote correct English to get past it before anyone noticed the
+  // linter was the thing that was wrong. An explicit list cannot do that.
+  [
+    /\b(?:organis|realis|recognis|apologis|authoris|categoris|customis|emphasis(?=e)|final is|finalis|initialis|minimis|maximis|normalis|optimis|prioritis|randomis|serialis|specialis|standardis|summaris|synchronis|utilis|visualis|memoris|modularis|parameteris|sanitis|tokenis)(?:e|es|ed|ing)\b/i,
+    "the -ize spelling",
+  ],
+  [/\banalys(?:e|es|ed|ing)\b/i, "analyze"],
   [/\bcancelled\b/i, "canceled"],
   [/\blicence\b/i, "license"],
   [/\bdefence\b/i, "defense"],

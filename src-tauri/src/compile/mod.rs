@@ -68,8 +68,24 @@ pub fn load_cards(content_dir: &Path) -> Result<Vec<Card>> {
 /// a card that no longer exists.
 pub fn create_database(path: &Path) -> Result<Connection> {
     if path.exists() {
-        std::fs::remove_file(path)
-            .with_context(|| format!("removing previous build at {}", path.display()))?;
+        std::fs::remove_file(path).map_err(|e| {
+            // Windows refuses to delete a file another process has open, and the
+            // other process is nearly always the app itself still running from
+            // `pnpm tauri dev`. The raw "os error 32" gives no hint of that.
+            if e.kind() == std::io::ErrorKind::PermissionDenied
+                || e.raw_os_error() == Some(32)
+            {
+                anyhow::anyhow!(
+                    "{} is open in another process.\n\
+                     The app holds the database while it is running. Close the Coding \
+                     Compendium window (or stop `pnpm tauri dev`) and run this again.",
+                    path.display()
+                )
+            } else {
+                anyhow::Error::new(e)
+                    .context(format!("removing previous build at {}", path.display()))
+            }
+        })?;
     }
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent)?;

@@ -127,6 +127,74 @@ pub fn split_frontmatter(raw: &str) -> Result<(&str, &str)> {
     Ok((yaml, body))
 }
 
+/// The first real paragraph of a body, for use as a fallback `answer`.
+///
+/// Skips headings, code fences, blockquotes, lists, and tables, so the result is
+/// a sentence rather than a fragment of a table row. Returns `None` when the
+/// card opens with something that is not prose, in which case the palette shows
+/// the title alone, which is honest.
+fn lead_paragraph(body: &str) -> Option<String> {
+    let mut para = String::new();
+    let mut in_fence = false;
+
+    for line in body.lines() {
+        let t = line.trim();
+
+        if t.starts_with("```") {
+            in_fence = !in_fence;
+            if !para.is_empty() {
+                break;
+            }
+            continue;
+        }
+        if in_fence {
+            continue;
+        }
+
+        if t.is_empty() {
+            if !para.is_empty() {
+                break; // paragraph ended
+            }
+            continue;
+        }
+        // Anything that is not running prose.
+        if t.starts_with('#') || t.starts_with('>') || t.starts_with('|') || t.starts_with("- ")
+            || t.starts_with("* ") || t.starts_with("---")
+        {
+            if !para.is_empty() {
+                break;
+            }
+            continue;
+        }
+
+        if !para.is_empty() {
+            para.push(' ');
+        }
+        para.push_str(t);
+    }
+
+    if para.is_empty() {
+        return None;
+    }
+
+    // Strip the markdown emphasis and code markers that would otherwise show as
+    // literal asterisks and backticks in a plain-text result row.
+    let cleaned: String = para.chars().filter(|c| !matches!(c, '*' | '`' | '_')).collect();
+    let cleaned = cleaned.trim();
+
+    // Keep it to roughly the length of an authored answer. Cutting at a sentence
+    // boundary avoids ending mid-clause.
+    const MAX: usize = 240;
+    if cleaned.len() <= MAX {
+        return Some(cleaned.to_string());
+    }
+    let cut = cleaned[..MAX]
+        .rfind(". ")
+        .map(|i| i + 1)
+        .unwrap_or_else(|| cleaned[..MAX].rfind(' ').unwrap_or(MAX));
+    Some(cleaned[..cut].trim().to_string())
+}
+
 impl Card {
     pub fn parse(raw: &str, path: &Path) -> Result<Self> {
         let (yaml, body) = split_frontmatter(raw)?;
@@ -163,13 +231,22 @@ impl Card {
             serde_yaml_ng::from_str(yaml).context("re-reading frontmatter as a value")?;
         let meta_json = serde_json::to_string(&value).context("converting frontmatter to JSON")?;
 
+        // Only prose sections declare an `answer` in frontmatter. Every other
+        // card type would show as a bare title in the palette, which throws away
+        // the whole answer-first premise, so one is derived from the opening
+        // paragraph. Authors already write that paragraph as a one-line
+        // definition ("A compiled systems language that refuses to build your
+        // program until it can prove the memory handling is safe"), so the
+        // derived answer is the sentence they would have written anyway.
+        let answer = common.answer.or_else(|| lead_paragraph(body));
+
         Ok(Card {
             id: common.id,
             title: common.title,
             kind: common.kind,
             track: common.track,
             order: common.order,
-            answer: common.answer,
+            answer,
             body: body.to_string(),
             keywords: common.keywords,
             volatility: common.volatility,
@@ -245,6 +322,53 @@ mod tests {
     fn id_must_match_filename() {
         let err = Card::parse(MINIMAL, &path("something-else")).unwrap_err();
         assert!(err.to_string().contains("does not match filename"));
+    }
+
+    #[test]
+    fn an_explicit_answer_wins_over_the_derived_one() {
+        let doc = "---\nid: demo\ntitle: Demo\ntype: section\nvolatility: low\nverified: 2026-08-02\nanswer: The authored answer.\n---\n\nThe opening paragraph.\n";
+        let card = Card::parse(doc, &path("demo")).unwrap();
+        assert_eq!(card.answer.as_deref(), Some("The authored answer."));
+    }
+
+    /// Language, error, and command cards carry no `answer` field, and without a
+    /// derived one they render in the palette as a bare title. That throws away
+    /// the answer-first premise the whole app is built on.
+    #[test]
+    fn the_opening_paragraph_becomes_the_answer() {
+        let doc = "---\nid: demo\ntitle: Demo\ntype: language\nvolatility: low\nverified: 2026-08-02\n---\n\nA compiled systems language that refuses to build your program.\n\n## The shape\n\nMore text.\n";
+        let card = Card::parse(doc, &path("demo")).unwrap();
+        assert_eq!(
+            card.answer.as_deref(),
+            Some("A compiled systems language that refuses to build your program.")
+        );
+    }
+
+    #[test]
+    fn the_derived_answer_skips_non_prose() {
+        // Opening with a heading and a code fence must not produce "## Heading"
+        // or a line of Rust as the answer.
+        let body = "## Heading\n\n```rust\nfn main() {}\n```\n\nThe actual sentence.\n";
+        assert_eq!(lead_paragraph(body).as_deref(), Some("The actual sentence."));
+
+        assert_eq!(lead_paragraph("| a | b |\n| - | - |\n").as_deref(), None);
+        assert_eq!(lead_paragraph("").as_deref(), None);
+    }
+
+    #[test]
+    fn the_derived_answer_drops_markdown_markers() {
+        assert_eq!(
+            lead_paragraph("Its packages are called **crates**, which uses `cargo`.").as_deref(),
+            Some("Its packages are called crates, which uses cargo.")
+        );
+    }
+
+    #[test]
+    fn a_long_opening_paragraph_is_cut_at_a_sentence() {
+        let body = format!("{} And a trailing clause that runs past the limit.", "Sentence one is quite long. ".repeat(12));
+        let out = lead_paragraph(&body).unwrap();
+        assert!(out.len() <= 240);
+        assert!(out.ends_with('.'), "should cut at a sentence boundary, got: {out:?}");
     }
 
     /// Type-specific fields are not modelled in Rust and must survive into the
