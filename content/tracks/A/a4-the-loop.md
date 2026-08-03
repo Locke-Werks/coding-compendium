@@ -126,8 +126,10 @@ git add -A
 git commit -m "feat: add CSV export to the reports page"
 ```
 
-`-A` stages every changed file. `-m` supplies the message inline. Then push and open the
-pull request, which is [d8](#d8-pull-requests), or take the next turn on the same branch.
+`-A` stages every changed file, which is safe here because you just read the whole diff;
+[d4](#d4-commit-well) covers staging by name for when you have not. `-m` supplies the
+message inline. Then push and open the pull request, which is [d8](#d8-pull-requests), or
+take the next turn on the same branch.
 
 ### When the loop stops working
 

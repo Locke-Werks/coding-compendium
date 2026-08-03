@@ -138,7 +138,8 @@ you want.
 
 The repository does not get smaller. Every past commit still contains those files and the
 `.git` folder still stores them. Cleaning that requires rewriting history, which is worth
-doing only for a secret or for a repository that has become genuinely unusable.
+doing only for a repository that has become genuinely unusable. It is not the fix for a
+leaked credential: revoke that instead ([g6](#g6-secrets-and-what-never-to-commit)).
 
 ### Why a file you ignored is still showing up
 

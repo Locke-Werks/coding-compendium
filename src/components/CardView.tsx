@@ -63,7 +63,17 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
   );
 }
 
-export default function CardView({ card, onBack }: { card: CardDetail; onBack: () => void }) {
+interface Props {
+  card: CardDetail;
+  /** Back to results, or to the previous card when there is history. */
+  onBack: () => void;
+  /** Follow a cross-card link. */
+  onNavigate: (id: string) => void;
+  /** How deep the reading history is, so the back label can say where it goes. */
+  depth: number;
+}
+
+export default function CardView({ card, onBack, onNavigate, depth }: Props) {
   return (
     <article className="selectable mx-auto max-w-3xl p-6">
       <button
@@ -71,7 +81,7 @@ export default function CardView({ card, onBack }: { card: CardDetail; onBack: (
         onClick={onBack}
         className="mb-4 text-xs text-paper-500 transition-colors hover:text-paper-100"
       >
-        &larr; back to results
+        &larr; {depth > 0 ? "back" : "back to results"}
       </button>
 
       <div className="flex items-baseline gap-3">
@@ -170,13 +180,28 @@ export default function CardView({ card, onBack }: { card: CardDetail; onBack: (
                 {children}
               </blockquote>
             ),
-            a: ({ children }) => (
-              // Cross-card links are rendered inert for now. The reader needs
-              // history before following one is anything but a dead end.
-              <span className="text-amber-mark underline decoration-amber-dim underline-offset-2">
-                {children}
-              </span>
-            ),
+            a: ({ href, children }) => {
+              // Cross-card links are written as [text](#card-id). The corpus is
+              // dense with them by design: every author was told to link rather
+              // than re-explain, so following them is how most of it is reached.
+              const id = href?.startsWith("#") ? href.slice(1) : null;
+              if (!id) {
+                return (
+                  <span className="text-amber-mark underline decoration-amber-dim underline-offset-2">
+                    {children}
+                  </span>
+                );
+              }
+              return (
+                <button
+                  type="button"
+                  onClick={() => onNavigate(id)}
+                  className="text-amber-mark underline decoration-amber-dim underline-offset-2 transition-colors hover:decoration-amber-mark"
+                >
+                  {children}
+                </button>
+              );
+            },
           }}
         >
           {card.body}

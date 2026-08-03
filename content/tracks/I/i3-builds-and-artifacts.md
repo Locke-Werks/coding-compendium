@@ -38,9 +38,9 @@ keywords:
 
 ## More
 
-A **build** is a step that reads the files you edit and writes different files that actually
-run. The output is called an **artifact**: a single `.exe`, a folder of minified JavaScript,
-an installer, a container image.
+The output of a **build** is called an **artifact**: a single `.exe`, a folder of minified
+JavaScript, an installer, a container image. The build is the step that reads the files you
+edit and writes those instead.
 
 Not every project has one. A Python script runs from the file you typed, so there is nothing
 to build. A Rust program has to be compiled before anything can run at all. The dividing

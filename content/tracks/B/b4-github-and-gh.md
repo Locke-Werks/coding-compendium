@@ -158,7 +158,7 @@ Claude Code and Codex do not have their own GitHub accounts. When you say "commi
 open a pull request," the agent runs the same `git` and `gh` commands you would, using the
 credentials you set up here. Everything appears under `nyxlocke`, because it was you.
 
-That is worth sitting with for a second. There is no separate approval step on GitHub's side.
+There is no separate approval step on GitHub's side.
 Anything you can do from this terminal, an agent with permission to run commands can do too,
 which is why [e11](#e11-what-to-never-let-an-agent-do) exists and why force pushes are on
 its list.

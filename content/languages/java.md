@@ -40,8 +40,8 @@ tells:
     weight: 8
     note: >
       Java splits inheritance into two words, `extends` for a class and
-      `implements` for an interface. C#, Kotlin, Swift, and Scala all use a
-      single colon for both.
+      `implements` for an interface. C#, Kotlin, and Swift all use a single
+      colon for both, and Scala writes `extends` and `with`.
   - pattern: '@Override'
     kind: sigil
     weight: 8

@@ -161,10 +161,8 @@ though the disk savings can be disappointing.
 
 ### Version numbers in the manifest
 
-You will see `"express": "^4.18.2"`. The caret means "4.18.2 or newer, but stay below
-5.0.0." A tilde, `~4.18.2`, means patch updates only. A bare `4.18.2` means exactly that
-version and nothing else.
+A manifest names a range rather than one exact version, written with a caret or a tilde in
+front of the number. [i4](#i4-releases-and-versioning) reads the operators.
 
 Those ranges are why two people can install the same manifest and get different code, and
-they are the entire reason lockfiles exist. [g3](#g3-lockfiles) is next, and
-[i4](#i4-releases-and-versioning) explains what the three numbers promise.
+they are the entire reason lockfiles exist. [g3](#g3-lockfiles) is next.

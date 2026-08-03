@@ -23,14 +23,15 @@ tells:
       A lowercase type after a colon, as in `function greet(name: string)`. This is
       the single most reliable tell on the card. Python annotates the same way and
       spells the types `str`, `int`, `bool`. Kotlin and Swift capitalize theirs as
-      `String` and `Int`. Only TypeScript writes them lowercase in full.
+      `String` and `Int`. C# writes `string` lowercase too, but puts the type
+      before the name rather than after a colon.
   - pattern: 'interface'
     kind: token
     weight: 6
     note: >
       Declares a shape that objects must match. JavaScript has no such keyword, so
       this settles the pair on its own. Java, C#, Go, and PHP also have `interface`,
-      and none of them put `=>` and `const` in the same file.
+      so it settles nothing outside the JavaScript family.
   - pattern: '^\s*(export\s+)?type\s+\w+\s*='
     kind: regex
     weight: 8
@@ -158,10 +159,10 @@ confusable_with:
     tiebreak: { pattern: '(interface\s+\w+|:\s*(string|number|boolean)\b|\bas\s+const\b)', kind: regex, favors: typescript }
   - language: csharp
     settle_it: >
-      Both use `=>`, `interface`, `enum`, and `readonly`. C# capitalizes its types
-      (`string` is an alias for `String`), opens with `using System;`, and puts
-      `public class` at the top of nearly every file. TypeScript imports with
-      `import ... from "..."` and has no `namespace` around ordinary code.
+      Both use `=>`, `interface`, `enum`, `readonly`, and lowercase `string`, so the
+      types are no help. C# opens with `using System;` and puts `public class` at the
+      top of nearly every file. TypeScript imports with `import ... from "..."` and
+      has no `namespace` around ordinary code.
     tiebreak: { pattern: '^\s*using\s+System', kind: regex, favors: csharp }
   - language: dart
     settle_it: >

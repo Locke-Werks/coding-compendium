@@ -32,10 +32,9 @@ keywords:
 
 ## More
 
-Deploying is putting a working copy of your program somewhere other people can reach, and
-starting it there. Where "there" is depends on the shape of the project: a rented Linux
-machine for a web app, a file host for a static site, an installer people download for a
-desktop program ([i5](#i5-shipping-a-desktop-app)).
+Where the copy goes depends on the shape of the project: a rented Linux machine for a web
+app, a file host for a static site, an installer people download for a desktop program
+([i5](#i5-shipping-a-desktop-app)).
 
 The word covers three steps that always happen in this order.
 

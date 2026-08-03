@@ -33,11 +33,10 @@ keywords:
 
 ## More
 
-Start here, because nobody says it out loud: **these files are not code.** JSON (JavaScript
-Object Notation), YAML (YAML Ain't Markup Language), and TOML (Tom's Obvious, Minimal
-Language) have no logic, no functions, no loops, and no way to make a decision. Nothing
-inside one ever runs. Each is a way of writing down settings or data so that a real program
-can read them and behave accordingly.
+**These files are not code.** JSON (JavaScript Object Notation), YAML (YAML Ain't Markup
+Language), and TOML (Tom's Obvious, Minimal Language) are ways of writing down settings or
+data so that a real program can read them and behave accordingly. Nothing inside one ever
+runs.
 
 That means a mistake in one of these files is never a bug in your program's thinking. It is
 a typo, a wrong value, or a key the tool does not recognize.
@@ -126,7 +125,8 @@ You added a key, the file is valid, the tool loads it, and the behavior does not
 because the tool has never heard of that key and ignores what it does not recognize. No
 error appears anywhere.
 
-This is a favorite failure of coding agents. Asked to change a setting, an agent will
+This is a favorite failure of coding agents ([e7](#e7-agent-failure-modes)). Asked to
+change a setting, an agent will
 confidently invent a plausible key name, write it into valid JSON, and report success. The
 check is not "does the file load." The check is "does the key exist in this tool's own
 documentation," and the file cannot tell you.
@@ -160,5 +160,4 @@ anywhere. If a comment in a `.json` file breaks a tool, that is the tool being c
 
 Each agent and editor keeps its configuration in one of these formats, at more than one
 level, with the narrower level winning. Which file, and which level, is
-[b9](#b9-where-settings-live). This card is only about reading the syntax once you have the
-file open.
+[b9](#b9-where-settings-live).

@@ -99,40 +99,23 @@ This one is a cannot-find error, in your own file, on an `import`. That combinat
 one thing: the library is not installed in the environment you are running. Not a bug in
 your code, and not something to ask an agent to rewrite around.
 
-### Exit codes, and the failure with no message
+### The two things that hide an error
 
-Every command returns a number when it finishes. Zero means success. Anything else means
-failure, and the number sometimes tells you the category. You usually never see it, because
-the terminal only shows it if you ask:
+An error can be missing rather than unreadable, for two reasons
+[f3](#f3-exit-codes-and-streams) owns in full. Every command hands back a number when it
+finishes, zero for success and anything else for failure, and nothing shows it unless you
+ask:
 
 ```powershell
 $LASTEXITCODE
 ```
 
-This matters in two situations. The first is CI (Continuous Integration), the automation that
-runs your tests when you push. It decides a step failed purely on that number, so a build can
-go red while the log looks fine. The second is the genuinely
-maddening case where a command fails and prints nothing at all. A non-zero exit code with no
-output means the program died without explaining itself, which is not your fault and is
-usually a crash rather than a rejection.
-
-### stdout, stderr, and why redirecting can hide the error
-
-Programs write to two separate streams. Normal output goes to **stdout**. Errors and
-warnings go to **stderr**. They both land in your terminal window, which makes them look
-like one thing, and they are not.
-
-The consequence: if you send output to a file to read it later, you get only the normal
-output and the error vanishes.
+Programs also write on two separate channels, ordinary output and errors, so sending output
+to a file captures the first and drops the second. Merging them keeps the error:
 
 ```powershell
-npm run build > log.txt          # stdout only, the error is NOT in log.txt
-npm run build > log.txt 2>&1     # both streams, the error is in log.txt
+npm run build > log.txt 2>&1
 ```
-
-`2>&1` means "send stream 2 (stderr) to the same place as stream 1 (stdout)." It is worth
-recognizing because it appears in nearly every set of build instructions ever written.
-[f3](#f3-exit-codes-and-streams) covers both in full.
 
 ### Warnings are not errors
 
@@ -188,12 +171,9 @@ There is nothing wrong with your code.
 ### When the error is empty
 
 Sometimes a command fails, prints nothing, and returns a non-zero exit code. This happens,
-and it is not your fault. In order:
+and it is not your fault. [f3](#f3-exit-codes-and-streams) has the four steps to work
+through, in order.
 
-1. Run it again with a verbosity flag if the tool has one: `--verbose`, `-v`, `--debug`.
-2. Check whether the tool writes a log file elsewhere. Most do. See [f4](#f4-logs).
-3. Check `$LASTEXITCODE`. A `137` means it was killed, usually for running out of memory. A
-   `1` is just generic failure.
-4. If it still says nothing, that is the thing to report: "this command exits with code N
-   and prints nothing." That is a real, specific, useful bug report, and a much better
-   prompt than "it doesn't work."
+The part to carry away is what you report at the end of them: "this command exits with code
+N and prints nothing" is specific and useful, and a much better prompt than "it doesn't
+work."

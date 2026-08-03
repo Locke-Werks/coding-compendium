@@ -46,8 +46,8 @@ keywords:
 
 ## More
 
-There is no single undo in git. There are six, and picking the right one is a question of
-what you want back, not how git works. Find your row.
+There is no single undo in git. There are several, and picking the right one is a question
+of what you want back, not how git works. Find your row.
 
 | What you want back | Command | What it destroys |
 |---|---|---|

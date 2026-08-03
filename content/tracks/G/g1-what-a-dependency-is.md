@@ -38,8 +38,8 @@ keywords:
 
 ## More
 
-A **dependency** is code somebody else wrote that your project needs to run: a
-date-formatting library, a web framework, a testing tool. You name it in your project's
+A date-formatting library, a web framework, a testing tool. Each one is a **dependency**,
+code somebody else wrote that your project cannot run without. You name it in your project's
 **manifest**, the file listing what the project requires, and a package manager downloads
 it for you. [g2](#g2-package-managers) covers the managers, one per language.
 
@@ -78,10 +78,9 @@ The **manifest** is short, hand-edited, and yours: `package.json`, `pyproject.to
 `Cargo.toml`, `requirements.txt`, `Gemfile`. It names what you want, usually as a range
 rather than an exact version.
 
-The **lockfile** is long, machine-written, and nobody's: `package-lock.json`,
-`pnpm-lock.yaml`, `Cargo.lock`, `poetry.lock`. It records the exact version of every
-package you actually received, transitive ones included. [g3](#g3-lockfiles) is the card
-for it.
+The **lockfile** is long, machine-written, and nobody's. It records the exact version of
+every package you actually received, transitive ones included, and it is
+[g3](#g3-lockfiles).
 
 The installed folder is the third thing, and it is derived from the other two. That is the
 whole reason it is safe to delete.

@@ -35,11 +35,11 @@ is not your code: a database, a browser, an issue tracker, a notes app, a cloud 
 Anthropic published it, other vendors adopted it, and both Claude Code and Codex support
 it.
 
-The mechanics are less magical than the name suggests. An MCP **server** is a small program
-that publishes a list of tools with descriptions, along the lines of `search_issues`,
-`run_query`, `create_page`. Those tools get added to the agent's menu alongside read-file
-and run-command. When the agent decides one is relevant, it calls it, and the server does
-the work using whatever credentials you gave the server.
+An MCP **server** is a small program that publishes a list of tools with descriptions,
+along the lines of `search_issues`, `run_query`, `create_page`. Those tools get added to
+the agent's menu alongside read-file and run-command. When the agent decides one is
+relevant, it calls it, and the server does the work using whatever credentials you gave the
+server.
 
 So "connecting a tool" means three things happening at once:
 

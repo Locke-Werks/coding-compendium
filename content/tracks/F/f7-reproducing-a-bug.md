@@ -33,9 +33,8 @@ keywords:
 
 ## More
 
-The reason to care is short: if you cannot make the bug happen on demand, you cannot tell
-whether it is fixed. You get a change, the symptom does not appear for an hour, and you have
-learned nothing. Everything else in this card follows from that sentence.
+If you cannot make the bug happen on demand, you cannot tell whether it is fixed. You get a
+change, the symptom does not appear for an hour, and you have learned nothing.
 
 A reproduction has five parts. Write them down, in a file, not in your head.
 
@@ -162,5 +161,4 @@ again with the evidence being recorded ([f4](#f4-logs)). That is slower and it c
 
 Put the reproduction in the issue, the pull request, or a scratch file in the repository. Two
 reasons. It is the first thing anyone needs, including you in a month. And once the fix
-lands, the reproduction is the checklist that proves it worked, which is the whole point of
-having written it down.
+lands, the reproduction is the checklist that proves it worked.

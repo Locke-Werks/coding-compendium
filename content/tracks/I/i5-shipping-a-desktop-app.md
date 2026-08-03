@@ -158,9 +158,8 @@ Publishing the file's checksum next to the download is the honest supplement: it
 careful person confirm the file they got is the file you built. It also costs you one line
 in the release notes.
 
-### The bottom line for this app
+### When to buy the certificate
 
-Unsigned, distributed as an `.msi` from a GitHub release, with the warning documented in the
-readme. The certificate is a real cost with a real benefit and it is not the first thing to
-buy. When the number of people installing this gets past the number you can text, that
-calculation flips.
+Not yet. This app ships unsigned, as an `.msi` from a GitHub release, with the warning
+documented in the readme. When the number of people installing it gets past the number you
+can text, that calculation flips.

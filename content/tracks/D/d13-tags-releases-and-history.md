@@ -290,7 +290,8 @@ git bisect reset
 ```
 
 It puts you back on the branch you started from. Without it you are left parked on an old
-commit, which is the state described in [d10](#d10-undo-everything) and looks alarming.
+commit with no branch involved, which is the detached HEAD state in
+[d3](#d3-the-three-places) and looks alarming.
 
 ### Living with the pager
 

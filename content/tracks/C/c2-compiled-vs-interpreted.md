@@ -140,7 +140,7 @@ the language at all ([j1](#j1-how-to-recognize-a-language)).
   interpreter to be a prerequisite.
 - A `package.json` means JavaScript or TypeScript on Node, which is interpreted, except that
   TypeScript itself is compiled to JavaScript first by a step called transpiling. Both facts
-  are true at once and neither is worth arguing about.
+  are true at once.
 - A `pom.xml`, `build.gradle`, or `.csproj` means bytecode and a virtual machine.
 
 Whatever the answer, the command that starts it is written down in that same file, and

@@ -35,9 +35,8 @@ keywords:
 
 ## More
 
-A test is code that runs your code and complains when the answer is wrong. That is the
-whole idea. There is no separate testing technology and nothing magic happening underneath:
-a test is a small function that calls your function and checks what came back.
+There is no separate testing technology and nothing magic happening underneath: a test is a
+small function that calls your function and checks what came back.
 
 Here is a complete one, with no framework involved:
 
@@ -168,9 +167,8 @@ green suites that are lying to you is [h6](#h6-when-tests-lie).
 
 ### Where tests live
 
-Most projects keep them in a `tests/` folder at the root, or beside each source file with a
-matching name: `cart.js` and `cart.test.js`. Rust conventionally puts them in the same file
-as the code, at the bottom, behind a marker that keeps them out of the shipped build.
+A `tests` folder at the root, or a file sitting beside the code it checks, depending on the
+ecosystem ([j3](#j3-project-layouts)).
 
 You do not have to place them. The runner has a convention and your agent knows it. What is
 worth knowing is that a test file appearing in a commit that was supposed to change source

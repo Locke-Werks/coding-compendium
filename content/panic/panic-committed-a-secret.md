@@ -120,9 +120,9 @@ nodes:
       shell: powershell
       does: >
         Removes the last checkpoint and puts everything it contained back in the
-        staging area. Now delete the secret from the file, add the file to
-        `.gitignore`, unstage it with `git restore --staged <the-file>`, and
-        commit again.
+        queue for the next one. Now delete the secret from the file, add the file
+        to `.gitignore`, take it back out of the queue with `git restore --staged
+        <the-file>`, and commit again.
       destroys: Nothing. Every change is kept.
       verify: >
         `git log -p -1` no longer shows the secret anywhere in its output, and
@@ -160,6 +160,7 @@ nodes:
     ask: >
       Is this a private repository that only you use, short enough that losing
       its history would cost you nothing?
+    how_to_tell: gh repo view --json visibility,nameWithOwner
     branches:
       - label: Yes, it is mine and private and the history does not matter
         goto: fresh-start

@@ -180,8 +180,7 @@ does not exist.
 
 ### The reason this happens so often to you specifically
 
-Agents start dev servers in background terminals to check their own work, and they are
-inconsistent about stopping them afterward. The window closes, the turn ends, the process
-keeps running with nothing on screen. Your next run collides with a server you never knew
-existed. [c5](#c5-processes-and-killing-them) has the general form of that problem, and the
-[EADDRINUSE error card](#eaddrinuse-address-already-in-use) has the full fix ladder.
+Agents leave dev servers running in the background after a turn ends
+([c5](#c5-processes-and-killing-them)), so your next run collides with a server you never
+knew existed. The [EADDRINUSE error card](#eaddrinuse-address-already-in-use) has the full
+fix ladder.

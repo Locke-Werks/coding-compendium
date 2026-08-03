@@ -390,6 +390,72 @@ function checkDangerAnnotation(card: Card): Finding[] {
   return findings;
 }
 
+/**
+ * Every panic tree must be walkable end to end.
+ *
+ * A `goto` naming a node that does not exist strands her mid-recovery, on the
+ * one surface where being stranded is worst: she reached it because something is
+ * already broken. The schema cannot catch this, because `goto` is just a string
+ * and the node map is `additionalProperties`.
+ *
+ * Also checks the inverse. An unreachable node is 400 words of careful recovery
+ * advice that nobody will ever see, which is a quieter failure and still a bug.
+ */
+function checkPanicTree(card: Card): Finding[] {
+  if (card.type !== "panic") return [];
+
+  const nodes = (card.frontmatter.nodes ?? {}) as Record<string, any>;
+  const keys = new Set(Object.keys(nodes));
+  const root = card.frontmatter.root as string | undefined;
+  const findings: Finding[] = [];
+
+  const err = (message: string) =>
+    findings.push({ rule: "panic-tree", severity: "error" as const, line: 1, column: 1, message });
+
+  if (!root || !keys.has(root)) {
+    err(`root is "${root ?? "missing"}", which is not one of the nodes.`);
+  }
+
+  const reachable = new Set<string>();
+  const walk = (key: string) => {
+    if (reachable.has(key) || !keys.has(key)) return;
+    reachable.add(key);
+    for (const b of (nodes[key]?.branches ?? []) as Array<{ label?: string; goto?: string }>) {
+      if (!b.goto || !keys.has(b.goto)) {
+        err(`node "${key}" has a branch going to "${b.goto ?? "nothing"}", which does not exist.`);
+        continue;
+      }
+      walk(b.goto);
+    }
+  };
+  if (root && keys.has(root)) walk(root);
+
+  for (const key of keys) {
+    const node = nodes[key];
+    // A node must either ask something with answers, or resolve. Neither is a
+    // dead end with no way forward.
+    if (!node?.branches?.length && !node?.resolve) {
+      err(`node "${key}" has no branches and no resolve, so it is a dead end.`);
+    }
+    if (!reachable.has(key) && root && keys.has(root)) {
+      findings.push({
+        rule: "panic-tree",
+        severity: "warn",
+        line: 1,
+        column: 1,
+        message: `node "${key}" cannot be reached from the root, so nobody will ever see it.`,
+      });
+    }
+    // The cost has to be stated. She will run the command; whether she was told
+    // what it destroys first is the whole design of this surface.
+    if (node?.resolve && !node.resolve.destroys) {
+      err(`node "${key}" resolves with a command but does not say what it destroys.`);
+    }
+  }
+
+  return findings;
+}
+
 /** A card with an install command should give her a way to confirm it worked. */
 function checkVerifyPresent(card: Card): Finding[] {
   if (typeof card.frontmatter.verify === "string") return [];
@@ -625,6 +691,7 @@ export function lintCorpus(contentDir: string, extraKnownIds: Set<string> = new 
       ...checkAcronyms(card, assumedKnown),
       ...checkLinks(card, knownIds),
       ...checkDangerAnnotation(card),
+      ...checkPanicTree(card),
       ...checkVerifyPresent(card),
       ...checkTierDepth(card),
     );

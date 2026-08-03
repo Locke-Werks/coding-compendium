@@ -33,9 +33,9 @@ fallen into: talk to the model, take what it writes, run the thing, describe the
 repeat. He was describing throwaway weekend projects. The phrase escaped and now gets applied
 to everything up to and including production software.
 
-The mechanical part is small. You write a sentence in plain English. An agent, meaning an AI (Artificial Intelligence)
-(Artificial Intelligence) program that reads your files, writes new ones, and runs commands
-rather than only answering questions, turns that sentence into edits on disk. It runs the
+The mechanical part is small. You write a sentence in plain English. An agent, meaning an
+AI (Artificial Intelligence) program that reads your files, writes new ones, and runs
+commands rather than only answering questions, turns that into edits on disk. It runs the
 code, reads whatever the code printed, and tries again. What you look at is the result: the
 page, the output, the test that went green. [e1](#e1-what-an-agent-is) covers what an agent
 can reach and what it cannot.

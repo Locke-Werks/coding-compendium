@@ -12,6 +12,7 @@ import {
 } from "./api";
 import CardView from "./components/CardView";
 import IdentifyPanel from "./components/IdentifyPanel";
+import PanicView from "./components/PanicView";
 import ResultList from "./components/ResultList";
 
 /**
@@ -57,7 +58,11 @@ export default function App() {
   const [mode, setMode] = useState<Mode>("search");
   const [hits, setHits] = useState<Hit[]>([]);
   const [ident, setIdent] = useState<Identification | null>(null);
-  const [card, setCard] = useState<CardDetail | null>(null);
+  // A stack, not a single card. Authors were told to link rather than
+  // re-explain, so the corpus is dense with cross-references and reading it
+  // means following them. Without history, one click is a dead end.
+  const [trail, setTrail] = useState<CardDetail[]>([]);
+  const card = trail[trail.length - 1] ?? null;
   const [selected, setSelected] = useState(0);
   const [caps, setCaps] = useState<Capabilities | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -87,6 +92,8 @@ export default function App() {
 
   useEffect(() => {
     if (!inTauri()) return;
+
+    setTrail([]);
 
     const text = query.trim();
     if (!text) {
@@ -122,11 +129,22 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [query]);
 
+  /** Open a card fresh, discarding any reading history. */
   const open = useCallback((id: string) => {
     getCard(id)
-      .then(setCard)
+      .then((c) => setTrail([c]))
       .catch((e) => setError(String(e)));
   }, []);
+
+  /** Follow a link from inside a card, keeping the way back. */
+  const navigate = useCallback((id: string) => {
+    getCard(id)
+      .then((c) => setTrail((t) => [...t, c]))
+      .catch((e) => setError(String(e)));
+  }, []);
+
+  /** One step back: to the previous card, or out to the results. */
+  const back = useCallback(() => setTrail((t) => t.slice(0, -1)), []);
 
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -145,7 +163,7 @@ export default function App() {
         // Escape backs out one level: card first, then the query. Closing the
         // window would lose everything, and the usual reason to press it is to
         // start over rather than to leave.
-        if (card) setCard(null);
+        if (card) back();
         else setQuery("");
         return;
       }
@@ -160,7 +178,7 @@ export default function App() {
         setSelected((i) => Math.max(i - 1, 0));
       }
     },
-    [card, hits, mode, open, selected],
+    [back, card, hits, mode, open, selected],
   );
 
   const showHint = !query.trim() && !error;
@@ -194,7 +212,19 @@ export default function App() {
           </div>
         )}
 
-        {!error && card && <CardView card={card} onBack={() => setCard(null)} />}
+        {/* A panic tree is a walkthrough, not an article. Rendering its raw
+            markdown would show an empty body, because the whole tree lives in
+            frontmatter. */}
+        {!error && card?.card_type === "panic" && <PanicView card={card} onBack={back} />}
+
+        {!error && card && card.card_type !== "panic" && (
+          <CardView
+            card={card}
+            onBack={back}
+            onNavigate={navigate}
+            depth={trail.length - 1}
+          />
+        )}
 
         {!error && !card && mode === "identify" && ident && <IdentifyPanel result={ident} />}
 

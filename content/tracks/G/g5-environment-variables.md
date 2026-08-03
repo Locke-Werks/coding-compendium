@@ -34,11 +34,11 @@ keywords:
 
 ## More
 
-An **environment variable** is a named value the operating system hands to every program it
-starts. Programs read them for configuration: which database to talk to, which key to
-authenticate with, whether to print debug output. The value sits outside your code, which
-is the point, because the same code then runs on your machine and on a server with
-different values and no edits.
+Programs read their configuration from outside themselves: which database to talk to, which
+key to authenticate with, whether to print debug output. The mechanism is the **environment
+variable**, a named value the operating system hands to every program it starts. Keeping the
+value out of your code is the point, because the same code then runs on your machine and on
+a server with different values and no edits.
 
 There are three lifetimes on Windows and mixing them up is most of the confusion.
 

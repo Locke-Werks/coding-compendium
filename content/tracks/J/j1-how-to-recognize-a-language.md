@@ -32,7 +32,7 @@ keywords:
 ## More
 
 Paste the snippet into this app's identify box and you get the answer in a second, with the
-evidence it used. This section is the method behind that box, written out for the times the
+evidence it used. The manual version of the same method is worth carrying for the times the
 app is not open: a code review in a browser, a screenshot somebody sent you, a file on a
 machine that is not yours.
 

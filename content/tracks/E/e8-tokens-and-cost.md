@@ -83,27 +83,20 @@ re-read, is where the money actually goes.
 
 ### What burns tokens fastest
 
-- **Command output you did not need.** A test run printing every passing test, an install
-  log, a full `git log`. The single biggest avoidable cost.
-- **Whole-file reads** for a one-function question.
-- **Exploration caused by a vague request.** "Fix the login" makes it read the project.
-  Naming the file does not ([e5](#e5-prompting-that-works)).
-- **Very long sessions**, for the re-sending reason above
-  ([e6](#e6-when-to-reset-context)).
-- **Every MCP (Model Context Protocol) server you connect.** Its tool descriptions load at
-  the start of every session whether you use them or not ([e9](#e9-mcp)).
+The same list that fills the context window, for the same reason: one resource, two meters
+([e2](#e2-context-windows)). Command output you did not need is the single biggest
+avoidable cost. The one item that is easy to forget is every MCP (Model Context Protocol)
+server you connect, because its tool descriptions load at the start of every session
+whether you use them or not ([e9](#e9-mcp)).
 
-### Five things that cut it, in order of effect
+### What cuts it, in order of effect
 
 1. **Shorter sessions.** Clear at every task boundary
-   ([e6](#e6-when-to-reset-context)). This one is worth more than the other four combined.
-2. **Name the file instead of pasting it.** A file read on purpose is smaller than a file
-   pasted in a panic.
-3. **Paste the failure, not the run.** Twenty lines, not six hundred
-   ([f5](#f5-what-to-paste-and-what-not-to)).
-4. **Keep the instruction file short.** Every line is re-sent at the top of every session
-   forever ([e4](#e4-claude-md-and-agents-md)).
-5. **Use a cheaper model for mechanical work.** Renaming things, writing boilerplate,
+   ([e6](#e6-when-to-reset-context)). This one is worth more than everything else combined.
+2. **Every habit that keeps the context window small**, because they are the same habits:
+   name the file, paste the failure rather than the whole run, keep the instruction file
+   short. [e2](#e2-context-windows) has them with the reasoning.
+3. **Use a cheaper model for mechanical work.** Renaming things, writing boilerplate,
    turning a described case into a test. Save the expensive model for design and for
    debugging, which is where the difference shows.
 

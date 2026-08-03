@@ -38,8 +38,8 @@ tells:
     weight: 8
     note: >
       The pipe feeds the value on the left in as the first argument on the right.
-      R has a native `|>` too, so check for `defmodule` before deciding. No other
-      language on this deck pipes at all.
+      R has a native `|>` too, so check for `defmodule` before deciding. Bash and
+      PowerShell pipe with a bare `|`, which is a different operator.
   - pattern: '(?<![:\w]):\w+'
     kind: regex
     weight: 6

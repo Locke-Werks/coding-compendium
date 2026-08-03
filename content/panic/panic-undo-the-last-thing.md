@@ -64,8 +64,8 @@ nodes:
       command: git restore --staged "<path/to/the/file>"
       shell: powershell
       does: >
-        Removes the file from the staging area. Its contents on disk do not
-        change at all.
+        Removes the file from the queue for the next checkpoint. Its contents on
+        disk do not change at all.
       destroys: Nothing. Your edits are untouched.
       verify: >
         `git status` moves the file from the staged group into the unstaged
@@ -76,6 +76,7 @@ nodes:
 
   undo-commit:
     ask: Do you want to keep the work that was in it, or throw the work away too?
+    how_to_tell: git status -sb
     branches:
       - label: Keep the work, I only want the checkpoint undone
         goto: soft-reset
@@ -91,8 +92,8 @@ nodes:
       shell: powershell
       does: >
         Removes the most recent checkpoint. Every change it contained goes back
-        into the staging area, ready to be committed again once you have fixed
-        whatever was wrong.
+        into the queue for the next one, ready to be committed again once you
+        have fixed whatever was wrong.
       destroys: Nothing.
       verify: >
         `git log --oneline -3` no longer shows it at the top, and `git status`

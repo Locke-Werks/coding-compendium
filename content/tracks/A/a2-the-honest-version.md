@@ -82,8 +82,7 @@ skim catches the wrong category of problem. It catches ugly. It does not catch a
 that is backwards in a branch you did not exercise.
 
 Review is still worth doing. It is worth doing for the things a skim is actually good at:
-is this the file I expected, is the change the size I expected, did it touch something I did
-not ask about, did the test count go down. That is a different job from verifying
+scope, size, and anything you did not ask for. That is a different job from verifying
 correctness, it takes about ninety seconds, and [h3](#h3-reviewing-a-diff-you-cannot-fully-read)
 is the checklist.
 

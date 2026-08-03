@@ -191,6 +191,6 @@ that went out and came back. That panel answers "did the request even go out," "
 exactly did the server say," and "which request was the failing one," and it is faster than
 any amount of reading the code.
 
-The address bar's `https` prefix means the whole conversation is encrypted using TLS (Transport Layer Security)
-(Transport Layer Security), so nobody between you and the server can read it. Certificates
-and how a site gets one are in [i2](#i2-servers-and-hosting).
+The address bar's `https` prefix means the whole conversation is encrypted using
+TLS (Transport Layer Security), so nobody between you and the server can read it.
+Certificates and how a site gets one are in [i2](#i2-servers-and-hosting).

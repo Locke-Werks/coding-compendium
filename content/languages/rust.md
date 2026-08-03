@@ -20,8 +20,8 @@ tells:
     kind: token
     weight: 9
     note: >
-      Only Rust uses exactly `fn`. Go uses `func`, Kotlin uses `fun`, Python and
-      Ruby use `def`, JavaScript uses `function`.
+      Rust and Zig are the only two here that use exactly `fn`. Go uses `func`,
+      Kotlin uses `fun`, Python and Ruby use `def`, JavaScript uses `function`.
   - pattern: 'let mut'
     kind: regex
     weight: 10
@@ -109,8 +109,8 @@ confusable_with:
   - language: go
     settle_it: >
       Go declares with `:=` and functions with `func`. Rust uses `let` and `fn`, and
-      uses `::`, which Go never does. A brace language with no semicolons anywhere is
-      Go, because Rust ends statements with them.
+      uses `::`, which Go never does. A brace language with no semicolons at the ends
+      of lines is Go, because Rust ends statements with them.
     tiebreak: { pattern: ':=', kind: operator, favors: go }
   - language: cpp
     settle_it: >

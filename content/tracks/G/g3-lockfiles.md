@@ -10,7 +10,7 @@ verify: git ls-files package-lock.json pnpm-lock.yaml Cargo.lock
 answer: >
   Your manifest says roughly which versions you want and the lockfile records
   exactly which ones you got, down to every transitive package, so the lockfile
-  is what makes an install repeatable. Commit it. Never edit it by hand.
+  is what makes an install repeatable and you commit it. Never edit it by hand.
 owns:
   - lockfile
   - exact versions

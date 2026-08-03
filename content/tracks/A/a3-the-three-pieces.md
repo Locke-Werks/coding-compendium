@@ -100,18 +100,16 @@ Most "something is wrong" moments resolve by naming the piece first.
 ### Two complete copies, not a client and a server
 
 The GitHub copy is not the master and your folder is not a cache of it. Each side holds the
-entire history and either can rebuild the other. That is why git works on a plane, why
-deleting a repository on GitHub does not touch your machine, and why deleting your folder
-does not touch GitHub. [d1](#d1-what-git-actually-stores) makes the case in detail.
+entire history and either can rebuild the other, which is why deleting one leaves the other
+untouched. [d1](#d1-what-git-actually-stores) makes that case in detail.
 
 The practical consequence is the one worth internalizing now: a folder you have never pushed
 is backed up by nothing.
 
 ### What the agent can actually reach
 
-Your project folder is where it works, and it is not a wall. The agent runs as you, so it can
-reach anything your Windows account can reach: other folders, your home directory, the
-network. Both tools ask before doing most of it, and both can be configured to ask less.
+Your project folder is where it works, and it is not a wall: the agent runs as you and can
+reach anything your Windows account can reach ([e1](#e1-what-an-agent-is)).
 
 Two consequences:
 

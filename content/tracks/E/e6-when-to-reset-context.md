@@ -112,9 +112,8 @@ from the safety argument in [a4](#a4-the-loop).
 Most tools offer both. Compacting summarizes the conversation and continues from the
 summary. Clearing throws it away and starts empty.
 
-Compaction is convenient and lossy in one predictable direction: it keeps conclusions and
-drops reasons. After a compaction the agent knows you picked one library and has no idea
-why, so it will reopen that decision the moment the library is awkward.
+Compaction is convenient and lossy in one predictable direction, and
+[e2](#e2-context-windows) covers exactly what it drops.
 
 Clearing plus your own handoff is better, because you choose what survives instead of
 letting a summarizer choose. Use compaction when you are mid-task and cannot stop. Use a

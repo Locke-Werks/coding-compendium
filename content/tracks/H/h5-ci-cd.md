@@ -120,8 +120,8 @@ command in that file ([g3](#g3-lockfiles)).
    ([g5](#g5-environment-variables)). Real credentials go in the repository's secrets, never
    in the workflow file.
 3. **Filename capitalization.** Windows treats `Button.tsx` and `button.tsx` as the same
-   file. Linux does not. An import written with the wrong case works on your machine and
-   fails on the runner, and this is the most common Windows-specific cause by a wide margin.
+   file and the Linux runner does not, which is the most common Windows-specific cause by a
+   wide margin ([i1](#i1-what-deployment-means) has the full list of machine differences).
 4. **A stale lockfile.** The manifest and lockfile disagree, so `npm ci` refuses outright.
    Run the install locally and commit the result.
 5. **Line endings.** A test comparing exact file contents can fail when the checkout

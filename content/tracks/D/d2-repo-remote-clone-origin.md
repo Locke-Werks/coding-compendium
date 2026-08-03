@@ -159,17 +159,14 @@ inside another repository produces a nested repo that the outer one half-tracks,
 symptom is confusing: the inner project shows up in `git status` as a single unexplained
 entry rather than as its files.
 
-### Two Windows details that cost people an afternoon
-
-Keep your code somewhere plain, such as `C:\Users\<yourname>\dev\`, which PowerShell also
-writes as `~/dev`. Replace `<yourname>` with your actual Windows username.
+### The Windows detail that costs people an afternoon
 
 Avoid putting repositories inside a OneDrive folder. OneDrive syncs the `.git` folder while
 git is writing to it, and the result ranges from slow commands to a repository that reports
-corruption on a machine where nothing went wrong. Desktop and Documents are OneDrive
-folders by default on many Windows 11 installs, so check before you settle in. If your
-project is already there, the fix is to move the folder somewhere else and clone or copy
-it fresh.
+corruption on a machine where nothing went wrong. If your project is already there, the fix
+is to move the folder somewhere else and clone or copy it fresh.
+[c7](#c7-files-folders-and-paths) covers where to keep projects and why Desktop and
+Documents are the wrong answer on Windows 11.
 
 ### Renaming and removing a remote
 

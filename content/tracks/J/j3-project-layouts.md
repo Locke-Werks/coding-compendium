@@ -108,9 +108,8 @@ which is a small mercy. The ones you will actually meet:
 | `.claude\` | Agent settings and project instructions ([e4](#e4-claude-md-and-agents-md)) | Yes |
 | `.venv\` | A Python environment ([g4](#g4-environments-and-isolation)) | Never by hand |
 
-`.env.example` is worth pausing on. It exists so that a new person can copy it to `.env` and
-fill in their own values, which is how a project tells you which secrets it needs without
-handing you any.
+`.env.example` is the committed twin of the ignored `.env`, and it is how a fresh clone tells
+you which values the project needs ([g5](#g5-environment-variables)).
 
 ### Which folders are safe to delete
 

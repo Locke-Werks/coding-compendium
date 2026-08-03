@@ -132,11 +132,8 @@ open a fresh one, try again. [c4](#c4-path-and-command-not-found).
 question was answered with the narrowest option. Rerun the installer, choose the recommended
 middle option, and let it overwrite the existing install. Nothing is lost by reinstalling.
 
-### What you just installed, in one paragraph
+### What you just installed
 
-Git stores complete snapshots of your project, one per commit, each pointing at the one
-before it. It does that inside a hidden `.git` folder at the root of each project, and that
-folder is the entire repository: copy it and you have copied every version of everything.
-None of that requires an internet connection or a GitHub account. That model is worth
-understanding before you use it much, and it is
-[d1](#d1-what-git-actually-stores).
+Git records complete versions of your project inside a hidden `.git` folder, with no
+internet connection and no GitHub account involved. What is actually in that folder is
+[d1](#d1-what-git-actually-stores), and it is the card to read before you use git much.

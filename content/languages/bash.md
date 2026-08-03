@@ -177,7 +177,7 @@ confusable_with:
     settle_it: >
       A Makefile is also mostly shell commands, wrapped in `target:` lines with
       tab-indented recipes underneath and `$(VAR)` for its own variables. A `.sh`
-      file has no target lines and uses `${VAR}` with braces.
+      file has no target lines and writes `$VAR` or `${VAR}`, never `$(VAR)`.
     tiebreak: { pattern: '^\w+:\s*$', kind: regex, favors: makefile }
 
 errors_look_like:

@@ -35,8 +35,8 @@ tells:
     kind: operator
     weight: 7
     note: >
-      A left arrow binds a result inside a `do` block. Go uses `<-` for channels,
-      and nothing else in this deck uses it at all.
+      A left arrow binds a result inside a `do` block. Go uses `<-` for channels and
+      R uses it to assign, so check for a `do` block before deciding.
   - pattern: '\bwhere\b'
     kind: regex
     weight: 5
