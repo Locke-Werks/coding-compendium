@@ -68,8 +68,12 @@ function main(): void {
 
   const fired = new Set(reports.flatMap((r) => r.findings.map((f) => f.rule)));
   let failures = 0;
+  // Counted rather than computed. An earlier hardcoded total silently drifted
+  // out of step with the checks the moment one was added.
+  let checks = 0;
 
   for (const [rule, because] of MUST_FIRE) {
+    checks++;
     if (fired.has(rule)) {
       console.log(`  ok    ${rule.padEnd(22)} fired (${because})`);
     } else {
@@ -78,7 +82,32 @@ function main(): void {
     }
   }
 
+  // The prose rules must reach the frontmatter, not just the body.
+  //
+  // Error, command, intent, and glossary cards keep nearly all their prose in
+  // the YAML header. Checking only bodies left most of the corpus unguarded, and
+  // the gap was invisible precisely because a clean report looks identical
+  // whether the rules ran or not.
+  checks++;
+  const frontmatterFindings = reports
+    .flatMap((r) => r.findings)
+    .filter((f) => f.message.includes("(in frontmatter)"));
+
+  if (frontmatterFindings.length >= 2) {
+    console.log(
+      `  ok    frontmatter-prose      ${frontmatterFindings.length} findings in YAML header ` +
+        `(${[...new Set(frontmatterFindings.map((f) => f.rule))].join(", ")})`,
+    );
+  } else {
+    console.error(
+      "  FAIL  frontmatter-prose      the fixture has a banned word and an em dash in its " +
+        "frontmatter; prose rules are not reaching it",
+    );
+    failures++;
+  }
+
   for (const [rule, trap] of MUST_NOT_FIRE) {
+    checks++;
     if (!fired.has(rule)) {
       console.log(`  ok    ${rule.padEnd(22)} stayed quiet (${trap})`);
     } else {
@@ -95,6 +124,7 @@ function main(): void {
   // The fence ranges are computed from the file rather than hardcoded as line
   // numbers. An earlier version compared against a fixed line, which silently
   // stopped testing anything the moment the fixture grew.
+  checks++;
   const fixture = readFileSync(join(FIXTURES, "violations.md"), "utf8");
   const fenceRanges: Array<[number, number]> = [];
   {
@@ -131,7 +161,7 @@ function main(): void {
   }
 
   console.log(
-    `\n${MUST_FIRE.length + MUST_NOT_FIRE.length + 1} checks, ${failures} failure${failures === 1 ? "" : "s"}.`,
+    `\n${checks} checks, ${failures} failure${failures === 1 ? "" : "s"}.`,
   );
   process.exit(failures > 0 ? 1 : 0);
 }

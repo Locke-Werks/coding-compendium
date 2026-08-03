@@ -23,7 +23,14 @@ import { parse as parseYaml } from "yaml";
 import Ajv2020 from "ajv/dist/2020.js";
 import type { ValidateFunction } from "ajv";
 import addFormats from "ajv-formats";
-import { PROSE_RULES, blankOutCode, positionAt, scan, type Finding } from "./rules.js";
+import {
+  PROSE_RULES,
+  blankOutCode,
+  positionAt,
+  scan,
+  type Finding,
+  type RuleContext,
+} from "./rules.js";
 
 const ROOT = join(fileURLToPath(new URL(".", import.meta.url)), "..", "..");
 const CONTENT = join(ROOT, "content");
@@ -41,6 +48,8 @@ interface Card {
   body: string;
   /** Line offset of the body within the file, so findings point at the real line. */
   bodyLine: number;
+  /** The whole file, for rules that need to see the frontmatter text. */
+  raw: string;
 }
 
 /** Every .md under content/, excluding _meta which holds yml control files. */
@@ -113,7 +122,10 @@ function loadCard(absPath: string): { card?: Card; findings: Finding[] } {
   // report the line number the author actually sees in their editor.
   const bodyLine = raw.slice(0, raw.length - parsed.content.length).split("\n").length - 1;
 
-  return { card: { path, id: fm.id, type: fm.type, frontmatter: fm, body: parsed.content, bodyLine }, findings };
+  return {
+    card: { path, id: fm.id, type: fm.type, frontmatter: fm, body: parsed.content, bodyLine, raw },
+    findings,
+  };
 }
 
 // --------------------------------------------------------------------------
@@ -140,6 +152,71 @@ function buildValidators(): Map<string, ValidateFunction> {
 // --------------------------------------------------------------------------
 // Structural rules
 // --------------------------------------------------------------------------
+
+/**
+ * Frontmatter keys holding literal data rather than prose.
+ *
+ * Everything NOT listed here gets the prose rules, which is the right default.
+ * For a long time those rules ran only over card bodies, and an error card is
+ * almost entirely frontmatter: `means`, every `why` in the fix ladder, and
+ * `if_none_worked` all live up there. The majority of the corpus was going
+ * effectively unchecked. It surfaced when an author wrote their own throwaway
+ * script and it caught five real violations this gate had waved through.
+ *
+ * These keys are exempt because their contents are not English:
+ *   - regexes and match patterns, where `--` and odd spellings are meaningful
+ *   - commands, whose flags read like banned words
+ *   - `sample`, which is verbatim error output we do not control
+ *   - `phrasings`, deliberately ungrammatical because that is how she types
+ */
+const LITERAL_KEYS = new Set([
+  "id", "pattern", "patterns", "command", "verify", "safer_first", "sample",
+  "phrasings", "aka", "aliases", "keywords", "extensions", "file", "manifests",
+  "lockfiles", "build_dirs", "entry_points", "install_command", "run_command",
+  "test_command", "backup_first", "how_to_tell", "goto", "target",
+  "canonical_section", "see_also", "not_to_be_confused_with", "comment_line",
+  "comment_block", "string_quotes", "import_keyword", "tells", "rules_out",
+  "tiebreak", "errors_look_like", "project_fingerprint", "tooling",
+]);
+
+/**
+ * Run the prose rules over the frontmatter as well as the body.
+ *
+ * The raw YAML text is scanned rather than the parsed values, so line numbers
+ * point at the real line an author can jump to. Lines belonging to a
+ * literal-data key are blanked first, preserving offsets, so a regex full of
+ * dashes is never read as prose.
+ */
+function checkFrontmatterProse(card: Card, ctx: RuleContext): Finding[] {
+  const fmText = card.raw.slice(0, card.raw.length - card.body.length);
+
+  let suppressing = false;
+  let suppressIndent = 0;
+  const scrubbed = fmText.split("\n").map((line) => {
+    const blank = " ".repeat(line.length);
+    const keyMatch = /^(\s*)-?\s*([a-z_]+):/.exec(line);
+
+    if (keyMatch) {
+      const indent = keyMatch[1]?.length ?? 0;
+      const key = keyMatch[2] ?? "";
+      // A nested key under a suppressed parent stays suppressed.
+      if (suppressing && indent > suppressIndent) return blank;
+      suppressing = LITERAL_KEYS.has(key);
+      suppressIndent = indent;
+      return suppressing ? blank : line;
+    }
+    // Continuation lines inherit their key's treatment.
+    return suppressing ? blank : line;
+  });
+
+  const text = blankOutCode(scrubbed.join("\n"));
+  return PROSE_RULES
+    // Fence tagging and sentence length are body concerns; neither applies to
+    // a YAML header.
+    .filter((r) => r.name !== "tagged-code-fences" && r.name !== "sentence-length")
+    .flatMap((rule) => rule.run(text, { ...ctx, raw: text }))
+    .map((f) => ({ ...f, message: `${f.message} (in frontmatter)` }));
+}
 
 /**
  * `answer` must be one sentence under 45 words.
@@ -540,6 +617,7 @@ export function lintCorpus(contentDir: string, extraKnownIds: Set<string> = new 
     }
 
     findings.push(
+      ...checkFrontmatterProse(card, ctx),
       ...checkAnswerLength(card),
       ...checkAcronyms(card, assumedKnown),
       ...checkLinks(card, knownIds),

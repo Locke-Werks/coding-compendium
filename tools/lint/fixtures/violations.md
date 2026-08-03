@@ -9,7 +9,12 @@ patterns: ["this card is a test fixture and matches nothing real"]
 means: >
   Exists so the self-test can assert the linter still fires. Every rule below is
   broken on purpose. If the linter reports this file as clean, the linter is
-  broken, not this file.
+  broken, not this file. This sentence is deliberately robust and comprehensive
+  so the frontmatter prose check has something to catch, because an error card is
+  almost entirely frontmatter and body-only checking missed all of it.
+if_none_worked: >
+  Another frontmatter field with an em dash in it — right there — to prove the
+  scan reaches past the first key.
 fix_ladder:
   - try: Read tools/lint/selftest.ts
     why: It lists which rule each line here is meant to trip.
