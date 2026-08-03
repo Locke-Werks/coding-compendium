@@ -3,6 +3,9 @@ name = "coding-compendium"
 version = "0.1.0"
 description = "Offline reference for software development in the age of coding agents"
 authors = ["Locke Werks"]
+# Proprietary. See LICENSE at the repo root.
+license = "LicenseRef-Proprietary"
+publish = false
 edition = "2021"
 default-run = "coding-compendium"
 
@@ -53,6 +56,7 @@ regex = "1"
 walkdir = "2.5"
 anyhow = "1"
 thiserror = "2"
+tauri-plugin-global-shortcut = "2.3.2"
 
 [profile.release]
 # The app ships a ~380 MB model, so a few seconds of extra link time to shave

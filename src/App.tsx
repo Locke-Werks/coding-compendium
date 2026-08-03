@@ -5,6 +5,7 @@ import {
   extract,
   identify,
   inTauri,
+  onSummoned,
   search,
   type Capabilities,
   type CardDetail,
@@ -92,6 +93,29 @@ export default function App() {
         if (!c.corpus_ready) setError(c.load_error ?? "The reference database is not loaded.");
       })
       .catch((e) => setError(String(e)));
+  }, []);
+
+  // Summoning selects the existing query instead of clearing it. Typing
+  // replaces it, which is what she wants nearly every time, and the rest of the
+  // time the previous question is still there to edit rather than retype.
+  useEffect(() => {
+    if (!inTauri()) return;
+    let unlisten: (() => void) | undefined;
+
+    onSummoned(() => {
+      const el = inputRef.current;
+      if (!el) return;
+      el.focus();
+      el.select();
+    })
+      .then((fn) => {
+        unlisten = fn;
+      })
+      .catch(() => {
+        /* No shortcut is a degraded feature, not an error worth showing. */
+      });
+
+    return () => unlisten?.();
   }, []);
 
   useEffect(() => {
@@ -288,6 +312,7 @@ export default function App() {
               of thing that makes a tool feel unreliable rather than degraded. */}
           {caps?.corpus_ready && (caps.semantic ? " · hybrid search" : " · word match only")}
           {caps?.corpus_ready && " · local, no network"}
+          {caps?.hotkey && ` · ${caps.hotkey} from anywhere`}
         </span>
         <span className="flex gap-3">
           {card ? (

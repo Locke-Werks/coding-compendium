@@ -9,6 +9,7 @@
  */
 
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 
 /** Which engines found a result. Mirrors `search::Matched` in Rust. */
 export type Matched = "hybrid" | "lexical_only" | "semantic_only";
@@ -44,8 +45,14 @@ export interface Capabilities {
    * are missing. Surfaced so worse results are explained rather than mysterious.
    */
   semantic: boolean;
-  /** Whether the local model is available. The UI must work with this false. */
+  /** Always false. Answers are extracted from cards, never generated. */
   synthesis: boolean;
+  /**
+   * The global shortcut that summons the window, or null when another program
+   * already owns the binding. Shown in the footer so its absence is visible
+   * rather than mysterious.
+   */
+  hotkey: string | null;
 }
 
 export async function getCapabilities(): Promise<Capabilities> {
@@ -176,6 +183,18 @@ export interface Identification {
  */
 export async function identify(text: string): Promise<Identification> {
   return invoke<Identification>("identify", { text });
+}
+
+/**
+ * Fires when the global shortcut brings the window forward.
+ *
+ * The window has focus by the time this arrives, but the webview does not, so
+ * the caret has to be placed from here rather than from Rust.
+ *
+ * Returns an unlisten function.
+ */
+export async function onSummoned(handler: () => void): Promise<() => void> {
+  return listen("summoned", () => handler());
 }
 
 /**

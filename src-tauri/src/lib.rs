@@ -32,6 +32,7 @@
 
 pub mod compile;
 pub mod embed;
+pub mod hotkey;
 pub mod identify;
 pub mod search;
 pub mod synth;
@@ -60,6 +61,8 @@ struct AppState {
     /// Every chunk vector, held in memory. About 1.9 MB at 1,200 chunks, and a
     /// brute-force scan of it is faster than the encode that produced the query.
     vectors: Option<Vec<(String, Vec<f32>)>>,
+    /// The registered global shortcut, if registration succeeded.
+    hotkey: Option<String>,
     /// Why the corpus is missing, when it is. Shown in the UI instead of an
     /// empty result list, because "no results" and "the database did not load"
     /// look identical to someone searching and are entirely different problems.
@@ -78,10 +81,14 @@ struct Capabilities {
     /// vectors are missing. Surfaced so the footer can say so rather than
     /// leaving worse results unexplained.
     semantic: bool,
-    /// Reserved for the local model. Always false until the synthesis layer
-    /// lands, and the UI is built to work with it false, which is the property
-    /// that keeps that feature genuinely optional.
+    /// Always false. A local model was benchmarked for grounded answering and
+    /// did not ship, so answers are extracted from cards rather than written.
+    /// See docs/PHASE0-LLM-GATE.md.
     synthesis: bool,
+    /// The global shortcut that summons the window, or None when another
+    /// program already claimed the binding. Shown in the footer so she knows
+    /// the key, and so its absence is visible rather than mysterious.
+    hotkey: Option<String>,
 }
 
 /// Find content.db.
@@ -121,6 +128,7 @@ fn capabilities(state: tauri::State<'_, AppState>) -> Capabilities {
         load_error: state.load_error.clone(),
         semantic: state.embedder.is_some() && state.vectors.is_some(),
         synthesis: false,
+        hotkey: state.hotkey.clone(),
     }
 }
 
@@ -259,6 +267,7 @@ fn extract(
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
             // A missing or unreadable corpus is reported through `capabilities`
             // rather than panicking. The window still opens and explains itself,
@@ -293,11 +302,20 @@ pub fn run() {
                 .and_then(|_| embed::Embedder::load().ok())
                 .map(Mutex::new);
 
+            // A shortcut another program already owns costs the shortcut, not
+            // the app. Clicking on the window still works, and refusing to
+            // launch over a key combination would be wildly disproportionate.
+            let hotkey = match hotkey::register(app.handle()) {
+                Ok(()) => Some(hotkey::TOGGLE_LABEL.to_string()),
+                Err(_) => None,
+            };
+
             app.manage(AppState {
                 corpus: Mutex::new(corpus),
                 identifier,
                 embedder,
                 vectors,
+                hotkey,
                 load_error,
             });
             Ok(())

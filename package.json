@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Offline Windows reference app for software development in the age of coding agents",
   "author": "Locke Werks",
+  "license": "UNLICENSED",
   "scripts": {
     "lint:content": "tsx tools/lint/index.ts",
     "lint:selftest": "tsx tools/lint/selftest.ts",
@@ -34,6 +35,7 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/plugin-global-shortcut": "^2.3.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-markdown": "^10.1.0",

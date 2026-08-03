@@ -1,10 +1,13 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Permissions for the main window. Deliberately small: this app reads a local database and renders text. It has no reason to reach the network, the shell, or arbitrary files, so those permissions are absent rather than merely unused.",
-  "windows": ["main"],
+  "description": "Permissions for the main window. Deliberately small: this app reads a local database and renders text. It has no reason to reach the network, the shell, or arbitrary files, so those permissions are absent rather than merely unused. The global shortcut is the exception, and it is what lets the app be summoned from anywhere rather than alt-tabbed to.",
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
-    "opener:allow-open-url"
+    "opener:allow-open-url",
+    "global-shortcut:default"
   ]
 }
