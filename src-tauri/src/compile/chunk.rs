@@ -200,6 +200,7 @@ mod tests {
             track: None,
             order: None,
             answer: answer.map(str::to_string),
+            answer_derived: false,
             body: body.into(),
             keywords: vec![],
             volatility: "low".into(),

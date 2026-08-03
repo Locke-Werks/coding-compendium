@@ -70,7 +70,7 @@ tells:
     kind: token
     weight: 5
     note: >
-      The else-if keyword. PowerShell and C# write `elseif`, JavaScript writes
+      The else-if keyword. PowerShell writes `elseif`, C# writes `else if`, JavaScript writes
       `else if`. Python also uses `elif`, so check for a colon at the end of the
       line: Python has one, bash does not.
   - pattern: '$('

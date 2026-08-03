@@ -2,6 +2,7 @@ import { useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { CardDetail } from "../api";
+import LanguageCard from "./LanguageCard";
 
 /**
  * The reader.
@@ -96,11 +97,14 @@ export default function CardView({ card, onBack, onNavigate, depth }: Props) {
         )}
       </div>
 
-      {card.answer && (
-        // The answer is markdown like the body, and routinely contains code
-        // spans naming a command. Rendered as plain text it shows the backticks,
-        // which is exactly the kind of small wrongness that makes a tool feel
-        // untrustworthy.
+      {card.answer && !card.answer_derived && (
+        // Shown only when an author wrote it. A derived answer is the body's
+        // first paragraph verbatim, so rendering both prints the same sentence
+        // twice, once in a callout and again three lines below it.
+        //
+        // Rendered as markdown rather than text: answers routinely contain code
+        // spans naming a command, and showing the raw backticks is exactly the
+        // kind of small wrongness that makes a tool feel untrustworthy.
         <div className="mt-3 border-l-2 border-amber-dim pl-3 text-base leading-relaxed text-paper-300">
           <Markdown
             components={{
@@ -207,6 +211,11 @@ export default function CardView({ card, onBack, onNavigate, depth }: Props) {
           {card.body}
         </Markdown>
       </div>
+
+      {/* A language card's reference material lives in frontmatter, and it is
+          most of the card's value. The body is the introduction; this is the
+          part she came for. */}
+      {card.card_type === "language" && <LanguageCard card={card} onNavigate={onNavigate} />}
 
       <footer className="mt-8 border-t border-ink-700 pt-3 text-xs text-paper-500">
         Last checked {card.verified}. Changes {card.volatility === "low" ? "rarely" : card.volatility}.

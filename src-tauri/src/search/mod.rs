@@ -226,6 +226,9 @@ pub struct CardDetail {
     pub title: String,
     pub card_type: String,
     pub answer: Option<String>,
+    /// True when `answer` came from the body's opening paragraph. The reader
+    /// hides the callout in that case, because the body already opens with it.
+    pub answer_derived: bool,
     /// The markdown body. Rendered by the frontend.
     pub body: String,
     pub volatility: String,
@@ -443,7 +446,7 @@ impl Index {
     /// Fetch a card exactly as stored, without following intents.
     fn card_raw(&self, id: &str) -> Result<Option<CardDetail>> {
         let mut stmt = self.conn.prepare_cached(
-            "SELECT id, title, type, answer, body, volatility, verified, meta
+            "SELECT id, title, type, answer, answer_derived, body, volatility, verified, meta
              FROM cards WHERE id = ?1",
         )?;
 
@@ -453,21 +456,23 @@ impl Index {
                 r.get::<_, String>(1)?,
                 r.get::<_, String>(2)?,
                 r.get::<_, Option<String>>(3)?,
-                r.get::<_, String>(4)?,
+                r.get::<_, i64>(4)? != 0,
                 r.get::<_, String>(5)?,
                 r.get::<_, String>(6)?,
                 r.get::<_, String>(7)?,
+                r.get::<_, String>(8)?,
             ))
         });
 
         match row {
-            Ok((id, title, card_type, answer, body, volatility, verified, meta)) => {
+            Ok((id, title, card_type, answer, answer_derived, body, volatility, verified, meta)) => {
                 let stale = is_stale(&volatility, &verified);
                 Ok(Some(CardDetail {
                     id,
                     title,
                     card_type,
                     answer,
+                    answer_derived,
                     body,
                     stale,
                     volatility,

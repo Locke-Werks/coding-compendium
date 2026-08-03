@@ -17,6 +17,7 @@ owns:
   - cannot-find vs broke-at-runtime
 see_also:
   - f2-stack-traces
+  - f3-exit-codes-and-streams
   - f5-what-to-paste-and-what-not-to
   - c4-path-and-command-not-found
 keywords:

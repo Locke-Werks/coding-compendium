@@ -25,7 +25,10 @@
 
 use anyhow::{bail, Context, Result};
 use compendium_lib::embed::Embedder;
-use compendium_lib::search::{fuse, fuse_engines, fuse_weighted, semantic, Index, CANDIDATE_DEPTH};
+use compendium_lib::search::{
+    fuse, fuse_engines, fuse_weighted, semantic, Index, CANDIDATE_DEPTH, LEXICAL_WEIGHT,
+    SEMANTIC_WEIGHT,
+};
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 
@@ -169,7 +172,13 @@ fn main() -> Result<()> {
     if has_vectors {
         println!("  semantic       {}", scores[SEMANTIC].row(n));
         println!("  hybrid equal   {}", scores[HYBRID_EQUAL].row(n));
-        println!("  hybrid 1:1.8   {}   <- shipping", scores[HYBRID_WEIGHTED].row(n));
+        // Label derived from the constant, not typed in. A hardcoded "1:1.8"
+        // survived a change to 3.0 and reported the wrong ratio next to the
+        // right numbers, which is worse than no label.
+        println!(
+            "  hybrid {LEXICAL_WEIGHT:.0}:{SEMANTIC_WEIGHT:.0}     {}   <- shipping",
+            scores[HYBRID_WEIGHTED].row(n)
+        );
     }
 
     // `--sweep` tries a range of semantic weights instead of guessing one.

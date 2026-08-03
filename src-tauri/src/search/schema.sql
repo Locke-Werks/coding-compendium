@@ -35,6 +35,13 @@ CREATE TABLE IF NOT EXISTS cards (
     -- in the FTS index) costs nothing worth optimizing.
     body        TEXT NOT NULL,
 
+    -- True when `answer` was lifted from the body's opening paragraph rather
+    -- than authored as its own field. Only prose sections declare one, so every
+    -- other card type gets a derived answer to render in the palette. The reader
+    -- checks this to avoid printing the same sentence twice, once as the callout
+    -- and again as the first line of the body.
+    answer_derived INTEGER NOT NULL DEFAULT 0,
+
     -- Extra search terms an author added deliberately: plurals, misspellings,
     -- and the wrong-but-common name for a thing. Stored as one space-joined
     -- string rather than inside `meta`, because an external-content FTS5 table

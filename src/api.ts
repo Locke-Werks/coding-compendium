@@ -69,6 +69,12 @@ export interface CardDetail {
   title: string;
   card_type: CardType;
   answer: string | null;
+  /**
+   * True when `answer` was lifted from the body's opening paragraph rather than
+   * authored. The reader hides the callout in that case, because the body
+   * already opens with that exact sentence.
+   */
+  answer_derived: boolean;
   /** The markdown body. */
   body: string;
   volatility: "low" | "quarterly" | "weekly";

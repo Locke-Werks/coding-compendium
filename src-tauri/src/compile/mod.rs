@@ -109,8 +109,8 @@ pub fn write_cards(conn: &mut Connection, cards: &[Card]) -> Result<Stats> {
 
     {
         let mut insert_card = tx.prepare(
-            "INSERT INTO cards (id, type, title, track, ord, answer, body, keywords, volatility, verified, meta)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)",
+            "INSERT INTO cards (id, type, title, track, ord, answer, answer_derived, body, keywords, volatility, verified, meta)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
         )?;
         let mut insert_chunk = tx.prepare(
             "INSERT INTO chunks (card_id, ord, heading_path, text) VALUES (?1, ?2, ?3, ?4)",
@@ -124,6 +124,7 @@ pub fn write_cards(conn: &mut Connection, cards: &[Card]) -> Result<Stats> {
                 card.track,
                 card.order,
                 card.answer,
+                card.answer_derived as i64,
                 card.body,
                 card.keywords.join(" "),
                 card.volatility,

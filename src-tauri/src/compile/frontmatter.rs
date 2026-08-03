@@ -79,6 +79,11 @@ pub struct Card {
     pub track: Option<String>,
     pub order: Option<i64>,
     pub answer: Option<String>,
+    /// True when `answer` was lifted from the opening paragraph rather than
+    /// written as its own field. The reader uses this to avoid printing the
+    /// same sentence twice, once as the callout and again as the first line of
+    /// the body.
+    pub answer_derived: bool,
     pub body: String,
     pub keywords: Vec<String>,
     pub volatility: String,
@@ -238,7 +243,9 @@ impl Card {
         // definition ("A compiled systems language that refuses to build your
         // program until it can prove the memory handling is safe"), so the
         // derived answer is the sentence they would have written anyway.
+        let authored = common.answer.is_some();
         let answer = common.answer.or_else(|| lead_paragraph(body));
+        let answer_derived = !authored && answer.is_some();
 
         Ok(Card {
             id: common.id,
@@ -247,6 +254,7 @@ impl Card {
             track: common.track,
             order: common.order,
             answer,
+            answer_derived,
             body: body.to_string(),
             keywords: common.keywords,
             volatility: common.volatility,
