@@ -56,3 +56,10 @@ thiserror = "2"
 codegen-units = 1
 lto = true
 strip = true
+
+# Measures retrieval quality against a fixed query set. Separate from the tests
+# because it reports numbers to compare across changes rather than passing or
+# failing.
+[[bin]]
+name = "evaluate"
+path = "src/bin/evaluate.rs"

@@ -10,6 +10,7 @@
     "lint:selftest": "tsx tools/lint/selftest.ts",
     "check": "tsc --noEmit && pnpm lint:selftest && pnpm lint:content",
     "build:content": "cargo run --manifest-path src-tauri/Cargo.toml --bin compile-content",
+    "eval": "cargo run --manifest-path src-tauri/Cargo.toml --bin evaluate",
     "fetch:vendor": "pwsh -File scripts/fetch-vendor.ps1",
     "dev": "vite",
     "build": "tsc -b && vite build",

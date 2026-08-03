@@ -1,0 +1,87 @@
+# Retrieval evaluation set.
+#
+# One query per line: the words Nyx would actually type, a tab, then the card
+# ids that would be a good answer. Any one of them counts as correct, because
+# several cards can legitimately answer the same question and forcing a single
+# right answer measures the fixture rather than the search.
+#
+# These are written as she types: lowercase, conversational, occasionally
+# misspelled. A query set of tidy keywords would score beautifully and tell us
+# nothing, since keyword search is the case that already works.
+#
+# Run:  cargo run --bin evaluate
+#
+# The numbers exist to answer one question: does adding semantic search beat
+# lexical alone? Measure before, measure after, keep it only if it wins.
+
+# --- git, the biggest cluster -------------------------------------------
+how do i undo the last commit	d10-undo-everything
+undo my last commit but keep the changes	d10-undo-everything
+i committed something by mistake	d10-undo-everything
+take back the thing i just did	d10-undo-everything
+i think i lost my work	d11-when-you-lose-work	panic-lost-my-changes
+my changes disappeared	d11-when-you-lose-work	panic-lost-my-changes
+get back a file i deleted	d11-when-you-lose-work	panic-deleted-a-file
+what is a branch	d5-branches	branch
+how do i make a new branch	d5-branches
+i am on the wrong branch	panic-wrong-branch	d5-branches
+what does commit actually do	d4-commit-well	d1-what-git-actually-stores	commit
+how often should i commit	d4-commit-well
+whats the difference between git and github	d1-what-git-actually-stores	git	github
+what is staging	d3-the-three-places	staging-area
+merge conflict help	d7-merge-conflicts	panic-merge-conflict-stuck
+how do i fix conflicting changes	d7-merge-conflicts	panic-merge-conflict-stuck
+merge vs rebase	d6-merge-and-rebase
+what is a pull request	d8-pull-requests	pull-request
+how do i read a diff	d9-reading-a-diff	diff
+what should i not commit	d12-gitignore-and-what-not-to-commit	g6-secrets-and-what-never-to-commit
+i accidentally committed a password	panic-committed-a-secret	g6-secrets-and-what-never-to-commit
+i cant push my changes	panic-cant-push	git-failed-to-push-some-refs
+what is detached head	panic-detached-head	git-detached-head	detached-head
+
+# --- working with agents ------------------------------------------------
+why does claude get worse the longer i talk to it	e2-context-windows	context-window
+when should i start a new session	e6-when-to-reset-context
+how do i stop it doing too much at once	e7-agent-failure-modes	e11-what-to-never-let-an-agent-do
+it keeps making up functions that dont exist	e7-agent-failure-modes	hallucination
+the agent keeps saying try this instead	f6-when-the-agent-loops
+what am i actually paying for	e8-tokens-and-cost	token
+what is plan mode	e3-plan-mode	plan-mode
+what is a claude md file	e4-claude-md-and-agents-md
+what is mcp	e9-mcp	mcp
+how do i ask for what i actually want	e5-prompting-that-works
+what should i never let it do	e11-what-to-never-let-an-agent-do
+
+# --- errors and being stuck ---------------------------------------------
+how do i read an error message	f1-how-to-read-an-error-message
+what does this red text mean	f1-how-to-read-an-error-message
+no module named requests	python-module-not-found
+the term is not recognized	powershell-command-not-recognized
+running scripts is disabled on this system	powershell-execution-policy-disabled
+address already in use	eaddrinuse-address-already-in-use
+cannot find module	node-cannot-find-module
+i typed git and it says not a git repository	git-not-a-git-repository
+git says please tell me who you are	git-please-tell-me-who-you-are
+
+# --- recognition --------------------------------------------------------
+what language is this	j1-how-to-recognize-a-language
+what is a yaml file	yaml
+what is package json	json	javascript
+what is cargo toml	toml	rust
+what is a dockerfile	dockerfile
+whats the difference between javascript and typescript	typescript	javascript
+what is powershell	powershell
+is this python or ruby	python	ruby
+
+# --- the supply chain ---------------------------------------------------
+what is a lockfile	g3-lockfiles	lockfile
+why is node modules so big	g1-what-a-dependency-is	node-modules
+what is a virtual environment	g4-environments-and-isolation	virtual-environment
+what is an env file	g5-environment-variables
+what should i never paste into a chat	g8-what-never-to-paste-into-a-chat
+
+# --- proving it works ---------------------------------------------------
+what is a test	h1-what-a-test-is	unit-test
+how do i check a diff if i cant read code	h3-reviewing-a-diff-you-cannot-fully-read
+the tests pass but its still broken	h6-when-tests-lie
+what does the green check mean	h5-ci-cd	ci
