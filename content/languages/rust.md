@@ -118,6 +118,13 @@ confusable_with:
       `std::cout <<` for output. Rust has `use ...;` and `println!`. The exclamation
       mark has no C++ equivalent.
     tiebreak: { pattern: '#include', kind: line_start, favors: cpp }
+  - language: zig
+    settle_it: >
+      Both write `fn` and `pub fn`, which is the whole problem. Settle it on
+      imports and allocation: Zig writes `const std = @import("std")` with an
+      at-sign, and passes an allocator into anything that allocates. Rust writes
+      `use std::...;` and does not. Zig has no `impl` and no `!` macros.
+    tiebreak: { pattern: '@import', kind: regex, favors: zig }
   - language: typescript
     settle_it: >
       Both annotate types after a colon. TypeScript writes `function` or `=>` and

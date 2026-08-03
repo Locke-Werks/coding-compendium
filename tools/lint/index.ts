@@ -456,6 +456,57 @@ function checkPanicTree(card: Card): Finding[] {
   return findings;
 }
 
+/**
+ * Warn when a language names a neighbor that does not name it back.
+ *
+ * A `confusable_with` entry asserts something about the other language, and the
+ * identifier renders that assertion to the reader as its evidence. When only one
+ * side makes the claim, nothing is comparing the two, and a contradiction can sit
+ * there indefinitely.
+ *
+ * That is not hypothetical. `rust.md` claimed only Rust uses `fn` while `zig.md`
+ * opened its Rust entry with "Both write `fn`, which is the whole problem". The
+ * pair was one-directional, so the disagreement survived until a human read both
+ * cards side by side.
+ *
+ * A warning rather than an error, and only between two languages Nyx is actually
+ * likely to meet. One-directional pairings are usually deliberate: you hold the
+ * obscure thing and wonder whether it is the common one, not the reverse, so
+ * Zig naming C is expected and C naming Zig would be clutter. Checking every
+ * pairing produced 34 warnings against a handful of real ones, and a linter
+ * nobody reads catches nothing.
+ */
+const PROMINENT = new Set(["certain", "likely"]);
+
+function checkConfusableReciprocity(card: Card, byId: Map<string, Card>): Finding[] {
+  if (card.type !== "language") return [];
+  if (!PROMINENT.has(String(card.frontmatter.likelihood))) return [];
+
+  const mine = (card.frontmatter.confusable_with ?? []) as Array<{ language?: string }>;
+  const findings: Finding[] = [];
+
+  for (const entry of mine) {
+    const otherId = entry.language;
+    if (!otherId) continue;
+    const other = byId.get(otherId);
+    // A card that does not exist is caught by link-resolves, not here.
+    if (!other || other.type !== "language") continue;
+    if (!PROMINENT.has(String(other.frontmatter.likelihood))) continue;
+
+    const theirs = (other.frontmatter.confusable_with ?? []) as Array<{ language?: string }>;
+    if (!theirs.some((e) => e.language === card.id)) {
+      findings.push({
+        rule: "confusable-reciprocity",
+        severity: "warn",
+        line: 1,
+        column: 1,
+        message: `names "${otherId}" as confusable, but ${otherId} does not name it back. Nothing compares the two claims, which is how a contradiction hides.`,
+      });
+    }
+  }
+  return findings;
+}
+
 /** A card with an install command should give her a way to confirm it worked. */
 function checkVerifyPresent(card: Card): Finding[] {
   if (typeof card.frontmatter.verify === "string") return [];
@@ -654,6 +705,8 @@ export function lintCorpus(contentDir: string, extraKnownIds: Set<string> = new 
 
   for (const id of extraKnownIds) knownIds.add(id);
 
+  const byId = new Map(cards.map((c) => [c.id, c]));
+
   // Pass 2: validate each card against its schema and run every rule.
   for (const card of cards) {
     const findings = perFile.get(card.path) ?? [];
@@ -692,6 +745,7 @@ export function lintCorpus(contentDir: string, extraKnownIds: Set<string> = new 
       ...checkLinks(card, knownIds),
       ...checkDangerAnnotation(card),
       ...checkPanicTree(card),
+      ...checkConfusableReciprocity(card, byId),
       ...checkVerifyPresent(card),
       ...checkTierDepth(card),
     );

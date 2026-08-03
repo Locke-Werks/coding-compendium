@@ -37,9 +37,9 @@ keywords:
 
 ## More
 
-CI (Continuous Integration) is automation that builds your project and runs your tests on
-somebody else's computer every time you push. GitHub's version is called Actions. The check
-mark you see on a pull request is its verdict.
+The check mark on a pull request is a verdict from CI (Continuous Integration), automation
+that builds your project and runs your tests on somebody else's computer every time you
+push. GitHub's version is called Actions.
 
 That verdict is narrower than it looks. Green means every step the workflow was told to run
 finished with an exit code of zero ([f3](#f3-exit-codes-and-streams)). It does not mean the

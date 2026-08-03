@@ -32,8 +32,8 @@ keywords:
 
 ## More
 
-Where the copy goes depends on the shape of the project: a rented Linux machine for a web
-app, a file host for a static site, an installer people download for a desktop program
+Where your program ends up depends on the shape of the project: a rented Linux machine for a
+web app, a file host for a static site, an installer people download for a desktop program
 ([i5](#i5-shipping-a-desktop-app)).
 
 The word covers three steps that always happen in this order.

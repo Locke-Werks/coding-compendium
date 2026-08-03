@@ -181,6 +181,4 @@ about a database, which sends people looking in the wrong file for an hour.
 The identify box scores every signal at once instead of stopping at the first answer, weighs
 them against each other, and shows you which ones it used. That is worth doing when a
 snippet is genuinely ambiguous, and it is faster than this page in every case where you have
-the app open. The reason to know the manual method anyway is that recognition is a skill you
-carry into the browser, the pull request, and the screenshot, and those are exactly the
-places you cannot paste anything.
+the app open.

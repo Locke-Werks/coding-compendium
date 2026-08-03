@@ -35,8 +35,8 @@ keywords:
 ## More
 
 Every language has one tool that downloads dependencies, keeps a record of what it
-downloaded, and installs them where that language expects to find them. The tools have
-different names and nearly identical jobs.
+downloaded, and installs them where that language expects to find them. Only the names
+differ.
 
 | Language | Manager | Manifest | Add one package | Install everything |
 |---|---|---|---|---|

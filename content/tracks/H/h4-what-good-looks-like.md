@@ -146,7 +146,7 @@ Better:
 That last one is unreasonably effective. It gets the same information a `TODO` would have,
 for the parts where the agent did not leave one.
 
-### The habit that replaces all of this
+### Code that matches its surroundings
 
 Read the new code next to the old code, and notice whether it belongs. Same naming style,
 same error handling, same structure, same level of commenting. Code that matches its

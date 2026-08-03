@@ -41,9 +41,9 @@ keywords:
 
 ## More
 
-A **secret** is any value that grants access to something: an API (Application Programming
-Interface) key, a password, a token, a database connection string, a private key file. If
-possessing the string is enough to act as you, it is a secret.
+An API (Application Programming Interface) key, a password, a token, a database connection
+string, a private key file. If possessing the string is enough to act as you, it is a
+**secret**.
 
 They never go in the code, never go in a commit, and never go in a chat window
 ([g8](#g8-what-never-to-paste-into-a-chat)). They go in environment variables or a `.env`

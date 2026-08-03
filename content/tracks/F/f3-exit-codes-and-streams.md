@@ -36,8 +36,8 @@ keywords:
 
 ## More
 
-When a program finishes it hands the shell a number. Zero means it succeeded. Anything else
-means it failed, and the specific number sometimes says how. You never see it unless you ask:
+When a program finishes it hands the shell a number: zero for success, anything else for
+failure, and the specific number sometimes says how. You never see it unless you ask:
 
 ```powershell
 $LASTEXITCODE
