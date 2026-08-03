@@ -58,6 +58,26 @@ export async function search(query: string, live = true): Promise<Hit[]> {
   return invoke<Hit[]>("search", { query, live });
 }
 
+/** A whole card, for the reader. Mirrors `search::CardDetail` in Rust. */
+export interface CardDetail {
+  id: string;
+  title: string;
+  card_type: CardType;
+  answer: string | null;
+  /** The markdown body. */
+  body: string;
+  volatility: "low" | "quarterly" | "weekly";
+  verified: string;
+  /** Type-specific frontmatter, shape depends on card_type. */
+  meta: Record<string, unknown> | null;
+  /** True when the card has outlived the freshness budget its author declared. */
+  stale: boolean;
+}
+
+export async function getCard(id: string): Promise<CardDetail> {
+  return invoke<CardDetail>("get_card", { id });
+}
+
 /** What kind of thing was pasted. Mirrors `identify::Format` in Rust. */
 export type Format =
   | "source"

@@ -198,9 +198,37 @@ function checkAcronyms(card: Card, assumedKnown: Set<string>): Finding[] {
   return findings;
 }
 
-/** Every see_also and inline [text](#card-id) link has to resolve. */
+/**
+ * Every reference to another card has to resolve.
+ *
+ * Covers `see_also`, inline `](#id)` links, and the single-value pointers on
+ * specific card types. That last group is easy to miss and the most damaging to
+ * get wrong: an intent exists only to route a query somewhere, so an intent with
+ * a broken `target` is a query that silently goes nowhere. It was missed in the
+ * first version of this rule and found by an author checking their own work by
+ * hand, which is exactly the labor a gate is supposed to remove.
+ */
+const REF_FIELDS = [
+  "target", // intent: the card that answers it
+  "canonical_section", // glossary: where the term is explained properly
+  "language", // error: which language emits it
+] as const;
+
 function checkLinks(card: Card, knownIds: Set<string>): Finding[] {
   const findings: Finding[] = [];
+
+  for (const field of REF_FIELDS) {
+    const ref = card.frontmatter[field];
+    if (typeof ref === "string" && ref && !knownIds.has(ref)) {
+      findings.push({
+        rule: "link-resolves",
+        severity: "error",
+        line: 1,
+        column: 1,
+        message: `${field} points at "${ref}", which does not exist.`,
+      });
+    }
+  }
 
   for (const ref of (card.frontmatter.see_also as string[] | undefined) ?? []) {
     if (!knownIds.has(ref)) {
@@ -210,6 +238,18 @@ function checkLinks(card: Card, knownIds: Set<string>): Finding[] {
         line: 1,
         column: 1,
         message: `see_also points at "${ref}", which does not exist.`,
+      });
+    }
+  }
+
+  for (const ref of (card.frontmatter.not_to_be_confused_with as string[] | undefined) ?? []) {
+    if (!knownIds.has(ref)) {
+      findings.push({
+        rule: "link-resolves",
+        severity: "error",
+        line: 1,
+        column: 1,
+        message: `not_to_be_confused_with points at "${ref}", which does not exist.`,
       });
     }
   }
@@ -287,14 +327,52 @@ function checkVerifyPresent(card: Card): Finding[] {
   ];
 }
 
+/**
+ * Split a body into its `## ` sections, ignoring headings inside code fences.
+ *
+ * A regex cannot do this. `## Something` inside a fenced block is a shell
+ * comment or a markdown example, not a heading, and a naive split truncates the
+ * tier at that line. That is not a cosmetic problem: the tier silently loses its
+ * remaining text and the only symptom is a "full is shorter than more" warning
+ * that reads like an authoring mistake rather than a tooling bug. Found by an
+ * author whose CLAUDE.md example contained exactly that.
+ */
+function splitSections(body: string): Map<string, string> {
+  const sections = new Map<string, string>();
+  let current: string | null = null;
+  let buffer: string[] = [];
+  let inFence = false;
+
+  const flush = () => {
+    if (current !== null) sections.set(current.toLowerCase(), buffer.join("\n"));
+    buffer = [];
+  };
+
+  for (const line of body.split("\n")) {
+    if (line.trimStart().startsWith("```")) {
+      inFence = !inFence;
+      buffer.push(line);
+      continue;
+    }
+
+    const heading = !inFence && /^##\s+(.+?)\s*$/.exec(line);
+    if (heading) {
+      flush();
+      current = heading[1] ?? "";
+      continue;
+    }
+    buffer.push(line);
+  }
+  flush();
+  return sections;
+}
+
 /** `full` should go deeper than `more`, or it is not a third tier. */
 function checkTierDepth(card: Card): Finding[] {
   if (card.type !== "section") return [];
-  // `\Z` is Perl and Ruby, not JavaScript, where it is just a literal Z. The
-  // end-of-input assertion here is `$(?![\s\S])`. Getting this wrong made the
-  // final tier capture nothing and report every section as too short.
-  const more = card.body.match(/^##\s+More\s*$([\s\S]*?)(?=^##\s|$(?![\s\S]))/m)?.[1] ?? "";
-  const full = card.body.match(/^##\s+Full\s*$([\s\S]*?)(?=^##\s|$(?![\s\S]))/m)?.[1] ?? "";
+  const sections = splitSections(card.body);
+  const more = sections.get("more") ?? "";
+  const full = sections.get("full") ?? "";
 
   if (!more.trim()) {
     return [{ rule: "tier-structure", severity: "error", line: 1, column: 1, message: "Section is missing a `## More` tier." }];

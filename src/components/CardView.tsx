@@ -1,0 +1,191 @@
+import { useState } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import type { CardDetail } from "../api";
+
+/**
+ * The reader.
+ *
+ * Two things here do real work beyond rendering markdown.
+ *
+ * **Copy-ready commands.** Every code block gets a copy button and shows which
+ * shell it is for. Nyx is going to paste these without reading them, so the
+ * shell label is not decoration: a bash command pasted into PowerShell fails in
+ * a way that looks like the instructions were wrong.
+ *
+ * **The stale badge, only when earned.** It appears when a card has outlived the
+ * budget its own author declared, not on a fixed schedule. A date stamped on
+ * everything is noise nobody reads; a badge that appears rarely is a warning
+ * that means something.
+ */
+
+/** Shells whose blocks get a "this is for X" label. */
+const SHELL_LABEL: Record<string, string> = {
+  powershell: "PowerShell",
+  bash: "Git Bash",
+  cmd: "Command Prompt",
+};
+
+function CodeBlock({ language, code }: { language: string; code: string }) {
+  const [copied, setCopied] = useState(false);
+  const shell = SHELL_LABEL[language];
+
+  const copy = () => {
+    navigator.clipboard.writeText(code).then(
+      () => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1400);
+      },
+      () => {
+        /* Clipboard denied. The text is selectable, so this is recoverable. */
+      },
+    );
+  };
+
+  return (
+    <div className="my-3 overflow-hidden rounded-md border border-ink-700">
+      <div className="flex items-center justify-between bg-ink-800 px-3 py-1.5">
+        <span className="font-mono text-xs text-paper-500">
+          {shell ? `run in ${shell}` : language || "text"}
+        </span>
+        <button
+          type="button"
+          onClick={copy}
+          className="rounded px-2 py-0.5 text-xs text-paper-500 transition-colors hover:bg-ink-700 hover:text-paper-100"
+        >
+          {copied ? "copied" : "copy"}
+        </button>
+      </div>
+      <pre className="selectable overflow-x-auto bg-ink-850 p-3">
+        <code className="font-mono text-sm text-paper-100">{code}</code>
+      </pre>
+    </div>
+  );
+}
+
+export default function CardView({ card, onBack }: { card: CardDetail; onBack: () => void }) {
+  return (
+    <article className="selectable mx-auto max-w-3xl p-6">
+      <button
+        type="button"
+        onClick={onBack}
+        className="mb-4 text-xs text-paper-500 transition-colors hover:text-paper-100"
+      >
+        &larr; back to results
+      </button>
+
+      <div className="flex items-baseline gap-3">
+        <h1 className="text-2xl font-medium text-paper-100">{card.title}</h1>
+        {card.stale && (
+          <span
+            className="rounded bg-amber-dim/25 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-amber-mark"
+            title={`Last checked ${card.verified}. This card is marked "${card.volatility}", so it is due a look.`}
+          >
+            may be out of date
+          </span>
+        )}
+      </div>
+
+      {card.answer && (
+        // The answer is markdown like the body, and routinely contains code
+        // spans naming a command. Rendered as plain text it shows the backticks,
+        // which is exactly the kind of small wrongness that makes a tool feel
+        // untrustworthy.
+        <div className="mt-3 border-l-2 border-amber-dim pl-3 text-base leading-relaxed text-paper-300">
+          <Markdown
+            components={{
+              p: ({ children }) => <p>{children}</p>,
+              code: ({ children }) => (
+                <code className="rounded bg-ink-800 px-1 py-0.5 font-mono text-[0.9em] text-amber-mark">
+                  {children}
+                </code>
+              ),
+            }}
+          >
+            {card.answer}
+          </Markdown>
+        </div>
+      )}
+
+      <div className="prose-compendium mt-5">
+        <Markdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            code({ className, children, ...props }) {
+              const text = String(children).replace(/\n$/, "");
+              const language = /language-(\w+)/.exec(className ?? "")?.[1];
+
+              // react-markdown gives inline spans and fenced blocks to the same
+              // component. A fence always carries a language- class, so that is
+              // how the two are told apart.
+              if (!language) {
+                return (
+                  <code
+                    className="rounded bg-ink-800 px-1 py-0.5 font-mono text-[0.9em] text-amber-mark"
+                    {...props}
+                  >
+                    {children}
+                  </code>
+                );
+              }
+              return <CodeBlock language={language} code={text} />;
+            },
+            h2: ({ children }) => (
+              <h2 className="mt-7 mb-2 text-lg font-medium text-paper-100">{children}</h2>
+            ),
+            h3: ({ children }) => (
+              <h3 className="mt-5 mb-1.5 font-medium text-paper-100">{children}</h3>
+            ),
+            p: ({ children }) => (
+              <p className="my-3 leading-relaxed text-paper-300">{children}</p>
+            ),
+            ul: ({ children }) => (
+              <ul className="my-3 ml-5 list-disc space-y-1.5 text-paper-300">{children}</ul>
+            ),
+            ol: ({ children }) => (
+              <ol className="my-3 ml-5 list-decimal space-y-1.5 text-paper-300">{children}</ol>
+            ),
+            strong: ({ children }) => (
+              <strong className="font-medium text-paper-100">{children}</strong>
+            ),
+            table: ({ children }) => (
+              // Wide tables scroll inside their own box rather than widening the
+              // page and forcing the whole article sideways.
+              <div className="my-4 overflow-x-auto">
+                <table className="w-full border-collapse text-sm">{children}</table>
+              </div>
+            ),
+            th: ({ children }) => (
+              <th className="border-b border-ink-600 px-2 py-1.5 text-left font-medium text-paper-100">
+                {children}
+              </th>
+            ),
+            td: ({ children }) => (
+              <td className="border-b border-ink-700 px-2 py-1.5 align-top text-paper-300">
+                {children}
+              </td>
+            ),
+            blockquote: ({ children }) => (
+              <blockquote className="my-3 border-l-2 border-ink-600 pl-3 text-paper-500">
+                {children}
+              </blockquote>
+            ),
+            a: ({ children }) => (
+              // Cross-card links are rendered inert for now. The reader needs
+              // history before following one is anything but a dead end.
+              <span className="text-amber-mark underline decoration-amber-dim underline-offset-2">
+                {children}
+              </span>
+            ),
+          }}
+        >
+          {card.body}
+        </Markdown>
+      </div>
+
+      <footer className="mt-8 border-t border-ink-700 pt-3 text-xs text-paper-500">
+        Last checked {card.verified}. Changes {card.volatility === "low" ? "rarely" : card.volatility}.
+      </footer>
+    </article>
+  );
+}

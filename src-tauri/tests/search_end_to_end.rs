@@ -181,3 +181,44 @@ fn the_corpus_compiles_and_chunks() {
     let (index, _dir) = corpus("the_corpus_compiles_and_chunks");
     assert_eq!(index.card_count().unwrap(), 3);
 }
+
+/// An intent has no body. It exists to catch a query in her words and point at
+/// the card that answers it, so opening one must land on the answer rather than
+/// an empty page.
+#[test]
+fn opening_an_intent_lands_on_its_target() {
+    let branches = card(
+        "branches",
+        "Branches",
+        "A branch is a parallel line of development.",
+        "You branch off main, do work, then merge back.",
+    );
+    let intent = "---\nid: make-a-branch\ntitle: Make a new branch\ntype: intent\nverified: 2026-08-02\nvolatility: low\ngoal: I want to start work without touching main.\nphrasings: [new branch, branch off, start something new, make a branch]\ntarget: branches\n---\n";
+
+    let (index, _dir) = build_corpus(
+        "opening_an_intent_lands_on_its_target",
+        &[("branches", &branches), ("make-a-branch", intent)],
+    );
+
+    let opened = index.card("make-a-branch").unwrap().unwrap();
+    assert_eq!(opened.id, "branches", "an intent must forward to its target");
+    assert!(opened.body.contains("branch off main"));
+}
+
+/// A target that does not resolve must still show something rather than
+/// failing, because a broken link is an authoring bug and not a reason to
+/// refuse to render.
+#[test]
+fn an_intent_with_a_dangling_target_still_opens() {
+    let intent = "---\nid: orphan\ntitle: Goes nowhere\ntype: intent\nverified: 2026-08-02\nvolatility: low\ngoal: I want a card that does not exist.\nphrasings: [a, b, c, d]\ntarget: no-such-card\n---\n";
+    let (index, _dir) = build_corpus("an_intent_with_a_dangling_target_still_opens", &[("orphan", intent)]);
+
+    let opened = index.card("orphan").unwrap().unwrap();
+    assert_eq!(opened.id, "orphan");
+}
+
+#[test]
+fn a_missing_card_is_none_not_an_error() {
+    let (index, _dir) = corpus("a_missing_card_is_none_not_an_error");
+    assert!(index.card("does-not-exist").unwrap().is_none());
+}

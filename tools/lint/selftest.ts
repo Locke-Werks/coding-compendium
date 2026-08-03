@@ -19,6 +19,7 @@
  * Run with:  pnpm lint:selftest
  */
 
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { lintCorpus } from "./index.js";
@@ -47,6 +48,11 @@ const MUST_NOT_FIRE: Array<[rule: string, trap: string]> = [
   ["schema", "the fixture's frontmatter is valid; only its prose is broken"],
   ["duplicate-id", "the fixture id is unique"],
   ["id-matches-filename", "violations.md declares id: violations"],
+  [
+    "tier-depth",
+    "tier-fence.md has a heading inside a code fence; a regex splitter would truncate Full and report it as too short",
+  ],
+  ["tier-structure", "tier-fence.md has both a More and a Full tier"],
 ];
 
 function main(): void {
@@ -81,19 +87,47 @@ function main(): void {
     }
   }
 
-  // The tagged fence and the code spans in the fixture exist to prove code is
-  // excluded from prose checks. If any finding lands on a line inside the
-  // trailing ```text block, the blanking is broken.
-  const findings = reports.flatMap((r) => r.findings);
-  const codeBlockLines = findings.filter((f) => f.rule !== "tagged-code-fences" && f.line >= 45);
-  if (codeBlockLines.length > 0) {
+  // Prove code is excluded from prose checks.
+  //
+  // The fixture deliberately puts banned words, a British spelling, and an em
+  // dash inside fenced blocks. None of them may be reported.
+  //
+  // The fence ranges are computed from the file rather than hardcoded as line
+  // numbers. An earlier version compared against a fixed line, which silently
+  // stopped testing anything the moment the fixture grew.
+  const fixture = readFileSync(join(FIXTURES, "violations.md"), "utf8");
+  const fenceRanges: Array<[number, number]> = [];
+  {
+    let open: number | null = null;
+    fixture.split("\n").forEach((line, i) => {
+      if (!line.trimStart().startsWith("```")) return;
+      const lineNo = i + 1;
+      if (open === null) open = lineNo;
+      else {
+        fenceRanges.push([open, lineNo]);
+        open = null;
+      }
+    });
+  }
+
+  const inFence = (line: number) => fenceRanges.some(([a, b]) => line > a && line < b);
+  const leaked = reports
+    .flatMap((r) => r.findings)
+    .filter((f) => f.rule !== "tagged-code-fences" && inFence(f.line));
+
+  if (fenceRanges.length < 2) {
+    console.error("  FAIL  code-is-excluded      fixture has fewer than two fenced blocks to test with");
+    failures++;
+  } else if (leaked.length > 0) {
     console.error(
-      `  FAIL  code-is-excluded      ${codeBlockLines.length} finding(s) landed inside a fenced block: ` +
-        codeBlockLines.map((f) => `${f.rule}@${f.line}`).join(", "),
+      `  FAIL  code-is-excluded      ${leaked.length} finding(s) landed inside a fenced block: ` +
+        leaked.map((f) => `${f.rule}@${f.line}`).join(", "),
     );
     failures++;
   } else {
-    console.log("  ok    code-is-excluded      no prose findings inside fenced code");
+    console.log(
+      `  ok    code-is-excluded      no prose findings inside ${fenceRanges.length} fenced blocks`,
+    );
   }
 
   console.log(

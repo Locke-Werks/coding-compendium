@@ -46,3 +46,16 @@ must a fenced block containing the word simply:
 ```text
 simply delve robust seamless behaviour — colours
 ```
+
+## Full
+
+This tier exists so the tier splitter has something to find. It contains a code
+fence with a heading-shaped line inside it, which must NOT end the section:
+
+```bash
+## this is a shell comment, not a heading
+echo "still inside Full"
+```
+
+Text after the fence proves the splitter kept reading past that line. Without
+fence awareness this paragraph vanishes and the tier reads as truncated.

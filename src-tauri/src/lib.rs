@@ -135,6 +135,17 @@ fn search(
         .map_err(|e| format!("{e:#}"))
 }
 
+#[tauri::command]
+fn get_card(state: tauri::State<'_, AppState>, id: String) -> Result<search::CardDetail, String> {
+    let guard = state.corpus.lock().expect("corpus mutex poisoned");
+    let Some(index) = guard.as_ref() else {
+        return Err("The reference database is not loaded.".into());
+    };
+    index.card(&id).map_err(|e| format!("{e:#}")).and_then(|c| {
+        c.ok_or_else(|| format!("No card called {id}."))
+    })
+}
+
 /// Identify pasted text: what kind of thing it is, and what language.
 ///
 /// Runs locally with no model, so it answers instantly and can explain every
@@ -181,7 +192,7 @@ pub fn run() {
             });
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![capabilities, search, identify])
+        .invoke_handler(tauri::generate_handler![capabilities, search, identify, get_card])
         .run(tauri::generate_context!())
         .expect("error while running the Coding Compendium");
 }

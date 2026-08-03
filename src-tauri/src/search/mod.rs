@@ -145,6 +145,97 @@ fn title_boost(title: &str, terms: &[String]) -> f64 {
     boost
 }
 
+/// A whole card, for the reader.
+#[derive(Debug, Clone, Serialize)]
+pub struct CardDetail {
+    pub id: String,
+    pub title: String,
+    pub card_type: String,
+    pub answer: Option<String>,
+    /// The markdown body. Rendered by the frontend.
+    pub body: String,
+    pub volatility: String,
+    pub verified: String,
+    /// Type-specific frontmatter as JSON, so the reader can render a language
+    /// card's tells or an error card's fix ladder without this side needing to
+    /// know the shape of all seven card types.
+    pub meta: serde_json::Value,
+    /// True when the card has passed its own freshness budget.
+    pub stale: bool,
+}
+
+/// Has this card outlived its own freshness budget?
+///
+/// The budget is per-card because a blanket date on everything is noise: git's
+/// data model has not changed in fifteen years, while the install command for a
+/// coding agent can change in a fortnight. A card only goes stale against the
+/// volatility its author declared, so the badge means something when it appears.
+fn is_stale(volatility: &str, verified: &str) -> bool {
+    let days = match volatility {
+        "weekly" => 30,
+        "quarterly" => 180,
+        // "low" still expires, just slowly. Nothing is true forever.
+        _ => 730,
+    };
+
+    // verified is an ISO date, YYYY-MM-DD. Comparing as text works because the
+    // format sorts lexicographically, which avoids pulling in a date library for
+    // one subtraction.
+    let Some(then) = parse_ymd(verified) else { return false };
+    let Some(now) = parse_ymd(&current_date()) else { return false };
+    days_between(then, now) > days
+}
+
+fn parse_ymd(s: &str) -> Option<(i64, i64, i64)> {
+    let mut parts = s.split('-');
+    let y = parts.next()?.parse().ok()?;
+    let m = parts.next()?.parse().ok()?;
+    let d = parts.next()?.parse().ok()?;
+    Some((y, m, d))
+}
+
+/// Today, as YYYY-MM-DD, from the system clock.
+fn current_date() -> String {
+    let secs = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs() as i64)
+        .unwrap_or(0);
+    let days = secs / 86_400;
+    let (y, m, d) = civil_from_days(days);
+    format!("{y:04}-{m:02}-{d:02}")
+}
+
+/// Days since the epoch to a calendar date.
+///
+/// Howard Hinnant's civil-from-days algorithm. Twenty lines and no dependency,
+/// against a date crate pulled in for one conversion.
+fn civil_from_days(z: i64) -> (i64, i64, i64) {
+    let z = z + 719_468;
+    let era = if z >= 0 { z } else { z - 146_096 } / 146_097;
+    let doe = z - era * 146_097;
+    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146_096) / 365;
+    let y = yoe + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let d = doy - (153 * mp + 2) / 5 + 1;
+    let m = if mp < 10 { mp + 3 } else { mp - 9 };
+    (if m <= 2 { y + 1 } else { y }, m, d)
+}
+
+fn days_between(a: (i64, i64, i64), b: (i64, i64, i64)) -> i64 {
+    days_from_civil(b) - days_from_civil(a)
+}
+
+fn days_from_civil((y, m, d): (i64, i64, i64)) -> i64 {
+    let y = if m <= 2 { y - 1 } else { y };
+    let era = if y >= 0 { y } else { y - 399 } / 400;
+    let yoe = y - era * 400;
+    let mp = if m > 2 { m - 3 } else { m + 9 };
+    let doy = (153 * mp + 2) / 5 + d - 1;
+    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+    era * 146_097 + doe - 719_468
+}
+
 /// A handle to the compiled corpus.
 pub struct Index {
     conn: Connection,
@@ -254,6 +345,69 @@ impl Index {
         Ok(hits)
     }
 
+    /// Fetch a whole card for the reader, following intents to their target.
+    ///
+    /// An intent has no body: it exists only to catch a query in Nyx's words
+    /// ("oops", "i wrecked it") and point at the card that answers it. Opening
+    /// one would show an empty page, so it forwards instead. Resolved here
+    /// rather than in the UI so every caller gets the same behavior.
+    pub fn card(&self, id: &str) -> Result<Option<CardDetail>> {
+        let Some(card) = self.card_raw(id)? else { return Ok(None) };
+
+        if card.card_type == "intent" {
+            if let Some(target) = card.meta.get("target").and_then(|t| t.as_str()) {
+                // One hop only. An intent pointing at another intent is an
+                // authoring mistake, and following a chain would risk a loop.
+                if let Some(resolved) = self.card_raw(target)? {
+                    return Ok(Some(resolved));
+                }
+            }
+        }
+        Ok(Some(card))
+    }
+
+    /// Fetch a card exactly as stored, without following intents.
+    fn card_raw(&self, id: &str) -> Result<Option<CardDetail>> {
+        let mut stmt = self.conn.prepare_cached(
+            "SELECT id, title, type, answer, body, volatility, verified, meta
+             FROM cards WHERE id = ?1",
+        )?;
+
+        let row = stmt.query_row([id], |r| {
+            Ok((
+                r.get::<_, String>(0)?,
+                r.get::<_, String>(1)?,
+                r.get::<_, String>(2)?,
+                r.get::<_, Option<String>>(3)?,
+                r.get::<_, String>(4)?,
+                r.get::<_, String>(5)?,
+                r.get::<_, String>(6)?,
+                r.get::<_, String>(7)?,
+            ))
+        });
+
+        match row {
+            Ok((id, title, card_type, answer, body, volatility, verified, meta)) => {
+                let stale = is_stale(&volatility, &verified);
+                Ok(Some(CardDetail {
+                    id,
+                    title,
+                    card_type,
+                    answer,
+                    body,
+                    stale,
+                    volatility,
+                    verified,
+                    // A card whose meta failed to parse still renders; it just
+                    // loses its type-specific extras.
+                    meta: serde_json::from_str(&meta).unwrap_or(serde_json::Value::Null),
+                }))
+            }
+            Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+            Err(e) => Err(e).context("reading card"),
+        }
+    }
+
     /// Build the paste identifier from this corpus.
     ///
     /// Loaded once at startup and reused: it compiles a few hundred regexes,
@@ -359,6 +513,38 @@ mod tests {
     #[test]
     fn title_matching_ignores_case_and_function_words() {
         assert!(title_boost("PowerShell", &terms("what is powershell")) > 0.0);
+    }
+
+    #[test]
+    fn date_arithmetic_round_trips() {
+        for date in [(2026, 8, 2), (2000, 2, 29), (1970, 1, 1), (2024, 12, 31)] {
+            assert_eq!(civil_from_days(days_from_civil(date)), date, "round trip failed for {date:?}");
+        }
+        assert_eq!(days_between((2026, 1, 1), (2026, 1, 31)), 30);
+        // Across a leap day.
+        assert_eq!(days_between((2024, 2, 28), (2024, 3, 1)), 2);
+    }
+
+    /// The badge only means something if it appears when the card's own budget
+    /// is blown, not on a fixed schedule for everything.
+    #[test]
+    fn staleness_respects_the_cards_own_budget() {
+        let recent = current_date();
+        assert!(!is_stale("weekly", &recent), "a card verified today is never stale");
+
+        // A two-year-old card: stale at weekly and quarterly, still fine at low.
+        let (y, m, d) = parse_ymd(&recent).unwrap();
+        let two_years_ago = format!("{:04}-{:02}-{:02}", y - 2, m, d);
+        assert!(is_stale("weekly", &two_years_ago));
+        assert!(is_stale("quarterly", &two_years_ago));
+        assert!(!is_stale("low", &two_years_ago), "git's data model has not moved");
+    }
+
+    #[test]
+    fn a_malformed_date_is_not_reported_as_stale() {
+        // Better to show nothing than a wrong warning.
+        assert!(!is_stale("weekly", "not a date"));
+        assert!(!is_stale("weekly", ""));
     }
 
     #[test]

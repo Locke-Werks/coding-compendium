@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   getCapabilities,
+  getCard,
   identify,
   inTauri,
   search,
   type Capabilities,
+  type CardDetail,
   type Hit,
   type Identification,
 } from "./api";
+import CardView from "./components/CardView";
 import IdentifyPanel from "./components/IdentifyPanel";
 import ResultList from "./components/ResultList";
 
@@ -54,6 +57,7 @@ export default function App() {
   const [mode, setMode] = useState<Mode>("search");
   const [hits, setHits] = useState<Hit[]>([]);
   const [ident, setIdent] = useState<Identification | null>(null);
+  const [card, setCard] = useState<CardDetail | null>(null);
   const [selected, setSelected] = useState(0);
   const [caps, setCaps] = useState<Capabilities | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -118,16 +122,35 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [query]);
 
+  const open = useCallback((id: string) => {
+    getCard(id)
+      .then(setCard)
+      .catch((e) => setError(String(e)));
+  }, []);
+
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      // Enter submits rather than inserting a newline, except with shift held.
-      // A textarea is used only so pasted multi-line text survives; it is not a
-      // place to compose.
+      // Enter opens the selected card rather than inserting a newline. A
+      // textarea is used only so pasted multi-line text survives; it is not a
+      // place to compose. Shift+Enter still breaks a line, for the rare case of
+      // typing a snippet by hand.
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
+        const hit = hits[selected];
+        if (mode === "search" && hit) open(hit.card_id);
         return;
       }
-      if (mode !== "search") return;
+
+      if (e.key === "Escape") {
+        // Escape backs out one level: card first, then the query. Closing the
+        // window would lose everything, and the usual reason to press it is to
+        // start over rather than to leave.
+        if (card) setCard(null);
+        else setQuery("");
+        return;
+      }
+
+      if (mode !== "search" || card) return;
 
       if (e.key === "ArrowDown") {
         e.preventDefault();
@@ -135,13 +158,9 @@ export default function App() {
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         setSelected((i) => Math.max(i - 1, 0));
-      } else if (e.key === "Escape") {
-        // Escape clears rather than closing. Closing would lose the query, and
-        // the most common reason to press it is to start over.
-        setQuery("");
       }
     },
-    [hits.length, mode],
+    [card, hits, mode, open, selected],
   );
 
   const showHint = !query.trim() && !error;
@@ -175,26 +194,26 @@ export default function App() {
           </div>
         )}
 
-        {!error && mode === "identify" && ident && <IdentifyPanel result={ident} />}
+        {!error && card && <CardView card={card} onBack={() => setCard(null)} />}
 
-        {!error && mode === "search" && hits.length > 0 && (
+        {!error && !card && mode === "identify" && ident && <IdentifyPanel result={ident} />}
+
+        {!error && !card && mode === "search" && hits.length > 0 && (
           <ResultList
             hits={hits}
             selected={selected}
             onSelect={setSelected}
-            onOpen={() => {
-              /* The reader pane lands next. */
-            }}
+            onOpen={(hit) => open(hit.card_id)}
           />
         )}
 
-        {!error && mode === "search" && query.trim() && hits.length === 0 && (
+        {!error && !card && mode === "search" && query.trim() && hits.length === 0 && (
           <p className="p-6 text-sm text-paper-500">
             Nothing matches that yet. The corpus is still being written.
           </p>
         )}
 
-        {showHint && (
+        {!card && showHint && (
           <div className="p-6 text-sm text-paper-500">
             <p>Two things happen here.</p>
             <ul className="mt-3 flex flex-col gap-1.5">
@@ -217,9 +236,14 @@ export default function App() {
           {caps && !caps.synthesis && " · local, no network"}
         </span>
         <span className="flex gap-3">
-          {mode === "search" ? (
+          {card ? (
+            <>
+              <kbd className="font-mono">esc</kbd> back to results
+            </>
+          ) : mode === "search" ? (
             <>
               <kbd className="font-mono">up/down</kbd> move
+              <kbd className="font-mono">enter</kbd> open
               <kbd className="font-mono">esc</kbd> clear
             </>
           ) : (
