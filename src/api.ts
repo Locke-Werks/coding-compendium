@@ -186,6 +186,14 @@ export async function identify(text: string): Promise<Identification> {
 }
 
 /**
+ * Show or hide the sidecar: a narrow, always-on-top strip that sits beside the
+ * terminal so an answer is already on screen rather than one alt-tab away.
+ */
+export async function toggleSidecar(): Promise<void> {
+  return invoke<void>("toggle_sidecar");
+}
+
+/**
  * Fires when the global shortcut brings the window forward.
  *
  * The window has focus by the time this arrives, but the webview does not, so

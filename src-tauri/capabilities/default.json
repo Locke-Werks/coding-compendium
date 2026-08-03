@@ -3,7 +3,8 @@
   "identifier": "default",
   "description": "Permissions for the main window. Deliberately small: this app reads a local database and renders text. It has no reason to reach the network, the shell, or arbitrary files, so those permissions are absent rather than merely unused. The global shortcut is the exception, and it is what lets the app be summoned from anywhere rather than alt-tabbed to.",
   "windows": [
-    "main"
+    "main",
+    "sidecar"
   ],
   "permissions": [
     "core:default",

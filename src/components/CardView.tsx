@@ -76,7 +76,7 @@ interface Props {
 
 export default function CardView({ card, onBack, onNavigate, depth }: Props) {
   return (
-    <article className="selectable mx-auto max-w-3xl p-6">
+    <article className="selectable mx-auto max-w-3xl p-4 sm:p-6">
       <button
         type="button"
         onClick={onBack}

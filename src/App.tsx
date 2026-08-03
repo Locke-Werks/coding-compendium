@@ -7,6 +7,7 @@ import {
   inTauri,
   onSummoned,
   search,
+  toggleSidecar,
   type Capabilities,
   type CardDetail,
   type Extract,
@@ -56,6 +57,16 @@ function looksPasted(text: string): boolean {
 }
 
 type Mode = "search" | "identify";
+
+/**
+ * The sidecar is the same app in a narrow strip, not a separate one.
+ *
+ * Signalled by a query string rather than a second HTML entry point, so both
+ * windows ship one bundle and cannot drift apart. A fix to the reader lands in
+ * both by construction.
+ */
+const IS_SIDECAR =
+  typeof window !== "undefined" && window.location.search.includes("sidecar");
 
 export default function App() {
   const [query, setQuery] = useState("");
@@ -230,7 +241,7 @@ export default function App() {
     // client area, so the footer sat just below the bottom edge. Pinning to the
     // viewport is immune to both.
     <div className="fixed inset-0 flex flex-col overflow-hidden bg-ink-900">
-      <header className="border-b border-ink-700 px-4 py-3">
+      <header className={`border-b border-ink-700 ${IS_SIDECAR ? "px-3 py-2" : "px-4 py-3"}`}>
         <textarea
           ref={inputRef}
           autoFocus
@@ -238,10 +249,10 @@ export default function App() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="Ask a question, or paste anything you do not recognize"
+          placeholder={IS_SIDECAR ? "Ask, or paste" : "Ask a question, or paste anything you do not recognize"}
           spellCheck={false}
           aria-label="Search the compendium, or paste something to identify"
-          className="w-full resize-none bg-transparent text-lg text-paper-100 caret-amber-mark outline-none placeholder:text-paper-500"
+          className={`w-full resize-none bg-transparent text-paper-100 caret-amber-mark outline-none placeholder:text-paper-500 ${IS_SIDECAR ? "text-sm" : "text-lg"}`}
         />
       </header>
 
@@ -306,16 +317,29 @@ export default function App() {
 
       <footer className="flex items-center justify-between border-t border-ink-700 px-4 py-2 text-xs text-paper-500">
         <span>
-          {caps?.corpus_ready ? `${caps.card_count} cards` : "no corpus"}
+          {IS_SIDECAR ? "" : caps?.corpus_ready ? `${caps.card_count} cards` : "no corpus"}
           {/* Say which engines are running. Without the model, results are
               measurably worse, and an unexplained drop in quality is the kind
               of thing that makes a tool feel unreliable rather than degraded. */}
-          {caps?.corpus_ready && (caps.semantic ? " · hybrid search" : " · word match only")}
-          {caps?.corpus_ready && " · local, no network"}
-          {caps?.hotkey && ` · ${caps.hotkey} from anywhere`}
+          {!IS_SIDECAR && caps?.corpus_ready && (caps.semantic ? " · hybrid search" : " · word match only")}
+          {!IS_SIDECAR && caps?.corpus_ready && " · local, no network"}
+          {!IS_SIDECAR && caps?.hotkey && ` · ${caps.hotkey} from anywhere`}
+          {IS_SIDECAR && caps?.hotkey && `${caps.hotkey}`}
         </span>
-        <span className="flex gap-3">
-          {card ? (
+        <span className="flex items-center gap-3">
+          {!IS_SIDECAR && (
+            // Presence beats findability. A strip left open beside the terminal
+            // is read; a window she has to remember to open is not.
+            <button
+              type="button"
+              onClick={() => void toggleSidecar()}
+              className="rounded px-1.5 py-0.5 transition-colors hover:bg-ink-700 hover:text-paper-100"
+              title="Ctrl+Shift+D. A narrow strip that stays on top, to keep beside your terminal"
+            >
+              dock a strip
+            </button>
+          )}
+          {IS_SIDECAR ? null : card ? (
             <>
               <kbd className="font-mono">esc</kbd> back to results
             </>

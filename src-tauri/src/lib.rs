@@ -35,6 +35,7 @@ pub mod embed;
 pub mod hotkey;
 pub mod identify;
 pub mod search;
+pub mod sidecar;
 pub mod synth;
 
 use search::{Index, Matched};
@@ -202,6 +203,12 @@ fn get_card(state: tauri::State<'_, AppState>, id: String) -> Result<search::Car
     })
 }
 
+/// Show or hide the sidecar, the narrow always-on-top strip.
+#[tauri::command]
+fn toggle_sidecar(app: tauri::AppHandle) -> Result<(), String> {
+    sidecar::toggle(&app).map_err(|e| format!("{e}"))
+}
+
 /// Identify pasted text: what kind of thing it is, and what language.
 ///
 /// Runs locally with no model, so it answers instantly and can explain every
@@ -320,7 +327,7 @@ pub fn run() {
             });
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![capabilities, search, identify, get_card, extract])
+        .invoke_handler(tauri::generate_handler![capabilities, search, identify, get_card, extract, toggle_sidecar])
         .run(tauri::generate_context!())
         .expect("error while running the Coding Compendium");
 }

@@ -36,6 +36,18 @@ fn toggle() -> Shortcut {
 /// Human-readable form, for the footer hint.
 pub const TOGGLE_LABEL: &str = "Ctrl+Shift+Space";
 
+/// Docks or hides the narrow always-on-top strip.
+///
+/// A binding as well as a button, because the strip is something she will toggle
+/// while her hands are already on the keyboard and mid-task. Reaching for the
+/// mouse to dismiss a reference window is exactly the friction it exists to
+/// remove.
+fn dock() -> Shortcut {
+    Shortcut::new(Some(Modifiers::CONTROL.union(Modifiers::SHIFT)), Code::KeyD)
+}
+
+pub const DOCK_LABEL: &str = "Ctrl+Shift+D";
+
 /// Register the global shortcut.
 ///
 /// Returns an error only if the binding is already claimed by another program.
@@ -71,6 +83,15 @@ pub fn register(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
         // there. Doing it here would need the webview to be focused already,
         // which it is not until this returns.
         let _ = app.emit("summoned", ());
+    })?;
+
+    app.global_shortcut().on_shortcut(dock(), move |app, _shortcut, event| {
+        if event.state() != ShortcutState::Pressed {
+            return;
+        }
+        // A failure here costs the strip, not the app. The main window is
+        // untouched and she can still search in it.
+        let _ = crate::sidecar::toggle(app);
     })?;
 
     Ok(())
