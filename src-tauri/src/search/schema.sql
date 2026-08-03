@@ -193,6 +193,18 @@ CREATE TABLE IF NOT EXISTS language_tiebreaks (
     favors      TEXT NOT NULL
 ) STRICT;
 
+-- Regexes that route a pasted error to the card explaining it.
+--
+-- This is what closes the loop on the identifier. Telling Nyx "this is a Python
+-- crash" is half an answer; the half she wanted is what the error means and what
+-- to try first. Compiled from the `patterns` field on every error card.
+CREATE TABLE IF NOT EXISTS error_patterns (
+    card_id TEXT NOT NULL REFERENCES cards(id) ON DELETE CASCADE,
+    pattern TEXT NOT NULL
+) STRICT;
+
+CREATE INDEX IF NOT EXISTS error_patterns_by_card ON error_patterns(card_id);
+
 -- --------------------------------------------------------------------------
 -- Build provenance
 -- --------------------------------------------------------------------------

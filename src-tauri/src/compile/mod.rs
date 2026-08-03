@@ -17,9 +17,11 @@
 
 mod chunk;
 mod frontmatter;
+mod languages;
 
 pub use chunk::{chunk_card, Chunk, CHUNK_OVERLAP_TOKENS, CHUNK_TARGET_TOKENS};
 pub use frontmatter::{split_frontmatter, Card, CardKind};
+pub use languages::{write_language_signals, LanguageStats};
 
 use anyhow::{bail, Context, Result};
 use rusqlite::Connection;
@@ -155,6 +157,10 @@ pub fn write_cards(conn: &mut Connection, cards: &[Card]) -> Result<Stats> {
     tx.execute_batch("INSERT INTO cards_fts(cards_fts) VALUES('rebuild')")
         .context("building the full-text index")?;
 
+    // The identifier's scoring table, compiled out of the language cards so the
+    // cards stay the one source of truth for both the prose and the classifier.
+    stats.languages = write_language_signals(&tx, cards)?;
+
     tx.commit()?;
     Ok(stats)
 }
@@ -163,4 +169,5 @@ pub fn write_cards(conn: &mut Connection, cards: &[Card]) -> Result<Stats> {
 pub struct Stats {
     pub cards: usize,
     pub chunks: usize,
+    pub languages: LanguageStats,
 }

@@ -470,6 +470,7 @@ name = "coding-compendium"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "regex",
  "rusqlite",
  "serde",
  "serde_json",

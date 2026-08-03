@@ -28,6 +28,7 @@
 //! nothing else. No code path outside `synth` may reference it.
 
 pub mod compile;
+pub mod identify;
 pub mod search;
 
 use search::{Index, Matched};
@@ -44,6 +45,9 @@ use tauri::Manager;
 /// than the database can answer.
 struct AppState {
     corpus: Mutex<Option<Index>>,
+    /// The paste identifier, built once at startup because it compiles a few
+    /// hundred regexes. It holds no database handle, so it needs no lock.
+    identifier: Option<identify::Identifier>,
     /// Why the corpus is missing, when it is. Shown in the UI instead of an
     /// empty result list, because "no results" and "the database did not load"
     /// look identical to someone searching and are entirely different problems.
@@ -131,6 +135,21 @@ fn search(
         .map_err(|e| format!("{e:#}"))
 }
 
+/// Identify pasted text: what kind of thing it is, and what language.
+///
+/// Runs locally with no model, so it answers instantly and can explain every
+/// point it awarded.
+#[tauri::command]
+fn identify(
+    state: tauri::State<'_, AppState>,
+    text: String,
+) -> Result<identify::Identification, String> {
+    let Some(id) = state.identifier.as_ref() else {
+        return Err("The reference database is not loaded.".into());
+    };
+    Ok(id.identify(&text))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -150,13 +169,19 @@ pub fn run() {
                 ),
             };
 
+            // A corpus that loads but has no language signals is a real state
+            // during content authoring, so a failure here disables the
+            // identifier rather than the app.
+            let identifier = corpus.as_ref().and_then(|c| c.identifier().ok());
+
             app.manage(AppState {
                 corpus: Mutex::new(corpus),
+                identifier,
                 load_error,
             });
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![capabilities, search])
+        .invoke_handler(tauri::generate_handler![capabilities, search, identify])
         .run(tauri::generate_context!())
         .expect("error while running the Coding Compendium");
 }

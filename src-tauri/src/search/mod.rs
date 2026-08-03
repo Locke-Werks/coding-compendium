@@ -254,6 +254,14 @@ impl Index {
         Ok(hits)
     }
 
+    /// Build the paste identifier from this corpus.
+    ///
+    /// Loaded once at startup and reused: it compiles a few hundred regexes,
+    /// which is cheap once and wasteful on every keystroke.
+    pub fn identifier(&self) -> Result<crate::identify::Identifier> {
+        crate::identify::Identifier::load(&self.conn)
+    }
+
     /// Total cards in the corpus. Used by the startup sanity check.
     pub fn card_count(&self) -> Result<usize> {
         let n: i64 = self.conn.query_row("SELECT count(*) FROM cards", [], |r| r.get(0))?;

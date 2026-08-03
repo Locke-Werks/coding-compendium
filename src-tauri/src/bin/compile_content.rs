@@ -45,6 +45,11 @@ fn main() -> Result<()> {
         stats.chunks,
         started.elapsed().as_secs_f32()
     );
+    let l = &stats.languages;
+    println!(
+        "         identifier: {} tells, {} rules-out, {} manifests, {} tiebreaks, {} error patterns",
+        l.tells, l.rules_out, l.manifests, l.tiebreaks, l.error_patterns
+    );
 
     Ok(())
 }

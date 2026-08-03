@@ -1,38 +1,70 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getCapabilities, inTauri, search, type Capabilities, type Hit } from "./api";
+import {
+  getCapabilities,
+  identify,
+  inTauri,
+  search,
+  type Capabilities,
+  type Hit,
+  type Identification,
+} from "./api";
+import IdentifyPanel from "./components/IdentifyPanel";
 import ResultList from "./components/ResultList";
 
 /**
- * The search surface.
+ * The one surface.
  *
  * Everything here serves one claim: this should be faster than opening a browser
- * tab. Three decisions follow from that and are worth stating, because each one
- * looks like a detail and is not.
+ * tab. Four decisions follow from that, and each looks like a detail and is not.
  *
  * 1. **The box is always focused.** No click to start typing.
  * 2. **Results update as you type**, with the final word treated as a prefix, so
  *    the list does not empty out between keystrokes.
  * 3. **The answer is on screen without clicking.** A search engine makes you
  *    click. That round trip is the thing being beaten.
+ * 4. **Pasting something switches modes automatically.** Nyx should never have
+ *    to know she wanted "identify" rather than "search". If it looks like she
+ *    pasted a thing rather than asked a question, it gets identified.
  */
 
 /** Wait this long after the last keystroke before searching. */
 const DEBOUNCE_MS = 45;
 
+/**
+ * Does this look like pasted material rather than a typed question?
+ *
+ * Anything with a line break is the strong signal: nobody types a newline into a
+ * search box. Beyond that, a long single line dense with code punctuation is
+ * usually a command or a one-liner, and a short phrase never is.
+ */
+function looksPasted(text: string): boolean {
+  if (text.includes("\n")) return true;
+  if (text.length < 12) return false;
+
+  const punct = (text.match(/[{}();=<>[\]$|\\/]/g) ?? []).length;
+  const words = text.trim().split(/\s+/).length;
+  // Roughly: more than one code character per two words, or an obvious path.
+  return punct * 2 >= words || /[A-Za-z]:\\|\.\w{1,4}\b.*[:(]\d+/.test(text);
+}
+
+type Mode = "search" | "identify";
+
 export default function App() {
   const [query, setQuery] = useState("");
+  const [mode, setMode] = useState<Mode>("search");
   const [hits, setHits] = useState<Hit[]>([]);
+  const [ident, setIdent] = useState<Identification | null>(null);
   const [selected, setSelected] = useState(0);
   const [caps, setCaps] = useState<Capabilities | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Guards against a slow search overwriting a newer one. Each request carries a
+  // Guards against a slow reply overwriting a newer one. Each request carries a
   // sequence number and a stale reply is dropped. Without this, typing quickly
   // can leave results for a prefix of what is in the box, which reads as the
   // search being wrong rather than late.
-  const requestSeq = useRef(0);
+  const seqRef = useRef(0);
 
   useEffect(() => {
     if (!inTauri()) {
@@ -52,25 +84,35 @@ export default function App() {
   useEffect(() => {
     if (!inTauri()) return;
 
-    const trimmed = query.trim();
-    if (!trimmed) {
+    const text = query.trim();
+    if (!text) {
       setHits([]);
+      setIdent(null);
+      setMode("search");
       return;
     }
 
-    const seq = ++requestSeq.current;
+    const wantsIdentify = looksPasted(query);
+    setMode(wantsIdentify ? "identify" : "search");
+
+    const seq = ++seqRef.current;
     const timer = setTimeout(() => {
-      search(trimmed, true)
-        .then((results) => {
-          if (seq !== requestSeq.current) return; // a newer query has been sent
-          setHits(results);
-          setSelected(0);
-          setError(null);
-        })
-        .catch((e) => {
-          if (seq !== requestSeq.current) return;
-          setError(String(e));
-        });
+      const request = wantsIdentify
+        ? identify(query).then((r) => {
+            if (seq !== seqRef.current) return;
+            setIdent(r);
+            setHits([]);
+          })
+        : search(text, true).then((r) => {
+            if (seq !== seqRef.current) return;
+            setHits(r);
+            setIdent(null);
+            setSelected(0);
+          });
+
+      request.then(() => seq === seqRef.current && setError(null)).catch((e) => {
+        if (seq === seqRef.current) setError(String(e));
+      });
     }, DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
@@ -78,6 +120,15 @@ export default function App() {
 
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
+      // Enter submits rather than inserting a newline, except with shift held.
+      // A textarea is used only so pasted multi-line text survives; it is not a
+      // place to compose.
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        return;
+      }
+      if (mode !== "search") return;
+
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setSelected((i) => Math.min(i + 1, hits.length - 1));
@@ -88,50 +139,45 @@ export default function App() {
         // Escape clears rather than closing. Closing would lose the query, and
         // the most common reason to press it is to start over.
         setQuery("");
-        setHits([]);
       }
     },
-    [hits.length],
+    [hits.length, mode],
   );
 
+  const showHint = !query.trim() && !error;
+
   return (
-    // `fixed inset-0` rather than h-full or h-screen.
-    //
-    // h-full is height:100% and resolves against the parent chain, so one
-    // ancestor without a definite height breaks it. h-screen is 100vh, which
-    // WebView2 reports slightly larger than the visible client area, so the
-    // footer sat just below the bottom edge and the results list overflowed the
-    // window instead of scrolling inside it. Pinning to the viewport is immune
-    // to both.
+    // `fixed inset-0` rather than h-full or h-screen. h-full resolves against
+    // the parent chain, so one ancestor without a definite height breaks it.
+    // h-screen is 100vh, which WebView2 reports slightly larger than the visible
+    // client area, so the footer sat just below the bottom edge. Pinning to the
+    // viewport is immune to both.
     <div className="fixed inset-0 flex flex-col overflow-hidden bg-ink-900">
       <header className="border-b border-ink-700 px-4 py-3">
-        <input
+        <textarea
           ref={inputRef}
           autoFocus
+          rows={query.includes("\n") ? Math.min(query.split("\n").length, 10) : 1}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="What do you need?"
+          placeholder="Ask a question, or paste anything you do not recognize"
           spellCheck={false}
-          aria-label="Search the compendium"
-          className="w-full bg-transparent text-lg text-paper-100 caret-amber-mark outline-none placeholder:text-paper-500"
+          aria-label="Search the compendium, or paste something to identify"
+          className="w-full resize-none bg-transparent text-lg text-paper-100 caret-amber-mark outline-none placeholder:text-paper-500"
         />
       </header>
 
       <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
         {error && (
-          <div className="m-4 rounded-md border border-danger/40 bg-danger/10 p-3 text-sm text-paper-300 selectable">
+          <div className="selectable m-4 rounded-md border border-danger/40 bg-danger/10 p-3 text-sm text-paper-300">
             {error}
           </div>
         )}
 
-        {!error && query.trim() && hits.length === 0 && (
-          <p className="p-6 text-sm text-paper-500">
-            Nothing matches that yet. The corpus is still being written.
-          </p>
-        )}
+        {!error && mode === "identify" && ident && <IdentifyPanel result={ident} />}
 
-        {hits.length > 0 && (
+        {!error && mode === "search" && hits.length > 0 && (
           <ResultList
             hits={hits}
             selected={selected}
@@ -142,9 +188,25 @@ export default function App() {
           />
         )}
 
-        {!query.trim() && !error && (
+        {!error && mode === "search" && query.trim() && hits.length === 0 && (
+          <p className="p-6 text-sm text-paper-500">
+            Nothing matches that yet. The corpus is still being written.
+          </p>
+        )}
+
+        {showHint && (
           <div className="p-6 text-sm text-paper-500">
-            <p>Start typing. Try &ldquo;merge conflict&rdquo;, &ldquo;what is Rust&rdquo;, or an error message.</p>
+            <p>Two things happen here.</p>
+            <ul className="mt-3 flex flex-col gap-1.5">
+              <li>
+                Type a question. Try &ldquo;what is a branch&rdquo; or &ldquo;how do I undo the last
+                commit&rdquo;.
+              </li>
+              <li>
+                Or paste anything you do not recognize: code, an error, a command, a config file. It
+                will tell you what it is and show you how it knew.
+              </li>
+            </ul>
           </div>
         )}
       </main>
@@ -152,11 +214,17 @@ export default function App() {
       <footer className="flex items-center justify-between border-t border-ink-700 px-4 py-2 text-xs text-paper-500">
         <span>
           {caps?.corpus_ready ? `${caps.card_count} cards` : "no corpus"}
-          {caps && !caps.synthesis && " · local search only"}
+          {caps && !caps.synthesis && " · local, no network"}
         </span>
         <span className="flex gap-3">
-          <kbd className="font-mono">up/down</kbd> move
-          <kbd className="font-mono">esc</kbd> clear
+          {mode === "search" ? (
+            <>
+              <kbd className="font-mono">up/down</kbd> move
+              <kbd className="font-mono">esc</kbd> clear
+            </>
+          ) : (
+            <span>identifying pasted text</span>
+          )}
         </span>
       </footer>
     </div>
