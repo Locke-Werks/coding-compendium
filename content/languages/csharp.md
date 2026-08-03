@@ -160,6 +160,13 @@ confusable_with:
       declares with `fun`, `val`, and `var name: String`, putting the type after
       the name. C# puts the type first and ends every line with a semicolon.
     tiebreak: { pattern: 'fun', kind: token, favors: kotlin }
+  - language: powershell
+    settle_it: >
+      PowerShell can call the same libraries C# uses, so a line like
+      `[System.IO.Path]::GetFullPath($p)` appears in both. C# files open with
+      `using System;`, put everything inside a `class`, and end every statement with a
+      semicolon. PowerShell has a `$` on every variable and no class around the code.
+    tiebreak: { pattern: '$env:', kind: sigil, favors: powershell }
 
 errors_look_like:
   sample: |

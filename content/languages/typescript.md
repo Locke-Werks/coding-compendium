@@ -176,6 +176,13 @@ confusable_with:
       with `use`, and uses `::` everywhere. TypeScript writes `function` or `=>`,
       imports with `import ... from`, and never uses `::`.
     tiebreak: { pattern: 'fn\s+\w+\s*\(', kind: regex, favors: rust }
+  - language: sql
+    settle_it: >
+      A TypeScript file often holds SQL inside a backtick template literal, so
+      uppercase `SELECT` and `FROM` on the screen do not make the file SQL. Next to
+      `const`, `await`, or a type after a colon, it is TypeScript code holding a
+      query. A standalone `.sql` file has none of that around it.
+    tiebreak: { pattern: 'const ', kind: regex, favors: typescript }
 
 errors_look_like:
   sample: |

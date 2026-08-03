@@ -1,5 +1,69 @@
 # Phase 0 gate: local grounded answering
 
+## Decision: NOT SHIPPING the generated answer. Extractive only.
+
+Recorded 2026-08-02, after reading the measurements below.
+
+The gate report recommends GO conditional on six things. Three of them cannot be
+met, and the reason is a squeeze the abstention number alone does not show:
+
+**The quantization that fits her GPU is the one that fails the safety gate.**
+Q4_K_M needs 2,017 MiB of VRAM and emitted a third status value, `ANSWER_SOURCE`,
+six times, breaking the machine-readable contract the entire design rests on.
+Q8_0 holds the contract and needs 2,686 MiB. Her card is a 2060-class laptop
+part with 6GB, possibly 3GB. At 3GB, Q8_0 is the whole card while the display is
+also using it, and Q4 is the option that does not work.
+
+**Twenty seconds is not a reference tool.** 20.6 s median on CPU, measured on a
+16-core Ryzen 9 7950X. Her machine is a 4-core or 6-core laptop, so expect worse.
+A beginner watching a spinner for twenty seconds concludes the app is broken, and
+she would be right to: the extractive path returns in milliseconds.
+
+**The one failure is the wrong kind of failure.** Asked about connecting Prisma
+to Postgres, which the corpus does not cover, it answered from
+`g8-what-never-to-paste-into-a-chat`, a card whose entire purpose is to warn
+against pasting connection strings. It lifted the redacted example out of the
+warning and presented it as instruction. Well-formed, correctly cited, literally
+quoted, and it inverted a security warning into advice. That is precisely the
+failure mode this gate existed to catch, and it happened on 1 of 15.
+
+Fourteen of fifteen is also not the confidence it sounds like. The 95% Wilson
+interval on 14/15 runs from 70% to 99%, so the sample does not exclude failing
+the 80% bar it appears to clear. And the abstention rate does not transfer
+between machines: greedy decoding turned out not to be backend-deterministic,
+with one of fifty statuses flipping between CPU and Vulkan, and it was the
+confabulation that flipped.
+
+A correct status is also not a correct answer. Three of the 35 answerable
+responses were meaningfully degraded against the cards they came from. The worst
+told her how to kill a process while dropping the card's "try Ctrl+C first" step
+and inverting its ordering. The gate measured whether the model knows when to
+stay quiet. It does. It did not establish that what it says when it speaks is as
+good as the card it is paraphrasing, and on this evidence it is not.
+
+None of this is a criticism of the model, which did what it claims and did it
+better than a general instruct model of four times the size would have. It is a
+statement about this machine, this audience, and a 380MB to 1.8GB download bought
+for a feature that answers more slowly than reading.
+
+**What ships instead:** the extractive path. Highlight the sentences within
+retrieved cards that match the question, and pull the two or three most relevant
+verbatim sentences into an attributed quote block. Zero hallucination risk by
+construction, because nothing is generated. It cannot invert a warning into
+advice, because it can only show her what a card already says, with the card's
+name attached.
+
+**What would reopen this:** a measurement on Nyx's actual laptop, a widened
+abstention set of 50+ uncoverable questions, and a tuned `--parallel 1` server
+with a 2048-token context, which the report projects would cut both the KV
+allocation and the latency substantially. The trait boundary in
+`src-tauri/src/synth/` is built so this can be switched on later without touching
+anything else.
+
+The rest of this document is the measurement it rests on, unedited.
+
+---
+
 Date: 2026-08-02
 Scope: does the Compendium ship a small local model that reads retrieved cards
 and writes a short cited answer when search finds relevant cards but no card
@@ -608,7 +672,9 @@ added to `content/`, `src/` or `src-tauri/`.
 - `occ-ai/OCC-RAG-1.7B-GGUF` at `Q4_K_M` and `Q8_0`, byte counts confirmed against
   the Hugging Face repo after download
 - Retrieval replica reading a copy of `build/content.db`, `fastembed` 0.8.0 for
-  the query encoder
+  the query encoder. The repo was being edited during this session and
+  `content.db` was rebuilt afterwards; the snapshot used and the rebuilt file both
+  hold 686 cards and 1228 chunk vectors, so the retrieval results stand.
 - `llama-server` at `temperature 0`, `top_k 1`, `-c 8192`, prompts assembled
   manually, status parsed from `/detokenize` output
 - Three full runs: Q4_K_M Vulkan, Q8_0 Vulkan, Q8_0 CPU

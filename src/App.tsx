@@ -2,15 +2,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   getCapabilities,
   getCard,
+  extract,
   identify,
   inTauri,
   search,
   type Capabilities,
   type CardDetail,
+  type Extract,
   type Hit,
   type Identification,
 } from "./api";
 import CardView from "./components/CardView";
+import ExtractPanel from "./components/ExtractPanel";
 import IdentifyPanel from "./components/IdentifyPanel";
 import PanicView from "./components/PanicView";
 import ResultList from "./components/ResultList";
@@ -58,6 +61,7 @@ export default function App() {
   const [mode, setMode] = useState<Mode>("search");
   const [hits, setHits] = useState<Hit[]>([]);
   const [ident, setIdent] = useState<Identification | null>(null);
+  const [excerpt, setExcerpt] = useState<Extract | null>(null);
   // A stack, not a single card. Authors were told to link rather than
   // re-explain, so the corpus is dense with cross-references and reading it
   // means following them. Without history, one click is a dead end.
@@ -119,6 +123,18 @@ export default function App() {
             setHits(r);
             setIdent(null);
             setSelected(0);
+            setExcerpt(null);
+
+            // Sentence extraction runs after the results are already on screen,
+            // never before. The result list is the answer; this is a shortcut
+            // into it, and it must never delay what she can already read.
+            if (r.length > 0) {
+              extract(text, r.slice(0, 4).map((h) => h.card_id))
+                .then((x) => seq === seqRef.current && setExcerpt(x))
+                .catch(() => {
+                  /* No excerpt is a normal outcome, not an error worth showing. */
+                });
+            }
           });
 
       request.then(() => seq === seqRef.current && setError(null)).catch((e) => {
@@ -227,6 +243,10 @@ export default function App() {
         )}
 
         {!error && !card && mode === "identify" && ident && <IdentifyPanel result={ident} />}
+
+        {!error && !card && mode === "search" && excerpt && (
+          <ExtractPanel extract={excerpt} onOpen={open} />
+        )}
 
         {!error && !card && mode === "search" && hits.length > 0 && (
           <ResultList

@@ -136,6 +136,18 @@ confusable_with:
       has no section headings and joins with `: `. Both allow `#` comments, so
       the separator is the thing to look at.
     tiebreak: { pattern: '^\s*\[[\w.-]+\]\s*$', kind: regex, favors: ini }
+  - language: css
+    settle_it: >
+      Both use `key: value` pairs and both look like settings. YAML uses indentation
+      with no braces and no semicolons. CSS wraps every group in braces and ends
+      every line with a semicolon.
+    tiebreak: { pattern: '\{', kind: regex, favors: css }
+  - language: dockerfile
+    settle_it: >
+      They travel together and do different jobs. The Dockerfile builds one image and
+      opens every line with an uppercase keyword. `docker-compose.yml` is YAML and
+      says how to run several containers together, in `key: value` pairs.
+    tiebreak: { pattern: '^FROM ', kind: line_start, favors: dockerfile }
 
 errors_look_like:
   sample: |

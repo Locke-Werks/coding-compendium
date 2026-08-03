@@ -128,6 +128,12 @@ confusable_with:
       unquoted, allows single quotes, and sits to the right of something like
       `const config =`. A JSON file is the value alone with no code around it.
     tiebreak: { pattern: 'const |=>|function ', kind: regex, favors: javascript }
+  - language: css
+    settle_it: >
+      Both are braces full of pairs. JSON quotes every single key, separates pairs
+      with commas, and allows no comments. CSS quotes no keys, ends each pair with a
+      semicolon, and allows `/* */`. One quoted key settles it for JSON.
+    tiebreak: { pattern: '\b\d+(px|rem|em|vh|vw)\b', kind: regex, favors: css }
 
 errors_look_like:
   sample: |

@@ -173,6 +173,26 @@ confusable_with:
       (`String name = 'nyx'`) where JavaScript puts no type at all, and Dart files
       end in `.dart` beside a `pubspec.yaml`.
     tiebreak: { pattern: '\brequired\s+this\.', kind: regex, favors: dart }
+  - language: css
+    settle_it: >
+      A CSS rule looks like a JavaScript object: braces full of `key: value`.
+      JavaScript separates the pairs with commas and quotes its string values. CSS
+      ends every pair with a semicolon and quotes almost nothing. A brace opening
+      after a bare word, a dot, or a hash is CSS.
+    tiebreak: { pattern: '^\s*[.#][\w-]+\s*\{', kind: regex, favors: css }
+  - language: html
+    settle_it: >
+      A React file mixes tags into JavaScript and looks like HTML from a distance.
+      It writes `className=` instead of `class=`, wraps values in braces
+      (`href={url}`), and has `import` at the top. Real HTML has neither.
+    tiebreak: { pattern: '<!DOCTYPE html', kind: regex, favors: html }
+  - language: python
+    settle_it: >
+      Both are dynamically typed and both are everywhere. JavaScript wraps every
+      block in curly braces and declares with `const`, `let`, or `function`. Python
+      has no declaration keyword at all, opens blocks with a colon, and closes them
+      by outdenting.
+    tiebreak: { pattern: 'def \w+\(.*\):', kind: regex, favors: python }
 
 errors_look_like:
   sample: |

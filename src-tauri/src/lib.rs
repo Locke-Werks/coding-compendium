@@ -19,18 +19,22 @@
 //!   copies of that model would eventually diverge, and vectors from different
 //!   models compare as confident nonsense with no error anywhere.
 //!
-//! # The optionality rule
+//! # No text is ever generated
 //!
-//! Everything here works with no network, no account, and no language model. A
-//! local model is used for one narrow job (reading retrieved cards and writing a
-//! short cited answer) and is reached only through a trait with a do-nothing
-//! implementation. Deleting the model file degrades exactly that feature and
-//! nothing else. No code path outside `synth` may reference it.
+//! [`synth`] answers questions by SELECTING sentences from cards, never by
+//! writing them. That was a decision, not a limitation: a local model was
+//! benchmarked against a 50-question gate and did not ship. See
+//! `docs/PHASE0-LLM-GATE.md`.
+//!
+//! The consequence worth stating plainly: every sentence this app shows Nyx was
+//! written by a human and appears verbatim in a card she can open. Nothing here
+//! can invent a flag, invert a warning, or cite a card it did not read.
 
 pub mod compile;
 pub mod embed;
 pub mod identify;
 pub mod search;
+pub mod synth;
 
 use search::{Index, Matched};
 use serde::Serialize;
@@ -205,6 +209,52 @@ fn identify(
     Ok(id.identify(&text))
 }
 
+/// Pull the sentences that best answer a question out of the top cards.
+///
+/// Nothing is generated. Every returned string appears verbatim in a card, with
+/// that card named, so the worst failure is a less relevant sentence than a
+/// human would have picked rather than a confident invention.
+#[tauri::command]
+fn extract(
+    state: tauri::State<'_, AppState>,
+    query: String,
+    card_ids: Vec<String>,
+) -> Result<synth::Extract, String> {
+    let guard = state.corpus.lock().expect("corpus mutex poisoned");
+    let (Some(index), Some(embedder)) = (guard.as_ref(), state.embedder.as_ref()) else {
+        // No model means no sentence scoring. The result list still stands on
+        // its own, so this degrades rather than fails.
+        return Ok(synth::Extract { excerpts: Vec::new(), weak: true });
+    };
+
+    let mut model = embedder.lock().expect("embedder mutex poisoned");
+    let Ok(query_vec) = model.embed_query(&query) else {
+        return Ok(synth::Extract { excerpts: Vec::new(), weak: true });
+    };
+
+    // Only the top few cards. Sentence scoring is cheap but not free, and a
+    // sentence from the eighth-ranked card is not an answer.
+    let cards: Vec<search::CardDetail> = card_ids
+        .iter()
+        .take(4)
+        .filter_map(|id| index.card(id).ok().flatten())
+        .collect();
+
+    let passages: Vec<synth::Passage<'_>> = cards
+        .iter()
+        .map(|c| synth::Passage {
+            card_id: &c.id,
+            card_title: &c.title,
+            heading_path: &c.title,
+            text: &c.body,
+        })
+        .collect();
+
+    Ok(synth::extract(&query_vec, &passages, |texts| {
+        model.embed_documents(texts.to_vec()).ok()
+    }))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -252,7 +302,7 @@ pub fn run() {
             });
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![capabilities, search, identify, get_card])
+        .invoke_handler(tauri::generate_handler![capabilities, search, identify, get_card, extract])
         .run(tauri::generate_context!())
         .expect("error while running the Coding Compendium");
 }

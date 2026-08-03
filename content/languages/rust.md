@@ -123,8 +123,9 @@ confusable_with:
       Both write `fn` and `pub fn`, which is the whole problem. Settle it on
       imports and allocation: Zig writes `const std = @import("std")` with an
       at-sign, and passes an allocator into anything that allocates. Rust writes
-      `use std::...;` and does not. Zig has no `impl` and no `!` macros.
-    tiebreak: { pattern: '@import', kind: regex, favors: zig }
+      `use std::...;` and does not. Zig has no `impl`, and the `!` differs: after a
+      name in Rust it is a macro, before a type in Zig it means "or an error".
+    tiebreak: { pattern: '@import', kind: sigil, favors: zig }
   - language: typescript
     settle_it: >
       Both annotate types after a colon. TypeScript writes `function` or `=>` and

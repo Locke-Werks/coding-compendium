@@ -100,24 +100,6 @@ This one is a cannot-find error, in your own file, on an `import`. That combinat
 one thing: the library is not installed in the environment you are running. Not a bug in
 your code, and not something to ask an agent to rewrite around.
 
-### The two things that hide an error
-
-An error can be missing rather than unreadable, for two reasons
-[f3](#f3-exit-codes-and-streams) owns in full. Every command hands back a number when it
-finishes, zero for success and anything else for failure, and nothing shows it unless you
-ask:
-
-```powershell
-$LASTEXITCODE
-```
-
-Programs also write on two separate channels, ordinary output and errors, so sending output
-to a file captures the first and drops the second. Merging them keeps the error:
-
-```powershell
-npm run build > log.txt 2>&1
-```
-
 ### Warnings are not errors
 
 A warning says something is questionable. An error says something stopped. Terminals print
@@ -172,9 +154,22 @@ There is nothing wrong with your code.
 ### When the error is empty
 
 Sometimes a command fails, prints nothing, and returns a non-zero exit code. This happens,
-and it is not your fault. [f3](#f3-exit-codes-and-streams) has the four steps to work
-through, in order.
+and it is not your fault. Two mechanisms account for almost all of it.
 
-The part to carry away is what you report at the end of them: "this command exits with code
-N and prints nothing" is specific and useful, and a much better prompt than "it doesn't
-work."
+Every command hands back a number when it finishes, zero for success and anything else for
+failure, and nothing shows it unless you ask:
+
+```powershell
+$LASTEXITCODE
+```
+
+Programs also write on two separate channels, ordinary output and errors, so sending output
+to a file captures the first and drops the second. Merging them keeps the error:
+
+```powershell
+npm run build > log.txt 2>&1
+```
+
+[f3](#f3-exit-codes-and-streams) owns both and has the rest of the procedure. The part to
+carry away is what you report at the end of it: "this command exits with code N and prints
+nothing" is specific and useful, and a much better prompt than "it doesn't work."

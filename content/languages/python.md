@@ -159,6 +159,13 @@ confusable_with:
       with `<-` and declares with `function(x)`. Python assigns with `=` and
       declares with `def`.
     tiebreak: { pattern: '<-', kind: operator, favors: r }
+  - language: sql
+    settle_it: >
+      A Python file often holds SQL inside a quoted string, so uppercase `SELECT` and
+      `FROM` on the screen do not make the file SQL. If the lines around them contain
+      `def`, `import`, or an `=`, the file is Python and the SQL is a string it hands
+      to a database at runtime. A standalone `.sql` file has none of that around it.
+    tiebreak: { pattern: 'def ', kind: regex, favors: python }
 
 errors_look_like:
   sample: |

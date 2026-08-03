@@ -89,6 +89,33 @@ export async function getCard(id: string): Promise<CardDetail> {
   return invoke<CardDetail>("get_card", { id });
 }
 
+/** One sentence lifted verbatim from a card. Mirrors `synth::Excerpt` in Rust. */
+export interface Excerpt {
+  card_id: string;
+  card_title: string;
+  /** Verbatim from the card. Never rewritten, never summarized. */
+  text: string;
+  heading_path: string;
+  score: number;
+}
+
+export interface Extract {
+  excerpts: Excerpt[];
+  /** True when nothing scored well enough to show. The result list stands alone. */
+  weak: boolean;
+}
+
+/**
+ * Pull the sentences that best answer a question out of the top cards.
+ *
+ * Nothing is generated. A local model was benchmarked for this job and did not
+ * ship: see docs/PHASE0-LLM-GATE.md. Selecting sentences cannot invert a warning
+ * into advice, and it returns in about a millisecond rather than twenty seconds.
+ */
+export async function extract(query: string, cardIds: string[]): Promise<Extract> {
+  return invoke<Extract>("extract", { query, cardIds });
+}
+
 /** What kind of thing was pasted. Mirrors `identify::Format` in Rust. */
 export type Format =
   | "source"

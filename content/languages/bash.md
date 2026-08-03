@@ -70,7 +70,7 @@ tells:
     kind: token
     weight: 5
     note: >
-      The else-if keyword. PowerShell writes `elseif`, C# writes `else if`, JavaScript writes
+      The else-if keyword. PowerShell writes `elseif`, JavaScript and C# write
       `else if`. Python also uses `elif`, so check for a colon at the end of the
       line: Python has one, bash does not.
   - pattern: '$('
@@ -179,6 +179,12 @@ confusable_with:
       tab-indented recipes underneath and `$(VAR)` for its own variables. A `.sh`
       file has no target lines and writes `$VAR` or `${VAR}`, never `$(VAR)`.
     tiebreak: { pattern: '^\w+:\s*$', kind: regex, favors: makefile }
+  - language: gitignore
+    settle_it: >
+      Both contain bare words and `*` wildcards. A shell script runs commands, so its
+      lines start with a verb such as `rm` or `echo`, and it opens with `#!/bin/bash`.
+      A gitignore line is a noun, and a leading `!` on one is gitignore alone.
+    tiebreak: { pattern: '^!\S', kind: regex, favors: gitignore }
 
 errors_look_like:
   sample: |
