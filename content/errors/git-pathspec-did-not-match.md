@@ -11,6 +11,11 @@ category: not-found
 # has to appear here.
 verify: git branch -a
 
+danger: >
+  The last step mentions `git checkout -- <file>` and `git restore <file>`. Both throw away your
+  uncommitted edits to that file with no undo. Run `git diff <file>` first to see what you would
+  lose, or `git stash` to set the edits aside instead of destroying them.
+
 sample: |
   PS C:\Users\nyx\dev\scraper> git checkout feature/login
   error: pathspec 'feature/login' did not match any file(s) known to git
@@ -32,7 +37,7 @@ fix_ladder:
     why: >
       Assumes the branch exists somewhere and you need the exact name. Remote branches appear
       with a `remotes/origin/` prefix. Seeing `remotes/origin/feature/login` with no local
-      counterpart means the branch is real and you simply do not have a local copy yet.
+      counterpart means the branch is real and you do not have a local copy of it yet.
 
   - try: Download the current list of branches from GitHub.
     command: git fetch

@@ -169,7 +169,7 @@ resource "aws_s3_bucket" "assets" {
 ```
 
 `var.environment` reaches into a `variable` block declared elsewhere in the same
-folder. That ability to point at another value is what separates this from JSON
+folder. That ability to point at another value is what separates this from JSON (JavaScript Object Notation)
 (JavaScript Object Notation) and the other config formats, which can only hold
 what you typed into them. See [JSON](#json) if that one is new.
 

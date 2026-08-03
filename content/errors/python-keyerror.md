@@ -85,7 +85,7 @@ keywords:
 A `KeyError` is a statement of fact and rarely a bug in the dictionary. Something built that
 dictionary with different contents than the code reading it expects.
 
-The three sources worth checking in order: an environment variable that is not set, a JSON
+The three sources worth checking in order: an environment variable that is not set, a JSON (JavaScript Object Notation)
 (JavaScript Object Notation) response whose shape changed, and a typo. All three produce an
 identical message.
 

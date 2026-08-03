@@ -39,6 +39,11 @@ export interface Capabilities {
   card_count: number;
   /** Why the corpus failed to load, when it did. */
   load_error: string | null;
+  /**
+   * False when search is word-matching only, because the model or the vectors
+   * are missing. Surfaced so worse results are explained rather than mysterious.
+   */
+  semantic: boolean;
   /** Whether the local model is available. The UI must work with this false. */
   synthesis: boolean;
 }

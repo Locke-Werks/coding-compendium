@@ -259,7 +259,10 @@ function checkAcronyms(card: Card, assumedKnown: Set<string>): Finding[] {
     // An expansion is a parenthetical immediately after the acronym, or the
     // acronym immediately after a parenthetical-free spelled-out form.
     const after = text.slice(m.index!, m.index! + acronym.length + 120);
-    const expanded = /^[A-Z]{2,6}\s*\([A-Z][^)]{4,}\)/.test(after);
+    // The parenthetical does not have to touch the acronym. "VS Code (Visual
+    // Studio Code)" and "MCP servers (Model Context Protocol)" are both correct
+    // English, and requiring adjacency rejected them.
+    const expanded = /^[A-Z]{2,6}[^.()\n]{0,24}\([A-Za-z][^)]{4,}\)/.test(after);
     if (expanded) continue;
 
     const { line, column } = positionAt(text, m.index!);

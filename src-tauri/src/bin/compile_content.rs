@@ -34,10 +34,6 @@ fn main() -> Result<()> {
     let mut conn = compile::create_database(&out)?;
     let stats = compile::write_cards(&mut conn, &cards)?;
 
-    // Vectors are added in a later pass, once the embedding model is wired up.
-    // Until then the database supports lexical search only, which is exactly
-    // what the build order calls for: prove the word matcher feels instant
-    // before adding the part that could hide latency behind it.
     println!(
         "wrote    {} ({} cards, {} chunks) in {:.1}s",
         out.display(),
@@ -49,6 +45,23 @@ fn main() -> Result<()> {
     println!(
         "         identifier: {} tells, {} rules-out, {} manifests, {} tiebreaks, {} error patterns",
         l.tells, l.rules_out, l.manifests, l.tiebreaks, l.error_patterns
+    );
+
+    // Embedding is by far the slowest part of the build, so it is skippable
+    // while authoring. `--no-embed` leaves the database lexical-only, which the
+    // app handles: it checks for vectors and runs one engine instead of two.
+    if std::env::args().any(|a| a == "--no-embed") {
+        println!("         skipped embeddings (--no-embed), search will be lexical only");
+        return Ok(());
+    }
+
+    let embed_started = Instant::now();
+    println!("embedding {} chunks, this is the slow part", stats.chunks);
+    let vectors = compile::write_embeddings(&mut conn)?;
+    println!(
+        "         {} vectors in {:.1}s",
+        vectors,
+        embed_started.elapsed().as_secs_f32()
     );
 
     Ok(())

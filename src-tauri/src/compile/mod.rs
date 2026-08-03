@@ -165,6 +165,72 @@ pub fn write_cards(conn: &mut Connection, cards: &[Card]) -> Result<Stats> {
     Ok(stats)
 }
 
+/// Embed every chunk and store the vectors.
+///
+/// Runs as a second pass after the text is written, because embedding is by far
+/// the slowest part of the build and keeping it separate means a content-only
+/// change can skip it during authoring.
+///
+/// The model identity is recorded in `build_meta`. The compiler and the app must
+/// use identical model bytes or their vectors live in different spaces, and the
+/// symptom is not an error: it is search that returns confident nonsense. The
+/// app checks this at startup and disables semantic search on a mismatch rather
+/// than silently mixing them.
+pub fn write_embeddings(conn: &mut Connection) -> Result<usize> {
+    use crate::embed::{to_blob, Embedder, DIMS};
+
+    let chunks: Vec<(i64, String)> = {
+        let mut stmt = conn.prepare("SELECT id, text FROM chunks ORDER BY id")?;
+        let rows = stmt.query_map([], |r| Ok((r.get::<_, i64>(0)?, r.get::<_, String>(1)?)))?;
+        rows.collect::<rusqlite::Result<Vec<_>>>()?
+    };
+
+    if chunks.is_empty() {
+        return Ok(0);
+    }
+
+    let mut embedder = Embedder::load()?;
+    let mut written = 0usize;
+
+    // Batched, because a forward pass has fixed overhead per call and 700 calls
+    // of one chunk each is several times slower than 3 calls of 256.
+    const BATCH: usize = 256;
+    for batch in chunks.chunks(BATCH) {
+        let texts: Vec<String> = batch.iter().map(|(_, t)| t.clone()).collect();
+        let vectors = embedder.embed_documents(texts)?;
+
+        let tx = conn.transaction()?;
+        {
+            let mut insert = tx.prepare(
+                "INSERT OR REPLACE INTO chunk_vectors (chunk_id, vec) VALUES (?1, ?2)",
+            )?;
+            for ((id, _), vector) in batch.iter().zip(&vectors) {
+                if vector.len() != DIMS {
+                    bail!(
+                        "the model returned {} dimensions, expected {DIMS}. \
+                         The wrong model is loaded and its vectors would be meaningless.",
+                        vector.len()
+                    );
+                }
+                insert.execute(rusqlite::params![id, to_blob(vector)])?;
+                written += 1;
+            }
+        }
+        tx.commit()?;
+    }
+
+    conn.execute(
+        "INSERT OR REPLACE INTO build_meta (key, value) VALUES ('embed_model', ?1)",
+        ["bge-small-en-v1.5-q"],
+    )?;
+    conn.execute(
+        "INSERT OR REPLACE INTO build_meta (key, value) VALUES ('embed_dims', ?1)",
+        [DIMS.to_string()],
+    )?;
+
+    Ok(written)
+}
+
 #[derive(Debug, Default)]
 pub struct Stats {
     pub cards: usize,

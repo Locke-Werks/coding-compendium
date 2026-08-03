@@ -29,6 +29,10 @@ identifiers:
   - NOTE
   - README
   - LICENSE
+  # Filenames. CLAUDE.md and AGENTS.md are instruction files, and the letters
+  # stand for nothing.
+  - CLAUDE
+  - AGENTS
   - MAIN
   - NUL
   - UTF

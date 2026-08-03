@@ -24,7 +24,8 @@
 //! do not move, the model is 63 MB of installer buying nothing.
 
 use anyhow::{bail, Context, Result};
-use compendium_lib::search::{Index, CANDIDATE_DEPTH};
+use compendium_lib::embed::Embedder;
+use compendium_lib::search::{fuse, fuse_engines, fuse_weighted, semantic, Index, CANDIDATE_DEPTH};
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 
@@ -93,51 +94,103 @@ fn main() -> Result<()> {
         println!("These count as misses below, so the scores are a floor.\n");
     }
 
-    let mut hits_at_5 = 0usize;
-    let mut hits_at_1 = 0usize;
-    let mut reciprocal_total = 0.0f64;
+    // Run each engine alone as well as fused. Fusion is only worth its cost if
+    // it beats both, and reporting all three is what makes that checkable
+    // instead of assumed.
+    let has_vectors = index.has_vectors()?;
+    let vectors = if has_vectors { index.load_vectors()? } else { Vec::new() };
+    let mut embedder = if has_vectors { Some(Embedder::load()?) } else { None };
+
+    if !has_vectors {
+        println!("No vectors in this database. Reporting lexical only.");
+        println!("Run `pnpm build:content` without --no-embed to include semantic search.\n");
+    }
+
+    let mut scores = [Metrics::default(), Metrics::default(), Metrics::default(), Metrics::default()];
+    const LEXICAL: usize = 0;
+    const SEMANTIC: usize = 1;
+    const HYBRID_EQUAL: usize = 2;
+    const HYBRID_WEIGHTED: usize = 3;
+
     let mut failures: Vec<(String, Vec<String>)> = Vec::new();
+    // Kept so the sweep can re-fuse without re-running either engine.
+    let mut rankings: Vec<(Vec<String>, Vec<String>)> = Vec::new();
 
     for case in &cases {
         // `false` for prefix: an eval query is a committed question, not a
         // half-typed one.
-        let ranked = index.lexical(&case.query, false, CANDIDATE_DEPTH)?;
-        let ids: Vec<String> = ranked.iter().map(|(id, _)| id.clone()).collect();
+        let lex = index.lexical(&case.query, false, CANDIDATE_DEPTH)?;
+        let lex_ids: Vec<String> = lex.iter().map(|(id, _)| id.clone()).collect();
 
-        // An intent forwards to its target, so a hit on either is correct: what
-        // she sees when she opens it is the same card.
-        let mut rank = None;
-        for (i, id) in ids.iter().enumerate() {
-            let resolved = index.card(id)?.map(|c| c.id);
-            if case.acceptable.contains(id) || resolved.is_some_and(|r| case.acceptable.contains(&r))
-            {
-                rank = Some(i + 1);
-                break;
+        let sem_ids: Vec<String> = match embedder.as_mut() {
+            Some(e) => {
+                let qv = e.embed_query(&case.query)?;
+                semantic(&qv, &vectors, CANDIDATE_DEPTH)
+                    .into_iter()
+                    .map(|(id, _)| id)
+                    .collect()
             }
+            None => Vec::new(),
+        };
+
+        // Both fusions are measured. Equal weight is the obvious thing to
+        // reach for and it is not the best thing here, so reporting both keeps
+        // that finding visible instead of buried in a constant.
+        let (fused, fused_equal): (Vec<String>, Vec<String>) = if sem_ids.is_empty() {
+            (lex_ids.clone(), lex_ids.clone())
+        } else {
+            (
+                fuse_engines(lex_ids.clone(), sem_ids.clone())
+                    .into_iter().map(|(id, _)| id).collect(),
+                fuse(&[lex_ids.clone(), sem_ids.clone()])
+                    .into_iter().map(|(id, _)| id).collect(),
+            )
+        };
+
+        scores[LEXICAL].add(rank_of(&index, &lex_ids, &case.acceptable)?);
+        if !sem_ids.is_empty() {
+            scores[SEMANTIC].add(rank_of(&index, &sem_ids, &case.acceptable)?);
         }
+        scores[HYBRID_EQUAL].add(rank_of(&index, &fused_equal, &case.acceptable)?);
+        let hybrid_rank = rank_of(&index, &fused, &case.acceptable)?;
+        scores[HYBRID_WEIGHTED].add(hybrid_rank);
 
-        match rank {
-            Some(r) => {
-                reciprocal_total += 1.0 / r as f64;
-                if r <= 5 {
-                    hits_at_5 += 1;
-                }
-                if r == 1 {
-                    hits_at_1 += 1;
-                }
-                if r > 5 {
-                    failures.push((case.query.clone(), ids.iter().take(3).cloned().collect()));
-                }
-            }
-            None => failures.push((case.query.clone(), ids.iter().take(3).cloned().collect())),
+        rankings.push((lex_ids.clone(), sem_ids.clone()));
+
+        if hybrid_rank.is_none_or(|r| r > 5) {
+            failures.push((case.query.clone(), fused.iter().take(3).cloned().collect()));
         }
     }
 
-    let n = cases.len() as f64;
-    println!("{} queries over {} cards\n", cases.len(), index.card_count()?);
-    println!("  recall@5   {:.1}%   the right answer is on screen without scrolling", hits_at_5 as f64 / n * 100.0);
-    println!("  recall@1   {:.1}%   the right answer is the first thing she reads", hits_at_1 as f64 / n * 100.0);
-    println!("  MRR        {:.3}    higher means the answer sits nearer the top", reciprocal_total / n);
+    let n = cases.len();
+    println!("{} queries over {} cards\n", n, index.card_count()?);
+    println!("                 recall@5   recall@1      MRR");
+    println!("  lexical        {}", scores[LEXICAL].row(n));
+    if has_vectors {
+        println!("  semantic       {}", scores[SEMANTIC].row(n));
+        println!("  hybrid equal   {}", scores[HYBRID_EQUAL].row(n));
+        println!("  hybrid 1:1.8   {}   <- shipping", scores[HYBRID_WEIGHTED].row(n));
+    }
+
+    // `--sweep` tries a range of semantic weights instead of guessing one.
+    // Picking a fusion constant by intuition is how a number nobody can defend
+    // ends up sitting in the codebase for a year.
+    if std::env::args().any(|a| a == "--sweep") && has_vectors {
+        println!("\nweight sweep, lexical held at 1.0\n");
+        println!("  semantic w   recall@5   recall@1      MRR");
+        for w in [0.5, 1.0, 1.5, 1.8, 2.0, 2.5, 3.0, 4.0, 6.0, 10.0] {
+            let mut m = Metrics::default();
+            for (case, (lex_ids, sem_ids)) in cases.iter().zip(&rankings) {
+                let fused: Vec<String> =
+                    fuse_weighted(&[(lex_ids.clone(), 1.0), (sem_ids.clone(), w)])
+                        .into_iter()
+                        .map(|(id, _)| id)
+                        .collect();
+                m.add(rank_of(&index, &fused, &case.acceptable)?);
+            }
+            println!("  {w:>9.1}   {}", m.row(n));
+        }
+    }
 
     if !failures.is_empty() {
         println!("\n{} queries missed the top five:", failures.len());
@@ -149,3 +202,47 @@ fn main() -> Result<()> {
 
     Ok(())
 }
+
+#[derive(Default)]
+struct Metrics {
+    at_5: usize,
+    at_1: usize,
+    reciprocal: f64,
+}
+
+impl Metrics {
+    fn add(&mut self, rank: Option<usize>) {
+        let Some(r) = rank else { return };
+        self.reciprocal += 1.0 / r as f64;
+        if r <= 5 {
+            self.at_5 += 1;
+        }
+        if r == 1 {
+            self.at_1 += 1;
+        }
+    }
+
+    fn row(&self, n: usize) -> String {
+        let n = n as f64;
+        format!(
+            "{:>7.1}%   {:>7.1}%   {:>6.3}",
+            self.at_5 as f64 / n * 100.0,
+            self.at_1 as f64 / n * 100.0,
+            self.reciprocal / n
+        )
+    }
+}
+
+/// Position of the first acceptable answer in a ranking, 1-based.
+fn rank_of(index: &Index, ids: &[String], acceptable: &HashSet<String>) -> Result<Option<usize>> {
+    for (i, id) in ids.iter().enumerate() {
+        // An intent forwards to its target, so a hit on either is correct: what
+        // she sees on opening it is the same card.
+        let resolved = index.card(id)?.map(|c| c.id);
+        if acceptable.contains(id) || resolved.is_some_and(|r| acceptable.contains(&r)) {
+            return Ok(Some(i + 1));
+        }
+    }
+    Ok(None)
+}
+

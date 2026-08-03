@@ -45,6 +45,10 @@ serde_yaml_ng = "0.10"
 # than a convenience.
 rusqlite = { version = "0.40", features = ["bundled", "functions"] }
 
+# Local embedding model. Pulls in ONNX Runtime, which is statically linked as
+# of ort rc.10, so no separate DLL ships beside the executable.
+fastembed = "5"
+
 regex = "1"
 walkdir = "2.5"
 anyhow = "1"

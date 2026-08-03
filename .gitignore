@@ -32,3 +32,8 @@ src-tauri/models/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Embedding model cache, downloaded by fastembed on first use.
+# 63 MB of ONNX weights: reproducible from a pinned model name, so it is a
+# build artifact rather than source.
+.fastembed_cache/

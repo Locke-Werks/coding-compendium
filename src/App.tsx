@@ -233,7 +233,11 @@ export default function App() {
       <footer className="flex items-center justify-between border-t border-ink-700 px-4 py-2 text-xs text-paper-500">
         <span>
           {caps?.corpus_ready ? `${caps.card_count} cards` : "no corpus"}
-          {caps && !caps.synthesis && " · local, no network"}
+          {/* Say which engines are running. Without the model, results are
+              measurably worse, and an unexplained drop in quality is the kind
+              of thing that makes a tool feel unreliable rather than degraded. */}
+          {caps?.corpus_ready && (caps.semantic ? " · hybrid search" : " · word match only")}
+          {caps?.corpus_ready && " · local, no network"}
         </span>
         <span className="flex gap-3">
           {card ? (

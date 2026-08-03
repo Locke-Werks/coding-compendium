@@ -50,7 +50,7 @@ fix_ladder:
     command: git status -sb
     shell: powershell
     why: >
-      Assumes the branches have diverged rather than simply moved forward. If the output
+      Assumes the two sides have diverged, meaning each has commits the other does not. If the output
       says ahead and behind at the same time, a plain push will be rejected, and you need
       to pull first.
 

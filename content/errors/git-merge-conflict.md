@@ -65,7 +65,7 @@ fix_ladder:
     command: git checkout --ours src/app.py
     shell: powershell
     why: >
-      Assumes one version is simply correct and the other is disposable, which is common
+      Assumes one version is correct and the other is disposable, which is common
       for generated files such as a lockfile. `--ours` is the branch you were on, `--theirs`
       is the branch you are merging in. Run `git add` on the file afterward.
 

@@ -54,7 +54,7 @@ fix_ladder:
     shell: powershell
     why: >
       Assumes the key exists but nothing is offering it. On Windows the ssh-agent service is
-      set to manual start by default, so it is often simply not running. `Start-Service`
+      set to manual start by default, so it is often not running at all. `Start-Service`
       needs an administrator window the first time.
 
   - try: Confirm the public key is on your GitHub account.

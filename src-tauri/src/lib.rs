@@ -28,6 +28,7 @@
 //! nothing else. No code path outside `synth` may reference it.
 
 pub mod compile;
+pub mod embed;
 pub mod identify;
 pub mod search;
 
@@ -48,6 +49,13 @@ struct AppState {
     /// The paste identifier, built once at startup because it compiles a few
     /// hundred regexes. It holds no database handle, so it needs no lock.
     identifier: Option<identify::Identifier>,
+    /// The query encoder. Loaded once because loading it costs a second or two
+    /// and encoding costs a few milliseconds. Behind a Mutex because a forward
+    /// pass needs `&mut`.
+    embedder: Option<Mutex<embed::Embedder>>,
+    /// Every chunk vector, held in memory. About 1.9 MB at 1,200 chunks, and a
+    /// brute-force scan of it is faster than the encode that produced the query.
+    vectors: Option<Vec<(String, Vec<f32>)>>,
     /// Why the corpus is missing, when it is. Shown in the UI instead of an
     /// empty result list, because "no results" and "the database did not load"
     /// look identical to someone searching and are entirely different problems.
@@ -62,6 +70,10 @@ struct Capabilities {
     corpus_ready: bool,
     card_count: usize,
     load_error: Option<String>,
+    /// False when search is word-matching only, because the model or the
+    /// vectors are missing. Surfaced so the footer can say so rather than
+    /// leaving worse results unexplained.
+    semantic: bool,
     /// Reserved for the local model. Always false until the synthesis layer
     /// lands, and the UI is built to work with it false, which is the property
     /// that keeps that feature genuinely optional.
@@ -103,6 +115,7 @@ fn capabilities(state: tauri::State<'_, AppState>) -> Capabilities {
         corpus_ready: guard.is_some(),
         card_count: count,
         load_error: state.load_error.clone(),
+        semantic: state.embedder.is_some() && state.vectors.is_some(),
         synthesis: false,
     }
 }
@@ -123,15 +136,46 @@ fn search(
         return Err("The reference database is not loaded.".into());
     };
 
-    let ranked = index
+    let lexical = index
         .lexical(&query, live, search::CANDIDATE_DEPTH)
         .map_err(|e| format!("{e:#}"))?;
+    let lex_ids: Vec<String> = lexical.iter().map(|(id, _)| id.clone()).collect();
 
-    // Only the word matcher runs today. Once the semantic engine lands, both
-    // rankings go through search::fuse and this becomes a real classification
-    // rather than a constant.
+    // The semantic half runs only when both a model and vectors are present.
+    // Either being absent degrades search to word matching rather than breaking
+    // it, which is what keeps the app useful mid-authoring and on a machine
+    // where the model never downloaded.
+    let sem_ids: Vec<String> = match (state.embedder.as_ref(), state.vectors.as_ref()) {
+        (Some(embedder), Some(vectors)) => {
+            let mut guard = embedder.lock().expect("embedder mutex poisoned");
+            match guard.embed_query(&query) {
+                Ok(qv) => search::semantic(&qv, vectors, search::CANDIDATE_DEPTH)
+                    .into_iter()
+                    .map(|(id, _)| id)
+                    .collect(),
+                // A failed encode costs the semantic half, not the search.
+                Err(_) => Vec::new(),
+            }
+        }
+        _ => Vec::new(),
+    };
+
+    if sem_ids.is_empty() {
+        return index
+            .hydrate(&lexical, |_| Matched::LexicalOnly)
+            .map_err(|e| format!("{e:#}"));
+    }
+
+    let in_lexical: std::collections::HashSet<&str> = lex_ids.iter().map(String::as_str).collect();
+    let in_semantic: std::collections::HashSet<&str> = sem_ids.iter().map(String::as_str).collect();
+
+    let fused = search::fuse_engines(lex_ids.clone(), sem_ids.clone());
     index
-        .hydrate(&ranked, |_| Matched::LexicalOnly)
+        .hydrate(&fused, |id| match (in_lexical.contains(id), in_semantic.contains(id)) {
+            (true, true) => Matched::Hybrid,
+            (true, false) => Matched::LexicalOnly,
+            _ => Matched::SemanticOnly,
+        })
         .map_err(|e| format!("{e:#}"))
 }
 
@@ -185,9 +229,25 @@ pub fn run() {
             // identifier rather than the app.
             let identifier = corpus.as_ref().and_then(|c| c.identifier().ok());
 
+            // Vectors and the encoder are loaded together or not at all: one
+            // without the other is useless, and treating them as a pair means
+            // there is a single condition for "semantic search is on".
+            let vectors = corpus
+                .as_ref()
+                .filter(|c| c.has_vectors().unwrap_or(false))
+                .and_then(|c| c.load_vectors().ok())
+                .filter(|v| !v.is_empty());
+
+            let embedder = vectors
+                .as_ref()
+                .and_then(|_| embed::Embedder::load().ok())
+                .map(Mutex::new);
+
             app.manage(AppState {
                 corpus: Mutex::new(corpus),
                 identifier,
+                embedder,
+                vectors,
                 load_error,
             });
             Ok(())
