@@ -1,0 +1,8 @@
+# Fetched from the Locke-Werks/Forge release, not vendored here.
+tools/
+
+# Assembled at build time from src-tauri/target/release and build/content.db.
+payload/
+
+# The forged installer. It ships as a GitHub release asset.
+dist/

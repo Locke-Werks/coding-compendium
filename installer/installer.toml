@@ -1,0 +1,84 @@
+# Forge config for Coding Compendium.
+#
+# lwforge stamps this plus a payload directory into a copy of lwstub.exe.
+# See Locke-Werks/Forge, docs/config-schema.md.
+#
+# Backslashes: TOML basic strings process escapes, so "C:\bin" is C, :, backspace,
+# in. Every Windows path below uses a literal single-quoted string instead.
+
+[product]
+name        = "Coding Compendium"
+version     = "0.1.0"
+publisher   = "Locke Werks"
+description = "Offline Windows reference for software development in the age of coding agents."
+copyright   = "Copyright (c) 2026 Locke Werks"
+url         = "https://github.com/Locke-Werks/coding-compendium"
+icon        = '..\src-tauri\icons\icon.ico'
+# Stable across every future version. Upgrade detection and the single-instance
+# mutex key off this, so changing it makes an upgrade look like a fresh product.
+upgrade_code = "3f62efa6-57d9-4163-9d95-f952414ef863"
+# No version component, or taskbar pins and toast notifications break on upgrade.
+aumid = "LockeWerks.CodingCompendium"
+
+[install]
+scope = "machine"
+dir   = '{ProgramFiles}\Coding Compendium'
+# on-demand runs the wizard unelevated, so anything shown on the first page is
+# seen before the UAC prompt.
+elevation = "on-demand"
+
+[ui]
+warning = "Coding Compendium runs entirely offline. It makes no network calls and sends no telemetry."
+# Verbatim from LICENSE at the repository root. Keep the two in step: this is a
+# proprietary product, so the installer is where acceptance is actually recorded.
+license_text = """
+Copyright (c) 2026 Locke Werks. All rights reserved.
+
+This software and its accompanying content, including the reference corpus in
+content/ and any database compiled from it, are proprietary and confidential.
+
+No permission is granted to use, copy, modify, merge, publish, distribute,
+sublicense, or sell any part of this work, in source or compiled form, without
+prior written permission from Locke Werks.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""
+
+[[preflight]]
+type = "os_build"
+# Tauri v2 and the WebView2 runtime require Windows 10 1809 or later.
+min  = 17763
+fail = "Windows 10 version 1809 or later is required."
+
+[[preflight]]
+type = "free_disk_space"
+# Measured payload is 43.6 MB (37.3 MB exe, 6.3 MB content.db). This leaves room
+# for extraction and a future version without gating installs on space the app
+# does not need.
+bytes = 120000000
+fail  = "At least 120 MB of free space is required."
+
+[[preflight]]
+type = "process_not_running"
+# Binary name comes from [[bin]] name in src-tauri/Cargo.toml, not productName.
+name = "coding-compendium.exe"
+# Offer to close it through the Restart Manager rather than refusing outright.
+restart_manager = true
+fail = "Close Coding Compendium before installing."
+
+[[actions]]
+type   = "shortcut"
+target = '{InstallDir}\coding-compendium.exe'
+where  = "common_programs"
+name   = "Coding Compendium"
+
+[[actions]]
+type = "arp"
+# DisplayName, Publisher, DisplayVersion and EstimatedSize derive from [product]
+# and the payload, so the ARP entry cannot disagree about the version.
+quiet_uninstall = true
