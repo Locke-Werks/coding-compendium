@@ -1,4 +1,17 @@
+<div align="center">
+
+<img src="assets/coding-compendium.ico" width="96" alt="Coding Compendium">
+
 # Coding Compendium
+
+**Offline Windows reference that answers development questions faster than opening a browser tab**
+
+[![license](https://img.shields.io/badge/license-Proprietary-d6262a?style=flat-square)](LICENSE)
+![platform](https://img.shields.io/badge/platform-Windows%2011-d6262a?style=flat-square)
+
+</div>
+
+---
 
 A Windows desktop app that answers questions about software development faster than opening
 a browser tab. Everything runs on your machine: the search, the language identifier, and the
