@@ -113,21 +113,42 @@ if (-not $Dev) {
 }
 
 Step 'staging the payload'
-& (Join-Path $PSScriptRoot 'stage-payload.ps1') @(if ($Dev) { '-AllowUnsigned' })
+# Splatted from a hashtable rather than a conditional array: an empty array is
+# still one positional argument, and stage-payload.ps1 takes none.
+$stageArgs = @{}
+if ($Dev) { $stageArgs['AllowUnsigned'] = $true }
+& (Join-Path $PSScriptRoot 'stage-payload.ps1') @stageArgs
 
 Step 'forging'
 New-Item -ItemType Directory (Split-Path $out -Parent) -Force | Out-Null
-$forgeArgs = @(
-    'build'
-    '--config',  (Join-Path $repo 'installer\installer.toml')
-    '--payload', (Join-Path $repo 'installer\payload')
-    '--stub',    (Join-Path $tools 'lwstub.exe')
-    '--out',     $out
-)
-if ($Dev) { $forgeArgs += '--dev' } else { $forgeArgs += '--sign' }
 
-& (Join-Path $tools 'lwforge.exe') @forgeArgs
-if ($LASTEXITCODE) { throw 'lwforge failed' }
+# Run from installer\tools, with relative paths, because lwforge resolves two
+# things against two different bases and only this directory satisfies both.
+#
+# product.icon resolves against the config file's directory, and the resolved
+# path is opened through the \\?\ long-path prefix, which does not collapse
+# `..`. An absolute --config on a path like "C:\...\Coding Compendium" therefore
+# yields \\?\C:\...\installer\..\src-tauri\... and fails with ERROR_INVALID_NAME.
+# Relative paths stay short enough that the prefix is never applied.
+#
+# --sign shells out to scripts\sign.ps1 relative to the working directory, and
+# that script reads signing\metadata.json from its own parent. Both live under
+# installer\tools.
+Push-Location $tools
+try {
+    $forgeArgs = @(
+        'build'
+        '--config',  '..\installer.toml'
+        '--payload', '..\payload'
+        '--stub',    '.\lwstub.exe'
+        '--out',     "..\dist\$(Split-Path $out -Leaf)"
+    )
+    if ($Dev) { $forgeArgs += '--dev' } else { $forgeArgs += '--sign' }
+
+    & .\lwforge.exe @forgeArgs
+    if ($LASTEXITCODE) { throw 'lwforge failed' }
+}
+finally { Pop-Location }
 
 Step 'result'
 $sig = Get-AuthenticodeSignature $out
