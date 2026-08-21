@@ -45,6 +45,8 @@ export interface Capabilities {
    * are missing. Surfaced so worse results are explained rather than mysterious.
    */
   semantic: boolean;
+  /** Why, when `semantic` is false despite the corpus carrying vectors. */
+  semantic_error: string | null;
   /** Always false. Answers are extracted from cards, never generated. */
   synthesis: boolean;
   /**

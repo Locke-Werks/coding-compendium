@@ -1,7 +1,8 @@
 # Fetched from the Locke-Werks/Forge release, not vendored here.
 tools/
 
-# Assembled at build time from src-tauri/target/release and build/content.db.
+# Assembled by scripts/stage-payload.ps1 from the signed release binary,
+# build/content.db, and the embedding weights.
 payload/
 
 # The forged installer. It ships as a GitHub release asset.

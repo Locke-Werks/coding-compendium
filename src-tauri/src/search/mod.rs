@@ -531,6 +531,19 @@ impl Index {
         crate::identify::Identifier::load(&self.conn)
     }
 
+    /// Read one value out of `build_meta`.
+    ///
+    /// `None` for a key the compiler did not write, which is the normal state
+    /// for a database built before that key existed rather than an error.
+    pub fn build_meta(&self, key: &str) -> Result<Option<String>> {
+        let mut stmt = self.conn.prepare("SELECT value FROM build_meta WHERE key = ?1")?;
+        let mut rows = stmt.query([key])?;
+        Ok(match rows.next()? {
+            Some(row) => Some(row.get(0)?),
+            None => None,
+        })
+    }
+
     /// Total cards in the corpus. Used by the startup sanity check.
     pub fn card_count(&self) -> Result<usize> {
         let n: i64 = self.conn.query_row("SELECT count(*) FROM cards", [], |r| r.get(0))?;

@@ -29,6 +29,19 @@ path = "src/main.rs"
 name = "compile-content"
 path = "src/bin/compile_content.rs"
 
+# Tauri decides between loading the frontend from the dev server and serving the
+# assets compiled into the binary on this feature alone, not on the build
+# profile: its build script is literally `let dev = !custom_protocol`. So a
+# `cargo build --release` without it produces an optimized, stripped, signed
+# binary that opens to "localhost refused to connect", which is a shipping
+# artifact that has never worked and looks exactly like one that does.
+#
+# `pnpm tauri dev` leaves it off. Everything that produces something to hand
+# someone turns it on. scripts/stage-payload.ps1 refuses a binary built without
+# it rather than trusting anyone to remember.
+[features]
+custom-protocol = ["tauri/custom-protocol"]
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
@@ -54,13 +67,16 @@ fastembed = "5"
 
 regex = "1"
 walkdir = "2.5"
+# Digests the embedding weights so the app can refuse a model that did not build
+# the vectors it is about to search. Nothing else here needs a hash.
+sha2 = "0.10"
 anyhow = "1"
 thiserror = "2"
 tauri-plugin-global-shortcut = "2.3.2"
 
 [profile.release]
-# The app ships a ~380 MB model, so a few seconds of extra link time to shave
-# the binary is worth it.
+# The installer already carries 66 MB of embedding weights, so a few seconds of
+# extra link time to shave the binary is worth it.
 codegen-units = 1
 lto = true
 strip = true

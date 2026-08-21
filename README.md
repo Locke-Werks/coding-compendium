@@ -82,19 +82,34 @@ Then, from this folder:
 
 ```powershell
 pnpm install              # downloads the frontend dependencies
-pnpm fetch:vendor         # downloads the model files and llama.cpp (large, once)
 pnpm build:content        # compiles content/ into the searchable database
 pnpm tauri dev            # runs the app
 ```
 
-`pnpm tauri dev` opens the app with live reload: change a file, the app updates. To build the
-installer you would hand to someone else:
+`pnpm build:content` downloads the 66MB embedding model the first time it runs, and never
+again. It is the only step that touches the network, and the built app does not.
+
+`pnpm tauri dev` opens the app with live reload: change a file, the app updates.
+
+To build the installer you would hand to someone else:
 
 ```powershell
-pnpm tauri build
+pnpm package
 ```
 
-The `.msi` lands in `src-tauri/target/release/bundle/msi/`.
+That runs the whole path in `scripts/build-installer.ps1`: frontend, corpus, release binary,
+sign the binary, stage the payload, forge, sign the installer. The result lands in
+`installer/dist/`.
+
+Signing needs `AZURE_TENANT_ID`, `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET` in the
+environment. Without them, `pnpm package -- -Dev` builds an unsigned installer that the stub
+labels as a development build.
+
+Two orderings in that script are load-bearing and are why it is a script rather than a list
+of commands. The payload binary is signed *before* it is staged, because payload members are
+extracted verbatim: an executable that goes in unsigned comes out unsigned, and signing the
+installer afterwards does nothing for it. The installer is signed *last*, because the
+signature is what makes the bytes immutable.
 
 ---
 
@@ -112,10 +127,11 @@ Coding Compendium/
 │   ├── panic/            the git disaster decision trees
 │   └── _meta/            the frozen glossary and section id lists
 ├── schema/             JSON Schemas: the required shape of every card type
-├── tools/
-│   ├── build/            compiles content/ into a SQLite database
-│   └── lint/             the voice linter, run in CI
-├── src-tauri/          the Rust half: search, embeddings, the identifier
+├── tools/lint/         the voice linter, run in CI
+├── scripts/            icons, payload staging, the installer build
+├── installer/          the Forge config that packages the app
+├── docs/               the decision record, and the local-model gate report
+├── src-tauri/          the Rust half: search, embeddings, the identifier, the compiler
 └── src/                the React half: everything you see
 ```
 
@@ -160,36 +176,38 @@ notice.
 
 ---
 
-## The local model
+## Why nothing here writes you an answer
 
-The app ships with a small language model, about 380MB, that runs on your own machine
-through llama.cpp. It is used for one narrow job: when the search finds relevant cards but
-you asked something the cards do not directly answer, it reads those cards and writes a
-short answer citing which ones it used.
+The app never generates prose. When search finds relevant cards, it highlights the sentences
+that match your question and pulls the two or three most relevant into a quote block with the
+card's name attached. Everything you read was written by a person and is sitting in
+`content/` where you can go check it.
 
-Two things about this were deliberate.
+This was going to work differently. The plan was to ship a small language model, about 380MB,
+that would read the retrieved cards and write a short cited answer for questions the cards do
+not directly cover. A model trained specifically to abstain was benchmarked before committing
+to it, on 50 questions, 15 of which the corpus deliberately does not answer.
 
-**It is optional by construction.** The model is a file on disk. Delete it and the app keeps
-working, minus that one feature. Nothing else in the app knows the model exists. That is
-enforced in the code by a trait boundary in `src-tauri/src/synth/`, which is a good example
-of a design pattern worth recognizing: make the optional thing implement an interface, and
-give the interface a do-nothing implementation for when it is absent.
+It mostly worked. It abstained on 14 or 15 of the 15, which cleared the bar it was measured
+against. It did not ship anyway, and the reason is worth knowing because it generalizes.
 
-**It was chosen for honesty, not intelligence.** Small models confabulate: they produce
-confident, fluent, wrong answers. A general-purpose model roughly four times this one's size
-still invents an answer on nearly half of the questions its source material does not cover.
-That is unacceptable for a reference tool, because you cannot check the answer, which is why
-you are asking.
+Asked how to connect Prisma to Postgres, which the corpus does not cover, it answered from a
+card whose entire purpose is to warn against pasting connection strings into a chat window. It
+lifted the redacted example out of the warning and presented it as instruction. Well-formed,
+correctly cited, literally quoted, and it had inverted a security warning into advice. One
+question in fifteen.
 
-So the model here is one trained specifically to say "the sources do not cover this," and it
-emits that verdict as a machine-readable field the Rust code checks rather than a phrase we
-hope shows up in the prose. On top of that, the answer is constrained by a grammar generated
-per request, which makes citing a source that was never provided *impossible* rather than
-merely discouraged.
+That is the failure mode you cannot defend against by being careful, because it looks exactly
+like success. And it matters most for the person least able to catch it: you are asking
+because you do not already know, which is precisely why you cannot check the answer.
 
-And the retrieved cards are always shown above the generated answer. If the model fails and
-if the model abstains, you see the same thing: the real cards. A failure can never turn into
-a wrong answer.
+So: extraction, not generation. It cannot invert a warning into advice, because it can only
+show you what a card already says. The full measurement is in `docs/PHASE0-LLM-GATE.md`, and
+the trait boundary in `src-tauri/src/synth/` is built so this can be revisited later without
+disturbing anything else.
+
+The 66MB embedding model that powers semantic search is a different thing entirely and does
+ship. It turns text into numbers so meanings can be compared. It does not write anything.
 
 ---
 

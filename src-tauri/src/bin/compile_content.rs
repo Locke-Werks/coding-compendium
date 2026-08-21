@@ -51,6 +51,7 @@ fn main() -> Result<()> {
     // while authoring. `--no-embed` leaves the database lexical-only, which the
     // app handles: it checks for vectors and runs one engine instead of two.
     if std::env::args().any(|a| a == "--no-embed") {
+        compile::seal(&conn)?;
         println!("         skipped embeddings (--no-embed), search will be lexical only");
         return Ok(());
     }
@@ -63,6 +64,9 @@ fn main() -> Result<()> {
         vectors,
         embed_started.elapsed().as_secs_f32()
     );
+
+    compile::seal(&conn)?;
+    println!("sealed   rollback journal, readable from a directory it cannot write");
 
     Ok(())
 }

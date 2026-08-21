@@ -102,6 +102,45 @@ pub fn create_database(path: &Path) -> Result<Connection> {
     Ok(conn)
 }
 
+/// Take the finished database out of WAL mode.
+///
+/// This is not housekeeping. A WAL database has to create a `-shm` file beside
+/// itself before it can be read, and that is true even of a connection opened
+/// read-only. The app installs to Program Files, where a standard user has read
+/// and execute and nothing else, so the write fails and the open fails with it:
+/// every non-administrator would get "content.db was not found" and a corpus of
+/// zero cards.
+///
+/// `journal_mode = DELETE` checkpoints the log into the main file, removes the
+/// sidecars, and flips the header back to a rollback journal, which needs no
+/// writable directory to read. WAL is still right during the build, where there
+/// are 1,227 vector inserts and the file is somewhere writable.
+///
+/// Called on both build paths. A `--no-embed` database is still a database the
+/// app has to open.
+pub fn seal(conn: &Connection) -> Result<()> {
+    // query_row rather than execute: the pragma reports the mode it settled on,
+    // and a refusal here is silent otherwise.
+    let mode: String = conn
+        .query_row("PRAGMA journal_mode = DELETE", [], |r| r.get(0))
+        .context("taking the database out of WAL mode")?;
+
+    if !mode.eq_ignore_ascii_case("delete") {
+        bail!(
+            "the database is still in {mode} mode. Shipped read-only, it would need to \
+             write beside itself to be read at all, which Program Files does not allow."
+        );
+    }
+
+    // Deliberately no ANALYZE, which is the obvious thing to add to a database
+    // that will never be written to again. It was tried and moved nothing: the
+    // eval reports identical numbers with and without it, because the corpus is
+    // small enough that the planner has no real choice to make. Statistics that
+    // buy nothing measurable are not worth shipping in a file whose ranking has
+    // to reproduce against a fixed query set.
+    Ok(())
+}
+
 /// Insert cards, their chunks, and the derived tables.
 pub fn write_cards(conn: &mut Connection, cards: &[Card]) -> Result<Stats> {
     let tx = conn.transaction()?;
@@ -227,6 +266,12 @@ pub fn write_embeddings(conn: &mut Connection) -> Result<usize> {
     conn.execute(
         "INSERT OR REPLACE INTO build_meta (key, value) VALUES ('embed_dims', ?1)",
         [DIMS.to_string()],
+    )?;
+    // The name and the dimensions both survive a model swap. The digest does
+    // not, which is the entire point of recording it.
+    conn.execute(
+        "INSERT OR REPLACE INTO build_meta (key, value) VALUES ('embed_model_sha256', ?1)",
+        [crate::embed::model_digest(&crate::embed::default_cache_dir())?],
     )?;
 
     Ok(written)

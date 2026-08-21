@@ -1,0 +1,46 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  content:
+    # The corpus is 686 cards written by many hands. The linter is the only
+    # thing standing between that and 686 slightly different voices, so it
+    # blocks rather than warns.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # The linter checked against itself first. A rule that has stopped firing
+      # reports a clean corpus, which is indistinguishable from a clean corpus.
+      - run: pnpm lint:selftest
+      - run: pnpm lint:content
+      - run: pnpm exec tsc --noEmit
+
+  rust:
+    # Windows because that is what ships. rusqlite builds SQLite from source
+    # with FTS5, which is the whole lexical half of the app, and the bundled
+    # amalgamation is the only way to be sure of getting it.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      # No model download here. The tests build their own small corpora and the
+      # embedding canary is #[ignore]d precisely so CI stays offline and fast.
+      - run: cargo test --manifest-path src-tauri/Cargo.toml
+      - run: cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings

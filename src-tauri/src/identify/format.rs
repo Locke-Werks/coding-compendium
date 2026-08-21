@@ -239,10 +239,10 @@ fn config_reason(text: &str, lines: &[&str]) -> Option<String> {
     let t = text.trim();
 
     // JSON: whole thing is one object or array, with quoted keys.
-    if (t.starts_with('{') && t.ends_with('}')) || (t.starts_with('[') && t.ends_with(']')) {
-        if t.contains("\":") || t.contains("\" :") {
-            return Some("wrapped in braces with quoted keys, which is JSON".into());
-        }
+    let bracketed = (t.starts_with('{') && t.ends_with('}'))
+        || (t.starts_with('[') && t.ends_with(']'));
+    if bracketed && (t.contains("\":") || t.contains("\" :")) {
+        return Some("wrapped in braces with quoted keys, which is JSON".into());
     }
 
     // TOML: [section] headings and key = value.

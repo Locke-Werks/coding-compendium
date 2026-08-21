@@ -33,6 +33,8 @@
 
 use anyhow::{Context, Result};
 use fastembed::{EmbeddingModel, InitOptions, TextEmbedding};
+use sha2::{Digest, Sha256};
+use std::path::{Path, PathBuf};
 
 /// Vector width for bge-small-en-v1.5.
 pub const DIMS: usize = 384;
@@ -48,17 +50,45 @@ pub struct Embedder {
     model: TextEmbedding,
 }
 
+/// fastembed's own default: `.fastembed_cache` under the working directory.
+///
+/// Mirrored here rather than left implicit, because every caller now says where
+/// the weights are and the digest check below has to look in the same place.
+pub fn default_cache_dir() -> PathBuf {
+    std::env::var("FASTEMBED_CACHE_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| PathBuf::from(".fastembed_cache"))
+}
+
 impl Embedder {
-    /// Load the model.
+    /// Load the model from the default cache.
     ///
-    /// Downloads it on first use and caches it. Takes a second or two warm and
-    /// noticeably longer cold, which is why the app loads it once at startup
-    /// rather than per query.
+    /// For the compiler and the eval harness, which both run from the repo root
+    /// and may download on first use. The app uses [`Embedder::load_from`].
     pub fn load() -> Result<Self> {
+        Self::load_from(&default_cache_dir())
+    }
+
+    /// Load the model from an explicit cache directory.
+    ///
+    /// Takes a second or two warm, which is why the app loads it once at
+    /// startup rather than per query.
+    ///
+    /// The directory is explicit because fastembed resolves its default against
+    /// the process working directory, and an installed app cannot count on what
+    /// that is: the Start Menu shortcut sets it to the install directory, a
+    /// terminal launch does not. A miss is not an error anyone sees either. It
+    /// is a 66 MB download, which is the one thing this app promises never to
+    /// do.
+    pub fn load_from(cache_dir: &Path) -> Result<Self> {
         let model = TextEmbedding::try_new(
-            InitOptions::new(EmbeddingModel::BGESmallENV15Q).with_show_download_progress(false),
+            InitOptions::new(EmbeddingModel::BGESmallENV15Q)
+                .with_show_download_progress(false)
+                .with_cache_dir(cache_dir.to_path_buf()),
         )
-        .context("loading the bge-small embedding model")?;
+        .with_context(|| {
+            format!("loading the bge-small embedding model from {}", cache_dir.display())
+        })?;
         Ok(Self { model })
     }
 
@@ -73,6 +103,33 @@ impl Embedder {
         let mut out = self.model.embed(vec![prefixed], None).context("embedding query")?;
         out.pop().context("the embedder returned nothing")
     }
+}
+
+/// SHA-256 of the ONNX weights inside a fastembed cache directory.
+///
+/// The compiler records this in `build_meta`; the app re-checks it before
+/// loading. It is the only thing that catches a swapped model, because nothing
+/// else about the two builds differs: same dimensions, same model name, same
+/// code. The vectors simply live in a different space, and comparing across
+/// them returns confident nonsense with no error anywhere.
+///
+/// The file is streamed rather than read whole. It is 66 MB, and there is no
+/// reason to hold all of it to hash it.
+pub fn model_digest(cache_dir: &Path) -> Result<String> {
+    let onnx = walkdir::WalkDir::new(cache_dir)
+        .into_iter()
+        .filter_map(|e| e.ok())
+        .map(|e| e.into_path())
+        .find(|p| p.extension().is_some_and(|x| x == "onnx"))
+        .with_context(|| format!("no .onnx weights under {}", cache_dir.display()))?;
+
+    let mut file = std::fs::File::open(&onnx)
+        .with_context(|| format!("reading {}", onnx.display()))?;
+    let mut hasher = Sha256::new();
+    std::io::copy(&mut file, &mut hasher)
+        .with_context(|| format!("hashing {}", onnx.display()))?;
+
+    Ok(format!("{:x}", hasher.finalize()))
 }
 
 /// Pack a vector into bytes for storage.

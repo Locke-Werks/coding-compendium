@@ -36,8 +36,14 @@ pub struct LanguageMeta {
     pub errors_look_like: Option<ErrorsLookLike>,
     #[serde(default)]
     pub extensions: Vec<String>,
+    // These three mirror fields the language schema requires and the reader
+    // renders straight from the card body. The compiler parses them so that a
+    // malformed one fails the build rather than surfacing later as a bad card,
+    // but nothing downstream of the identifier reads them.
+    #[allow(dead_code)]
     #[serde(default)]
     pub aka: Vec<String>,
+    #[allow(dead_code)]
     #[serde(default)]
     pub likelihood: Option<String>,
 }
@@ -67,6 +73,9 @@ pub struct ProjectFingerprint {
     pub manifests: Vec<Manifest>,
     #[serde(default)]
     pub lockfiles: Vec<String>,
+    // Parsed for schema fidelity; the manifests and lockfiles are what the
+    // project scan actually keys on.
+    #[allow(dead_code)]
     #[serde(default)]
     pub build_dirs: Vec<String>,
     #[serde(default)]
@@ -85,6 +94,9 @@ pub struct Manifest {
 #[derive(Debug, Deserialize)]
 pub struct Confusable {
     pub language: String,
+    // Prose for the reader, rendered from the card body. The identifier settles
+    // a confusion with `tiebreak`, which is machine-readable and weighted.
+    #[allow(dead_code)]
     #[serde(default)]
     pub settle_it: String,
     #[serde(default)]

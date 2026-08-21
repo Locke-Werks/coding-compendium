@@ -21,8 +21,9 @@ build/
 *.db-shm
 *.db-wal
 
-# vendored binaries and model weights, fetched by scripts/fetch-vendor.ps1.
-# Too large for git and reproducible from a pinned manifest.
+# Model weights. Too large for git and reproducible from a pinned model name.
+# The embedding weights do ship: scripts/stage-payload.ps1 copies them out of
+# .fastembed_cache into the installer payload. See docs/DECISIONS.md.
 src-tauri/vendor/
 src-tauri/models/
 *.onnx
@@ -33,7 +34,8 @@ Thumbs.db
 desktop.ini
 .DS_Store
 
-# Embedding model cache, downloaded by fastembed on first use.
-# 63 MB of ONNX weights: reproducible from a pinned model name, so it is a
-# build artifact rather than source.
+# Embedding model cache, downloaded by `pnpm build:content` on first use.
+# 67 MB of ONNX weights: reproducible from a pinned model name, so it is a
+# build artifact rather than source, even though a flattened copy of it ships
+# inside the installer.
 .fastembed_cache/

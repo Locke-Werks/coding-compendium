@@ -321,7 +321,13 @@ export default function App() {
           {/* Say which engines are running. Without the model, results are
               measurably worse, and an unexplained drop in quality is the kind
               of thing that makes a tool feel unreliable rather than degraded. */}
-          {!IS_SIDECAR && caps?.corpus_ready && (caps.semantic ? " · hybrid search" : " · word match only")}
+          {!IS_SIDECAR && caps?.corpus_ready && (
+            caps.semantic
+              ? " · hybrid search"
+              : // The reason rides along as a tooltip. It names a fixable
+                // cause instead of leaving "word match only" to look permanent.
+                <span title={caps.semantic_error ?? undefined}> · word match only</span>
+          )}
           {!IS_SIDECAR && caps?.corpus_ready && " · local, no network"}
           {!IS_SIDECAR && caps?.hotkey && ` · ${caps.hotkey} from anywhere`}
           {IS_SIDECAR && caps?.hotkey && `${caps.hotkey}`}

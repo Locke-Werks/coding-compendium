@@ -74,8 +74,7 @@ fn answer(query: &str) -> Vec<(String, String)> {
     // and drops only the line breaks, which are a rendering detail.
     let squash = |s: &str| {
         s.replace("**", "")
-            .replace('`', "")
-            .replace('*', "")
+            .replace(['`', '*'], "")
             .split_whitespace()
             .collect::<Vec<_>>()
             .join(" ")

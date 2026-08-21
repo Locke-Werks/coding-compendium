@@ -87,7 +87,7 @@ foreach ($spec in @(@(32, '32x32.png'), @(128, '128x128.png'), @(256, '128x128@2
 # System.Drawing's Icon.FromHandle path silently downsamples to 32x32 and loses
 # the alpha channel, which on Windows 11 produces a muddy taskbar icon. Writing
 # the container by hand and embedding real PNGs avoids both problems.
-$sizes = @(16, 32, 48, 64, 128, 256)
+$sizes = @(16, 24, 32, 48, 64, 128, 256)
 $images = @()
 foreach ($s in $sizes) {
     $bmp = New-CompendiumBitmap -Size $s
@@ -126,3 +126,12 @@ foreach ($img in $images) { $bw.Write($img.Bytes) }
 
 $bw.Flush(); $bw.Dispose(); $fs.Dispose()
 Write-Host "wrote $icoPath ($($images.Count) sizes)"
+
+# Deliberately does not write assets\coding-compendium.ico. That file is the
+# designed product icon the README header points at, and this script generates a
+# procedural one. They carry the same seven sizes and different artwork, so
+# copying over it would quietly replace the real icon with the placeholder.
+#
+# The convention is one icon with three consumers. These are two, which is worth
+# settling: either point tauri.conf.json at the designed file and delete this
+# generator, or accept that the exe and the README show different marks.

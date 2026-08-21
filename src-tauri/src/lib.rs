@@ -68,6 +68,10 @@ struct AppState {
     /// empty result list, because "no results" and "the database did not load"
     /// look identical to someone searching and are entirely different problems.
     load_error: Option<String>,
+    /// Why semantic search is off, when the corpus has vectors but the encoder
+    /// did not load. Same reasoning: worse results with no explanation read as
+    /// the search being bad rather than half of it being missing.
+    semantic_error: Option<String>,
 }
 
 /// What the frontend learns about the running app.
@@ -82,6 +86,8 @@ struct Capabilities {
     /// vectors are missing. Surfaced so the footer can say so rather than
     /// leaving worse results unexplained.
     semantic: bool,
+    /// Why, when `semantic` is false despite the corpus carrying vectors.
+    semantic_error: Option<String>,
     /// Always false. A local model was benchmarked for grounded answering and
     /// did not ship, so answers are extracted from cards rather than written.
     /// See docs/PHASE0-LLM-GATE.md.
@@ -119,6 +125,60 @@ fn locate_corpus(app: &tauri::AppHandle) -> Option<PathBuf> {
     None
 }
 
+/// Find the embedding model's weights.
+///
+/// Beside the executable in a release build, the same place content.db lives,
+/// so the installer puts the two together and neither depends on the working
+/// directory. In development it is fastembed's own default under the repo root,
+/// which is where `pnpm build:content` left it.
+fn locate_model_cache(app: &tauri::AppHandle) -> PathBuf {
+    if let Ok(dir) = app.path().resource_dir() {
+        let bundled = dir.join(".fastembed_cache");
+        if bundled.is_dir() {
+            return bundled;
+        }
+    }
+    embed::default_cache_dir()
+}
+
+/// Load the query encoder, refusing a model that did not build these vectors.
+///
+/// Returns the reason on failure rather than swallowing it. Semantic search
+/// going quietly missing costs ten points of recall@1 and looks, from the
+/// outside, exactly like search being bad.
+fn load_encoder(
+    app: &tauri::AppHandle,
+    index: &Index,
+) -> (Option<Mutex<embed::Embedder>>, Option<String>) {
+    let cache = locate_model_cache(app);
+
+    // A database built before this key existed has nothing to check against.
+    // That is a rebuild away from being fixed and is not worth refusing over.
+    if let Ok(Some(expected)) = index.build_meta("embed_model_sha256") {
+        match embed::model_digest(&cache) {
+            Ok(actual) if actual != expected => {
+                return (
+                    None,
+                    Some(
+                        "the embedding model beside the app is not the one that built the \
+                         search index. Semantic search is off rather than wrong: vectors from \
+                         two models compare as confident nonsense. Rebuild with \
+                         `pnpm build:content`."
+                            .to_string(),
+                    ),
+                );
+            }
+            Err(e) => return (None, Some(format!("{e:#}"))),
+            _ => {}
+        }
+    }
+
+    match embed::Embedder::load_from(&cache) {
+        Ok(e) => (Some(Mutex::new(e)), None),
+        Err(e) => (None, Some(format!("{e:#}"))),
+    }
+}
+
 #[tauri::command]
 fn capabilities(state: tauri::State<'_, AppState>) -> Capabilities {
     let guard = state.corpus.lock().expect("corpus mutex poisoned");
@@ -128,6 +188,7 @@ fn capabilities(state: tauri::State<'_, AppState>) -> Capabilities {
         card_count: count,
         load_error: state.load_error.clone(),
         semantic: state.embedder.is_some() && state.vectors.is_some(),
+        semantic_error: state.semantic_error.clone(),
         synthesis: false,
         hotkey: state.hotkey.clone(),
     }
@@ -304,10 +365,10 @@ pub fn run() {
                 .and_then(|c| c.load_vectors().ok())
                 .filter(|v| !v.is_empty());
 
-            let embedder = vectors
-                .as_ref()
-                .and_then(|_| embed::Embedder::load().ok())
-                .map(Mutex::new);
+            let (embedder, semantic_error) = match (&vectors, &corpus) {
+                (Some(_), Some(index)) => load_encoder(app.handle(), index),
+                _ => (None, None),
+            };
 
             // A shortcut another program already owns costs the shortcut, not
             // the app. Clicking on the window still works, and refusing to
@@ -324,6 +385,7 @@ pub fn run() {
                 vectors,
                 hotkey,
                 load_error,
+                semantic_error,
             });
             Ok(())
         })

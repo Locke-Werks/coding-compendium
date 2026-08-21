@@ -10,6 +10,9 @@
 -- that "the shipped content is unmodified" is a property of the filesystem
 -- rather than a promise.
 
+-- WAL for the build, which is write-heavy. `compile::seal` turns it back off
+-- before the file ships: a WAL database creates a -shm file beside itself even
+-- to be read, and the app installs somewhere it cannot write.
 PRAGMA journal_mode = WAL;
 PRAGMA synchronous = NORMAL;
 PRAGMA foreign_keys = ON;

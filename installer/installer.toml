@@ -23,9 +23,13 @@ aumid = "LockeWerks.CodingCompendium"
 [install]
 scope = "machine"
 dir   = '{ProgramFiles}\Coding Compendium'
-# on-demand runs the wizard unelevated, so anything shown on the first page is
-# seen before the UAC prompt.
-elevation = "on-demand"
+# required stamps requireAdministrator, so UAC arrives before the wizard does.
+# The alternative, on-demand, stamps asInvoker and the stub has no self-elevation
+# path: a machine-scope install would then die at the first write to Program
+# Files unless the person knew to right-click and run as administrator. Nyx will
+# double-click it. The license is still read before anything is installed, just
+# after the prompt rather than before it.
+elevation = "required"
 
 [ui]
 warning = "Coding Compendium runs entirely offline. It makes no network calls and sends no telemetry."
@@ -57,11 +61,14 @@ fail = "Windows 10 version 1809 or later is required."
 
 [[preflight]]
 type = "free_disk_space"
-# Measured payload is 43.6 MB (37.3 MB exe, 6.3 MB content.db). This leaves room
-# for extraction and a future version without gating installs on space the app
+# Measured payload is 111 MB: 37.3 MB exe, 6.3 MB content.db, and 67 MB of
+# embedding weights. The weights are the reason search understands what she
+# meant rather than only what she typed, and shipping them is what keeps the
+# app from reaching for the network on first run. This leaves room for
+# extraction and a future version without gating installs on space the app
 # does not need.
-bytes = 120000000
-fail  = "At least 120 MB of free space is required."
+bytes = 300000000
+fail  = "At least 300 MB of free space is required."
 
 [[preflight]]
 type = "process_not_running"
