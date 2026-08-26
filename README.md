@@ -6,7 +6,8 @@
 
 **Offline Windows reference that answers development questions faster than opening a browser tab**
 
-[![license](https://img.shields.io/badge/license-Proprietary-d6262a?style=flat-square)](LICENSE)
+[![release](https://img.shields.io/github/v/release/Locke-Werks/coding-compendium?style=flat-square&color=d6262a)](https://github.com/Locke-Werks/coding-compendium/releases)
+[![license](https://img.shields.io/badge/license-GPLv3-d6262a?style=flat-square)](LICENSE)
 ![platform](https://img.shields.io/badge/platform-Windows%2011-d6262a?style=flat-square)
 
 </div>
@@ -211,6 +212,24 @@ ship. It turns text into numbers so meanings can be compared. It does not write 
 
 ---
 
-## License and attribution
+## License
 
-Private. Locke Werks.
+Two licenses, because the program and the writing are different kinds of thing.
+
+**The program is GPLv3.** Everything that compiles or runs: `src/`, `src-tauri/`,
+`tools/`, `scripts/`, the schemas, and the build configuration. Full text in
+[LICENSE](LICENSE). Ship a modified build and the people you ship it to are entitled to
+the source for it.
+
+**The corpus is CC0.** Everything under `content/`, the seed document
+`vibecoding-knowledge.md`, the style guide `AUTHORING.md`, and any database compiled from
+them. Public domain, no attribution required, no conditions at all. Full text in
+[LICENSE-CONTENT](LICENSE-CONTENT).
+
+The split is deliberate. Copyleft is the right answer for a program, because it keeps
+improvements available to the people the program is for. It is the wrong answer for a
+paragraph explaining what a branch is. Take the writing, fork it, sell it, relicense it,
+feed it to a model. It was written to be read by someone who is stuck, and every condition
+attached to it is one more reason it does not reach them.
+
+Copyright (C) 2026 Locke Werks.
