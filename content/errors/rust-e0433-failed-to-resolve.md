@@ -13,8 +13,8 @@ category: not-found
 verify: cargo tree --depth 1
 
 sample: |
-  PS C:\Users\nyx\dev\tool> cargo run
-     Compiling tool v0.1.0 (C:\Users\nyx\dev\tool)
+  PS C:\Users\you\dev\tool> cargo run
+     Compiling tool v0.1.0 (C:\Users\you\dev\tool)
   error[E0433]: failed to resolve: use of undeclared crate or module `rand`
    --> src/main.rs:1:5
     |

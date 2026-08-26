@@ -10,7 +10,7 @@ import LanguageCard from "./LanguageCard";
  * Two things here do real work beyond rendering markdown.
  *
  * **Copy-ready commands.** Every code block gets a copy button and shows which
- * shell it is for. Nyx is going to paste these without reading them, so the
+ * shell it is for. People paste these without reading them, so the
  * shell label is not decoration: a bash command pasted into PowerShell fails in
  * a way that looks like the instructions were wrong.
  *
@@ -214,7 +214,7 @@ export default function CardView({ card, onBack, onNavigate, depth }: Props) {
 
       {/* A language card's reference material lives in frontmatter, and it is
           most of the card's value. The body is the introduction; this is the
-          part she came for. */}
+          part they came for. */}
       {card.card_type === "language" && <LanguageCard card={card} onNavigate={onNavigate} />}
 
       <footer className="mt-8 border-t border-ink-700 pt-3 text-xs text-paper-500">

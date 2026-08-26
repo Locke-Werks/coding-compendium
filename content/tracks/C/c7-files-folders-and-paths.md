@@ -82,7 +82,7 @@ The quotes are not decoration. Any path that might contain a space gets them.
 ### Reading a path
 
 ```text
-C:\Users\nyx\projects\site\src\app.ts
+C:\Users\you\projects\site\src\app.ts
 |  \_________________________/ \____/
 |             folders           file
 drive
@@ -111,15 +111,15 @@ Prompt, which is one of several reasons to stop using Command Prompt
 
 In most programming languages the backslash starts an escape sequence, so `\n` means a new
 line and `\t` means a tab. A Windows path pasted into code is therefore full of accidental
-instructions: `"C:\Users\nyx"` contains `\U` and `\n`, and the string you get back is not
+instructions: `"C:\Users\you"` contains `\U` and `\n`, and the string you get back is not
 the one you typed.
 
 The three fixes you will see an agent use, all correct:
 
 ```python
-path = "C:\\Users\\nyx\\projects"   # doubled: each pair means one backslash
-path = r"C:\Users\nyx\projects"     # raw string: the r turns escapes off
-path = "C:/Users/nyx/projects"      # forward slashes: Windows accepts them
+path = "C:\\Users\\you\\projects"   # doubled: each pair means one backslash
+path = r"C:\Users\you\projects"     # raw string: the r turns escapes off
+path = "C:/Users/you/projects"      # forward slashes: Windows accepts them
 ```
 
 The third is the one to prefer in new code, because it also works unchanged on other

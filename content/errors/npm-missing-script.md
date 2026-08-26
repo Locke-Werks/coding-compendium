@@ -13,7 +13,7 @@ category: not-found
 verify: npm run
 
 sample: |
-  PS C:\Users\nyx\dev\site> npm run dev
+  PS C:\Users\you\dev\site> npm run dev
   npm error Missing script: "dev"
   npm error
   npm error Did you mean one of these?

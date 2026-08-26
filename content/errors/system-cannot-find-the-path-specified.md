@@ -12,11 +12,11 @@ category: not-found
 verify: Get-Location
 
 sample: |
-  Set-Location : Cannot find path 'C:\Users\nyx\dev\scaper' because it does not exist.
+  Set-Location : Cannot find path 'C:\Users\you\dev\scaper' because it does not exist.
   At line:1 char:1
-  + cd C:\Users\nyx\dev\scaper
+  + cd C:\Users\you\dev\scaper
   + ~~~~~~~~~~~~~~~~~~~~~~~~~~
-      + CategoryInfo          : ObjectNotFound: (C:\Users\nyx\dev\scaper:String) [Set-Location], ItemNotFoundException
+      + CategoryInfo          : ObjectNotFound: (C:\Users\you\dev\scaper:String) [Set-Location], ItemNotFoundException
       + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.SetLocationCommand
 
 patterns:

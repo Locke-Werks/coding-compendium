@@ -9,17 +9,17 @@ language: javascript
 category: broke-at-runtime
 
 sample: |
-  PS C:\Users\nyx\dev\site> node index.js
-  C:\Users\nyx\dev\site\src\tree.js:8
+  PS C:\Users\you\dev\site> node index.js
+  C:\Users\you\dev\site\src\tree.js:8
       return countChildren(node);
              ^
 
   RangeError: Maximum call stack size exceeded
-      at countChildren (C:\Users\nyx\dev\site\src\tree.js:8:12)
-      at countChildren (C:\Users\nyx\dev\site\src\tree.js:8:12)
-      at countChildren (C:\Users\nyx\dev\site\src\tree.js:8:12)
-      at countChildren (C:\Users\nyx\dev\site\src\tree.js:8:12)
-      at countChildren (C:\Users\nyx\dev\site\src\tree.js:8:12)
+      at countChildren (C:\Users\you\dev\site\src\tree.js:8:12)
+      at countChildren (C:\Users\you\dev\site\src\tree.js:8:12)
+      at countChildren (C:\Users\you\dev\site\src\tree.js:8:12)
+      at countChildren (C:\Users\you\dev\site\src\tree.js:8:12)
+      at countChildren (C:\Users\you\dev\site\src\tree.js:8:12)
 
   Node.js v22.11.0
 

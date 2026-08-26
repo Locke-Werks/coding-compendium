@@ -12,15 +12,15 @@ category: permission
 verify: git config --global --get-all safe.directory
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git status
-  fatal: detected dubious ownership in repository at 'C:/Users/nyx/dev/scraper'
-  'C:/Users/nyx/dev/scraper' is owned by:
+  PS C:\Users\you\dev\scraper> git status
+  fatal: detected dubious ownership in repository at 'C:/Users/you/dev/scraper'
+  'C:/Users/you/dev/scraper' is owned by:
           'S-1-5-21-1004336348-1177238915-682003330-1001'
   but the current user is:
           'S-1-5-21-1004336348-1177238915-682003330-500'
   To add an exception for this directory, call:
 
-          git config --global --add safe.directory C:/Users/nyx/dev/scraper
+          git config --global --add safe.directory C:/Users/you/dev/scraper
 
 patterns:
   - "detected dubious ownership"

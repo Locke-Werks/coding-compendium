@@ -20,7 +20,7 @@ them depending on the compute backend. That is the number the gate was written
 around and it passed. It did not ship anyway, for three reasons the abstention
 rate does not show: the quantization that fits the target laptop's GPU is the
 one that broke the machine-readable status contract, CPU latency was 20.6 s per
-question on hardware faster than hers, and the single failure inverted a
+question on hardware faster than a target laptop, and the single failure inverted a
 security warning into instruction.
 
 The full measurement is `PHASE0-LLM-GATE.md`. The trait boundary in
@@ -54,22 +54,48 @@ defensible rather than folklore.
 `search::SEMANTIC_WEIGHT = 3.0`. Equal weight is the obvious choice and it is
 measurably wrong here.
 
-Measured over 60 queries and 686 cards, re-run 2026-08-20:
+Measured over 60 queries and 713 cards, re-run 2026-08-25:
 
 | | recall@5 | recall@1 | MRR |
 |---|---|---|---|
 | lexical | 90.0% | 71.7% | 0.804 |
-| semantic | 95.0% | 81.7% | 0.870 |
-| hybrid, equal | 98.3% | 73.3% | 0.846 |
-| hybrid, 1:3 | 98.3% | 81.7% | 0.877 |
+| semantic | 91.7% | 81.7% | 0.868 |
+| hybrid, equal | 95.0% | 73.3% | 0.839 |
+| hybrid, 1:3 | 95.0% | 80.0% | 0.866 |
 
 Equal weight won on recall@5 and gave up ten points of recall@1 against semantic
 alone: it found the answer and then buried it, because an equal vote lets the
 weaker engine outvote the stronger one on what belongs first. recall@1 is the
 metric that matters, because the palette renders the top result's answer inline.
 
-A sweep from 0.5 to 10.0 puts the peak at 3.0. `pnpm eval -- --sweep`
-reproduces it.
+### The corpus grew and the numbers moved
+
+The run before this one, over 686 cards on 2026-08-20, scored 98.3% / 81.7% /
+0.877 on the shipping row. Tracks K and L added 27 cards, and two borderline
+queries fell out of the top five:
+
+- `i committed something by mistake` returns `e11`, `l2` and the wrong-branch
+  panic tree ahead of `d10-undo-everything`.
+- `what should i not commit` returns `d4-commit-well`, `l4` and `l2` ahead of
+  `d12-gitignore-and-what-not-to-commit`.
+
+Both still return a card that answers the question. What was lost is precision,
+not coverage. Removing `l2` and `l4` from the index restores the first of those
+and recall@1 to 81.7%, which confirms the cause is corpus growth rather than a
+defect in either card, so neither was trimmed to chase the fixture.
+
+A sweep from 0.5 to 10.0 used to put the peak at 3.0. On this corpus the peak on
+recall@1 and MRR is 6.0 (81.7%, 0.873) against 3.0 (80.0%, 0.866), and recall@5
+is flat at 95.0% from 1.0 through 10.0. One query in sixty is not enough evidence
+to move a shipping constant, so the weight stays at 3.0. `pnpm eval -- --sweep`
+reproduces the table.
+
+### Intents are lexical only
+
+All 156 intents produce zero chunks, so they carry no semantic weight. They reach
+the reader through the lexical half, which is the half weighted 1. Adding a
+phrasing to an intent cannot rescue a query the semantic engine ranks badly, and
+that was tried on `what should i not commit` before the note above was written.
 
 **What would change this:** a materially different corpus. Re-run the sweep
 rather than reasoning about it.
@@ -179,7 +205,7 @@ says why rather than running wrong.
 a separate `notes.db`, ATTACHed at runtime.
 
 Two files rather than one so an app update can replace the corpus wholesale
-without touching her notes, and so "the shipped content is unmodified" is a
+without touching the reader's notes, and so "the shipped content is unmodified" is a
 property of the filesystem rather than a promise. The notes feature does not
 exist yet; the split is reserved so that adding it later is not a migration.
 
@@ -220,7 +246,7 @@ The alternative, `on-demand`, stamps `asInvoker` so the license page is read
 before any UAC prompt. It is the wrong trade here, because the Forge stub has no
 self-elevation path: a machine-scope install stamped `asInvoker` dies at the
 first write to Program Files unless the person knew to right-click and run as
-administrator. She will double-click it.
+administrator. They will double-click it.
 
 `required` puts UAC before the wizard. The license is still read before anything
 is installed.

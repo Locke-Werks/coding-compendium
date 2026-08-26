@@ -226,7 +226,7 @@ git log --since="3 days ago" --oneline
 ```
 
 ```powershell
-git log --author="nyxlocke" --oneline
+git log --author="<yourname>" --oneline
 ```
 
 ### Who changed this line, and when

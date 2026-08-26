@@ -112,7 +112,7 @@ does two. Ask what else it does besides what the name says.
 implementation. It is the shape of code from a large system, applied to a small one. Ask
 whether the extra layer is doing anything, and be willing to accept "yes" as the answer.
 
-**Machine-specific values.** A hardcoded `C:\Users\nyx\projects\...` path, a port number
+**Machine-specific values.** A hardcoded `C:\Users\you\projects\...` path, a port number
 written into three files, a real email address in a default. These work on your machine
 today and nowhere else tomorrow. Anything that looks like a credential is a different and
 more urgent problem ([g6](#g6-secrets-and-what-never-to-commit)).

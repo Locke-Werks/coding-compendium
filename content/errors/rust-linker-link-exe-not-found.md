@@ -12,8 +12,8 @@ category: wont-compile
 verify: cargo build
 
 sample: |
-  PS C:\Users\nyx\dev\tool> cargo run
-     Compiling tool v0.1.0 (C:\Users\nyx\dev\tool)
+  PS C:\Users\you\dev\tool> cargo run
+     Compiling tool v0.1.0 (C:\Users\you\dev\tool)
   error: linker `link.exe` not found
     |
     = note: program not found

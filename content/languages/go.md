@@ -162,7 +162,7 @@ errors_look_like:
 
     goroutine 1 [running]:
     main.main()
-            C:/Users/nyx/hello/main.go:14 +0x1d
+            C:/Users/you/hello/main.go:14 +0x1d
     exit status 2
   recognize_by: >
     One word does it: `goroutine`. Nothing else in this deck prints it. A crash
@@ -237,7 +237,7 @@ package main
 import "fmt"
 
 func main() {
-    name := "nyx"       // := declares and assigns in one step
+    name := "ada"       // := declares and assigns in one step
     var count int = 3   // the long form, for when you want to state the type
     fmt.Println(name, count)
 }

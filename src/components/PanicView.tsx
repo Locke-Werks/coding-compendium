@@ -5,19 +5,19 @@ import type { CardDetail } from "../api";
  * The "I broke it" walkthrough.
  *
  * The design constraint here is different from every other surface, and it comes
- * from the state Nyx is in when she reaches it: something is broken, she does not
- * know what, and she is not reading carefully. Everything follows from that.
+ * from the state the reader is in when they reach it: something is broken, they do not
+ * know what, and they are not reading carefully. Everything follows from that.
  *
  * **One question on screen at a time.** No wall of options to scan.
- * **Every branch states its cost before she can pick it.** A command that
+ * **Every branch states its cost before they can pick it.** A command that
  * destroys work never appears without saying so first, in the same view as the
  * button, not a paragraph above it.
  * **A backup is offered before the first question**, because nearly every git
  * disaster is recoverable if a snapshot exists before the fix attempt, and
  * nobody thinks to take one while panicking.
  * **Every question has an escape hatch.** "I do not know" is the normal answer
- * when you are lost, so any node that asks something she may not be able to
- * answer carries a command that answers it for her.
+ * when you are lost, so any node that asks something they may not be able to
+ * answer carries a command that answers it for them.
  */
 
 interface Branch {
@@ -84,7 +84,7 @@ export default function PanicView({ card, onBack }: { card: CardDetail; onBack: 
   const tree = (card.meta ?? {}) as unknown as Tree;
   const nodes = tree.nodes ?? {};
 
-  // The path taken, so she can step back one answer instead of restarting. A
+  // The path taken, so they can step back one answer instead of restarting. A
   // wrong turn three questions deep should not cost the whole walk.
   const [path, setPath] = useState<string[]>(tree.root ? [tree.root] : []);
   const [tookBackup, setTookBackup] = useState(false);
@@ -113,8 +113,8 @@ export default function PanicView({ card, onBack }: { card: CardDetail; onBack: 
       {tree.symptom && <p className="mt-2 leading-relaxed text-paper-300">{tree.symptom}</p>}
 
       {/* Reassurance first, and honest rather than soothing. Most git disasters
-          really are recoverable, and knowing that changes how carefully she
-          proceeds through the rest of this. */}
+          really are recoverable, and knowing that changes how carefully they
+          proceed through the rest of this. */}
       {tree.reassurance && (
         <p className="mt-4 rounded-md border border-ink-700 bg-ink-850 p-3 leading-relaxed text-paper-300">
           {tree.reassurance}
@@ -181,8 +181,8 @@ export default function PanicView({ card, onBack }: { card: CardDetail; onBack: 
 
             {node.resolve && (
               <div className="mt-4">
-                {/* Cost before command, always. She will paste the first thing
-                    she sees, so what it destroys has to be above it, not below. */}
+                {/* Cost before command, always. They will paste the first thing
+                    they see, so what it destroys has to be above it, not below. */}
                 {node.resolve.destroys && (
                   <div
                     className={`rounded-md border p-3 ${

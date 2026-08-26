@@ -12,8 +12,8 @@ category: wont-compile
 verify: cargo check
 
 sample: |
-  PS C:\Users\nyx\dev\tool> cargo run
-     Compiling tool v0.1.0 (C:\Users\nyx\dev\tool)
+  PS C:\Users\you\dev\tool> cargo run
+     Compiling tool v0.1.0 (C:\Users\you\dev\tool)
   error[E0502]: cannot borrow `items` as mutable because it is also borrowed as immutable
    --> src/main.rs:5:5
     |

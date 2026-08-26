@@ -118,7 +118,7 @@ signature is what makes the bytes immutable.
 ```
 Coding Compendium/
 ├── content/            Everything the app knows, as markdown files
-│   ├── tracks/           the long explanations, organized A through J
+│   ├── tracks/           the long explanations, organized A through L
 │   ├── languages/        the 22 language fingerprint cards
 │   ├── errors/           50 error messages and what they mean
 │   ├── commands/         80 terminal commands, flag by flag

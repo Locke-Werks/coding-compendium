@@ -38,7 +38,7 @@ and your contribution history stays blank.
 Four commands, run in any shell, any folder:
 
 ```powershell
-git config --global user.name "Nyx Locke"
+git config --global user.name "Your Name"
 git config --global user.email "<your-github-email>"
 git config --global init.defaultBranch main
 git config --global pull.rebase false
@@ -76,8 +76,8 @@ PowerShell you can also write as `~/.gitconfig`. Open it and it reads like this:
 
 ```text
 [user]
-	name = Nyx Locke
-	email = nyx@example.com
+	name = Your Name
+	email = you@example.com
 [init]
 	defaultBranch = main
 [pull]
@@ -120,7 +120,7 @@ keeps settings at several levels works this way, and
 ### Keeping your email private
 
 Publishing commits publishes the email in them. GitHub can give you a forwarding address of
-the form `<id>+nyxlocke@users.noreply.github.com` for exactly this reason. Find the real one
+the form `<id>+<yourname>@users.noreply.github.com` for exactly this reason. Find the real one
 under Settings, then Emails, on github.com, where the option to keep your address private
 also lives. Set that address with the same `user.email` command and your commits carry the
 noreply address instead.

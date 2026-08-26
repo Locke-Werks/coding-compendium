@@ -257,7 +257,7 @@ methods between vertical bars.
 ```ruby
 require "json"
 
-scores = { "nyx" => 10 }
+scores = { "ada" => 10 }
 
 scores.each do |name, points|
   puts "#{name}: #{points}"

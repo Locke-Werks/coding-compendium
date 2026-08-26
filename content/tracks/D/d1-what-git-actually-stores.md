@@ -84,8 +84,8 @@ this:
 ```text
 tree 91f2b4c8d3e5a6079182b3c4d5e6f708192a3b4c
 parent 6f1a0c9c1b2d3e4f5061728394a5b6c7d8e9f0a1
-author Nyx <nyx@example.com> 1785705600 -0500
-committer Nyx <nyx@example.com> 1785705600 -0500
+author Your Name <you@example.com> 1785705600 -0500
+committer Your Name <you@example.com> 1785705600 -0500
 
 feat: add email and password login
 ```

@@ -20,8 +20,8 @@ danger: >
   it, run `ls <path>` with the same path to see exactly what is in there, and
   never let a variable sit next to a slash without quotes around it.
 
-# Every note contrasts against PowerShell, because that is the prompt she is
-# standing at when she pastes one of these. A tell with no contrast is trivia.
+# Every note contrasts against PowerShell, because that is the prompt they are
+# standing at when they paste one of these. A tell with no contrast is trivia.
 tells:
   - pattern: '#!/bin/bash'
     kind: line_start
@@ -263,7 +263,7 @@ opening one backwards.
 #!/bin/bash
 set -euo pipefail                 # stop on the first error, not the last
 
-NAME="nyx"                        # no spaces around =
+NAME="ada"                        # no spaces around =
 GREETING="hello ${NAME}"          # double quotes expand, single quotes do not
 
 if [[ -f config.json ]]; then     # spaces inside the brackets are required

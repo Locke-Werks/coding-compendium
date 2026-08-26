@@ -5,13 +5,13 @@ import type { Format, Identification } from "../api";
  *
  * The evidence is the feature, not the verdict. Being told "this is Rust"
  * answers the question once. Being shown which tokens said so, and what the
- * neighboring language would have used instead, means the next time she
+ * neighboring language would have used instead, means the next time they
  * recognizes it without opening anything. A reference tool that makes itself
  * unnecessary is doing its job, so the reasons get more visual weight than the
  * confidence number.
  */
 
-/** Plain-language name for each format, and what it means for her next move. */
+/** Plain-language name for each format, and what it means for the reader's next move. */
 const FORMAT_LABEL: Record<Format, { title: string; hint: string }> = {
   source: { title: "Source code", hint: "" },
   stack_trace: {
@@ -53,7 +53,7 @@ export default function IdentifyPanel({ result }: { result: Identification }) {
         {label.hint && <p className="mt-2 text-sm text-paper-300">{label.hint}</p>}
       </div>
 
-      {/* If we know this exact error, that is the answer she came for. It goes
+      {/* If we know this exact error, that is the answer they came for. It goes
           above the language guess, because "which language" is trivia once you
           know what actually went wrong. */}
       {result.known_error && (
@@ -78,7 +78,7 @@ export default function IdentifyPanel({ result }: { result: Identification }) {
         <>
           {result.ambiguous && (
             // Naming a winner on a coin flip would be worse than saying so. The
-            // whole point is that she can trust the answer.
+            // whole point is that they can trust the answer.
             <p className="mb-3 rounded-md border border-amber-dim/50 bg-amber-dim/10 p-2 text-sm text-paper-300">
               Genuinely close between {top.name} and {rest[0]?.name}. The evidence below is what
               separates them.

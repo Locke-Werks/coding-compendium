@@ -43,8 +43,8 @@ inside it. The agent works here, on the real files, the same ones you can open i
 [d1](#d1-what-git-actually-stores) covers what git puts in there.
 
 **3. The copy on GitHub.** GitHub is a website holding a copy of that folder and its history.
-It is your backup, the address other machines can reach, and where pull requests live. Your
-account is `nyxlocke`. [d2](#d2-repo-remote-clone-origin) covers the vocabulary.
+It is your backup, the address other machines can reach, and where pull requests live.
+[d2](#d2-repo-remote-clone-origin) covers the vocabulary.
 
 The connections matter more than the pieces:
 
@@ -66,7 +66,7 @@ it, and the agent is the thing you granted permission to.
   your machine                                     the internet
   ------------                                     ------------
 
-  agent  ---->  project folder  ---git push--->    github.com/nyxlocke/my-project
+  agent  ---->  project folder  ---git push--->    github.com/yourname/my-project
     |           (.git holds the history)                    |
     |                                                       |
     |                                              <--git pull---

@@ -11,24 +11,29 @@ wrote them in one sitting.
 
 ## 1. Who you are writing for
 
-One person. Her name is Nyx.
+One reader. You do not know their name, their pronouns, or their job, and you write as
+though you are talking to exactly one of them rather than to an audience.
 
-She has touched code before. She has not lived inside git, the terminal, or AI coding agents
-day to day. She is on Windows 11 and will never be told to do something the Mac way. Her
-GitHub account is `nyxlocke`.
+They have touched code before. They have not lived inside git, the terminal, or AI coding
+agents day to day. They are on Windows 11 and will never be told to do something the Mac
+way.
 
-She is not stupid and she is not a child. Do not simplify by being vague. Simplify by being
-concrete, by defining words at the moment you use them, and by never assuming a prior
+They are not stupid and they are not a child. Do not simplify by being vague. Simplify by
+being concrete, by defining words at the moment you use them, and by never assuming a prior
 section was read. Most people arrive at a card from a search box in a moment of confusion,
 not from the top of a document.
 
+Write to them in the second person. "You" in a card means the reader, always. The corpus
+never names them, never guesses at their gender, and never assumes anything about them
+beyond the paragraph above. This guide says "the reader" and "they" for the same reason.
+
 Two consequences that shape everything:
 
-- **She cannot verify your claims.** If you write something wrong, she will act on it. This
-  is why every instruction gets a check step and why hedging is worse than useless: "this
-  should probably work" gives her nothing to do.
-- **She usually arrives mid-crisis.** Something broke, or an agent did something she does
-  not understand. Answer first. Explain second. Never make her read a preamble to reach the
+- **The reader cannot verify your claims.** If you write something wrong, they will act on
+  it. This is why every instruction gets a check step and why hedging is worse than useless:
+  "this should probably work" gives them nothing to do.
+- **They usually arrive mid-crisis.** Something broke, or an agent did something they do not
+  understand. Answer first. Explain second. Never make them read a preamble to reach the
   fix.
 
 ---
@@ -44,15 +49,16 @@ it, with its own examples.
 **1. Second person, present tense. Imperative for instructions.**
 > Open a new Windows Terminal window and confirm.
 
-**2. Define the word in the same sentence you use it.** Never send her to the glossary
-mid-sentence.
+**2. Define the word in the same sentence you use it.** Never send the reader to the
+glossary mid-sentence.
 > A **diff** is the line-by-line view of what changed.
 
 **3. Expand every acronym on first use in *this card*.** Not first use in the corpus. In a
 searchable app there is no "first," so every card stands alone. Hover handles repeats.
 > CLI (Command-Line Interface)
 
-**4. Every instruction gets a verification step.** She needs to know she succeeded.
+**4. Every instruction gets a verification step.** The reader needs to know they
+succeeded.
 > If it prints a version number, you are done.
 
 **5. Name the failure before it happens, and say what it looks like on screen.**
@@ -69,7 +75,7 @@ searchable app there is no "first," so every card stands alone. Hover handles re
 > It sounds intimidating and is not.
 
 **9. Dry humor at most once per section.** Always at the technology's expense. Never at
-Nyx's.
+the reader's.
 > Working software you cannot verify is a rumor, not a result.
 
 **10. Windows first, always.** Concrete paths as `C:\Users\<yourname>\...`, with the
@@ -132,7 +138,7 @@ answer-first search results possible, so it is not optional and it is not a form
 
 | Tier | Length | Rendered in | Job |
 |---|---|---|---|
-| `answer` | 1 sentence, **under 45 words** | The palette | The thing she needed, with no preamble |
+| `answer` | 1 sentence, **under 45 words** | The palette | The thing they needed, with no preamble |
 | `more` | 200-400 words | The reader, on open | Enough to act correctly and know why |
 | `full` | 400-900 words | On request | The whole story, edge cases, the worked example |
 
@@ -170,7 +176,7 @@ term you need is missing, add it in the same pull request rather than defining i
 
 ## 6. Commands
 
-Every command block is copy-ready. She will paste it without reading it, so it has to be
+Every command block is copy-ready. They will paste it without reading it, so it has to be
 correct standing alone.
 
     ```powershell
@@ -184,9 +190,9 @@ Rules:
 - Tag the shell: `powershell`, `bash`, or `cmd`. Never leave it bare. The seed doc is
   careful about which shell each command needs and so are you.
 - One command per block unless they genuinely must run together.
-- Explain every flag that is not obvious. Nyx does not know what `-u` does.
-- Never put a placeholder she might paste literally without marking it: `<yourname>`, not
-  `yourname`.
+- Explain every flag that is not obvious. Assume the reader does not know what `-u` does.
+- Never put a placeholder the reader might paste literally without marking it: `<yourname>`,
+  not `yourname`.
 
 **Destructive commands carry a `danger:` annotation in frontmatter, and the linter fails
 the card without one.** A destructive command is anything that can lose work: `git reset
@@ -217,8 +223,8 @@ volatility: low | quarterly | weekly
 The app shows a stale badge only when a card passes its own budget, so a `low` card from
 2026 stays clean and a `weekly` card goes yellow fast. A date on every card is noise.
 
-**Cards with install or check commands also carry a `verify:` command** that Nyx can run to
-test the claim herself. This generalizes what the seed doc already does well:
+**Cards with install or check commands also carry a `verify:` command** that the reader can
+run to test the claim themselves. This generalizes what the seed doc already does well:
 
 ```yaml
 verify: git --version
@@ -246,7 +252,7 @@ Full JSON Schemas are in `schema/`. The linter validates frontmatter against the
 
 These are the marquee feature and they have the tightest contract, because the identifier
 compiles its scoring weights out of them at build time. The card is the source of truth for
-both the prose Nyx reads and the classifier that guesses for her.
+both the prose the reader sees and the classifier that guesses on their behalf.
 
 The rule that makes them work: **state every tell against its nearest neighbor.**
 
@@ -262,8 +268,8 @@ This:
 The second version is what teaches recognition. The first is trivia. Every entry in `tells`
 and every entry in `confusable_with` follows this pattern.
 
-`confusable_with` gets a one-line settle-it rule per pair, phrased as a decision she can
-make in two seconds:
+`confusable_with` gets a one-line settle-it rule per pair, phrased as a decision the reader
+can make in two seconds:
 
 > **Go.** Settle it: Go declares with `:=` and functions with `func`. Rust uses `let` and
 > `fn`, and uses `::`, which Go never does.

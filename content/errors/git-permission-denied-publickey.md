@@ -12,7 +12,7 @@ category: permission
 verify: ssh -T git@github.com
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git push
+  PS C:\Users\you\dev\scraper> git push
   git@github.com: Permission denied (publickey).
   fatal: Could not read from remote repository.
 
@@ -37,7 +37,7 @@ fix_ladder:
     shell: powershell
     why: >
       Assumes the key setup is nearly right and you need to know which part failed. Success
-      prints `Hi nyxlocke! You've successfully authenticated`. If that works and `git push`
+      prints `Hi <yourname>! You've successfully authenticated`. If that works and `git push`
       still fails, the key is fine and the repository address is the problem. If it fails the
       same way, the key is the problem.
 
@@ -110,7 +110,7 @@ HTTPS (HyperText Transfer Protocol Secure) and let the GitHub credential helper 
 with a browser sign-in:
 
 ```powershell
-git remote set-url origin https://github.com/nyxlocke/<repo>.git
+git remote set-url origin https://github.com/<yourname>/<repo>.git
 ```
 
 That trades one authentication method for another rather than fixing the key, so come back

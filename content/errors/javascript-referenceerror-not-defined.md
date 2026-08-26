@@ -9,14 +9,14 @@ language: javascript
 category: broke-at-runtime
 
 sample: |
-  PS C:\Users\nyx\dev\site> node index.js
-  C:\Users\nyx\dev\site\src\cart.js:14
+  PS C:\Users\you\dev\site> node index.js
+  C:\Users\you\dev\site\src\cart.js:14
     const total = subtotal + taxRate;
                              ^
 
   ReferenceError: taxRate is not defined
-      at calculateTotal (C:\Users\nyx\dev\site\src\cart.js:14:28)
-      at Object.<anonymous> (C:\Users\nyx\dev\site\index.js:5:1)
+      at calculateTotal (C:\Users\you\dev\site\src\cart.js:14:28)
+      at Object.<anonymous> (C:\Users\you\dev\site\index.js:5:1)
       at Module._compile (node:internal/modules/cjs/loader:1364:14)
 
   Node.js v22.11.0

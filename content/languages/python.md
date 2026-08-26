@@ -283,7 +283,7 @@ extra behavior without touching the body.
 import json
 
 def main() -> None:
-    scores = {"nyx": 10}
+    scores = {"ada": 10}
     print(json.dumps(scores))
 
 if __name__ == "__main__":

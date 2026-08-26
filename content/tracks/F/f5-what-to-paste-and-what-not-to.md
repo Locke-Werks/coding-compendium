@@ -67,7 +67,7 @@ since then I installed Node 22" is more useful than the error.
 ### The shape of a good paste
 
 ```text
-I ran this in PowerShell, from C:\Users\nyx\projects\site:
+I ran this in PowerShell, from C:\Users\you\projects\site:
 
     npm run dev
 

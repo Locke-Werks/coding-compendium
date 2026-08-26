@@ -9,14 +9,14 @@ language: javascript
 category: broke-at-runtime
 
 sample: |
-  PS C:\Users\nyx\dev\site> node index.js
-  C:\Users\nyx\dev\site\src\cart.js:22
+  PS C:\Users\you\dev\site> node index.js
+  C:\Users\you\dev\site\src\cart.js:22
       return user.profile.email;
                           ^
 
   TypeError: Cannot read properties of undefined (reading 'email')
-      at getEmail (C:\Users\nyx\dev\site\src\cart.js:22:25)
-      at Object.<anonymous> (C:\Users\nyx\dev\site\index.js:8:1)
+      at getEmail (C:\Users\you\dev\site\src\cart.js:22:25)
+      at Object.<anonymous> (C:\Users\you\dev\site\index.js:8:1)
       at Module._compile (node:internal/modules/cjs/loader:1364:14)
 
   Node.js v22.11.0

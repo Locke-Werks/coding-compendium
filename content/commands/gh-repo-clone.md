@@ -16,7 +16,7 @@ does: >
 flags:
   - flag: "<owner>/<repository-name>"
     means: >
-      The short form of the address, such as `nyxlocke/myproject`. The owner is the user or
+      The short form of the address, such as `yourname/myproject`. The owner is the user or
       organization. If you own it, the owner half can be left off.
   - flag: "<folder-name>, added at the end"
     means: Clones into a folder you name instead of one named after the repository.

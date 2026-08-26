@@ -2,11 +2,11 @@
 id: what-does-this-command-do
 title: "What this command does before I run it"
 type: intent
-verified: 2026-08-02
+verified: 2026-08-25
 volatility: low
 
 goal: "Something told me to run a command and I want to know what it does before I run it."
-target: b1-terminal-shell-command-line
+target: k2-anatomy-of-a-command
 urgency: stuck
 
 phrasings:

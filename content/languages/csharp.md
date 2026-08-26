@@ -172,8 +172,8 @@ errors_look_like:
   sample: |
     Unhandled exception. System.NullReferenceException: Object reference not set
     to an instance of an object.
-       at Example.App.Program.Greet(String name) in C:\Users\nyx\app\Program.cs:line 14
-       at Example.App.Program.Main(String[] args) in C:\Users\nyx\app\Program.cs:line 7
+       at Example.App.Program.Greet(String name) in C:\Users\you\app\Program.cs:line 14
+       at Example.App.Program.Main(String[] args) in C:\Users\you\app\Program.cs:line 7
   recognize_by: >
     The first line is the words `Unhandled exception.` followed by a type
     starting with `System.`. Every frame below reads `at Namespace.Class.Method`
@@ -242,7 +242,7 @@ without saying it.
 ## The shape
 
 Blocks use curly braces. Every statement ends with a semicolon. The type comes before the
-name: `string name = "nyx";` reads as type, name, value.
+name: `string name = "ada";` reads as type, name, value.
 
 Capitalization carries real meaning here, more than in any neighboring language. Methods
 and classes are PascalCase, so `Console.WriteLine` and `Main` are capitalized where Java
@@ -256,12 +256,12 @@ namespace Example.App;
 
 public class Program
 {
-    public string Name { get; set; } = "nyx";
+    public string Name { get; set; } = "ada";
 
     static void Main(string[] args)
     {
         var names = new List<string>();
-        names.Add("nyx");
+        names.Add("ada");
         Console.WriteLine($"hello {names[0]}");
     }
 }

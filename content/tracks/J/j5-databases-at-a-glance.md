@@ -113,7 +113,7 @@ SQL out the other end. Prisma and Drizzle in TypeScript, SQLAlchemy in Python, D
 Rust, Entity Framework in C#.
 
 ```typescript
-const user = await db.user.findFirst({ where: { email: "nyx@example.com" } })
+const user = await db.user.findFirst({ where: { email: "ada@example.com" } })
 ```
 
 That produces a `SELECT` statement you never see. Two things follow. First, when you go

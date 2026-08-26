@@ -13,7 +13,7 @@ category: not-found
 verify: Test-Path .\data\config.json
 
 sample: |
-  PS C:\Users\nyx\dev\site> node index.js
+  PS C:\Users\you\dev\site> node index.js
   node:internal/fs/utils:355
       throw err;
       ^
@@ -21,7 +21,7 @@ sample: |
   Error: ENOENT: no such file or directory, open 'data/config.json'
       at Object.openSync (node:fs:581:18)
       at Object.readFileSync (node:fs:453:35)
-      at loadConfig (C:\Users\nyx\dev\site\src\config.js:6:26) {
+      at loadConfig (C:\Users\you\dev\site\src\config.js:6:26) {
     errno: -4058,
     code: 'ENOENT',
     syscall: 'open',

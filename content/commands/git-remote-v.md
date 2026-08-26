@@ -21,7 +21,7 @@ flags:
 
 expect: >
   Two lines per remote, one tagged `(fetch)` and one tagged `(push)`, usually identical.
-  For example `origin  https://github.com/nyxlocke/myproject.git (fetch)`. A repository
+  For example `origin  https://github.com/yourname/myproject.git (fetch)`. A repository
   created locally with `git init` and never connected prints nothing.
 
 see_also:

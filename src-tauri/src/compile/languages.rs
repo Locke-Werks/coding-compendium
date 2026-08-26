@@ -1,14 +1,14 @@
 //! Extracting the identifier's scoring table out of the language cards.
 //!
 //! The cards are the single source of truth for both halves of the feature: the
-//! prose Nyx reads and the weights the classifier scores with. Editing a tell in
+//! prose the reader sees and the weights the classifier scores with. Editing a tell in
 //! the markdown changes the classifier on the next build.
 //!
 //! That property is the whole reason the tells carry a `note` explaining
 //! themselves against a neighbor language. The note is not documentation for the
 //! card; it is the evidence line the identifier displays. Being told "this is
 //! Rust" answers the question once. Being shown "because `fn`, and Go would say
-//! `func`" means the next time she recognizes it herself.
+//! `func`" means the next time they recognize it themselves.
 
 use anyhow::{Context, Result};
 use rusqlite::Transaction;
@@ -214,7 +214,7 @@ pub fn write_language_signals(tx: &Transaction<'_>, cards: &[Card]) -> Result<La
             }
         }
 
-        // Error output is often all Nyx has: she pastes a stack trace, not the
+        // Error output is often all the reader has: they paste a stack trace, not the
         // code that produced it. These patterns route it to a language.
         if let Some(errs) = &meta.errors_look_like {
             for p in &errs.patterns {

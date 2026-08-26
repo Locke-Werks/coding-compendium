@@ -46,14 +46,14 @@ full:
   - { id: php,        name: PHP,          batch: 4, likelihood: possible }
 
   # -- batch 5: the shells and the query language --------------------------
-  # She is on Windows, so PowerShell is `certain` and bash is close behind
+  # They are on Windows, so PowerShell is `certain` and bash is close behind
   # because every instruction on the internet is written for it.
   - { id: powershell, name: PowerShell,   batch: 5, likelihood: certain }
   - { id: bash,       name: Bash,         batch: 5, likelihood: certain }
   - { id: sql,        name: SQL,          batch: 5, likelihood: likely }
 
-  # -- batch 6: the ones that are not code, which nobody tells her ---------
-  # The highest-value batch in the deck. She meets these constantly, gets
+  # -- batch 6: the ones that are not code, which nobody explains ----------
+  # The highest-value batch in the deck. Readers meet these constantly, get
   # confused by them constantly, and every existing tutorial skips them because
   # they are "obvious".
   - { id: json,       name: JSON,         batch: 6, likelihood: certain }

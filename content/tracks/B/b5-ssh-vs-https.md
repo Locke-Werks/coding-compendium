@@ -53,8 +53,8 @@ To see which one a project is set up for, run this inside it:
 git remote -v
 ```
 
-A line reading `git@github.com:nyxlocke/my-project.git` is SSH. A line reading
-`https://github.com/nyxlocke/my-project.git` is HTTPS. Both print twice, once for fetch and
+A line reading `git@github.com:yourname/my-project.git` is SSH. A line reading
+`https://github.com/yourname/my-project.git` is HTTPS. Both print twice, once for fetch and
 once for push, which is normal.
 
 Test SSH end to end:
@@ -67,7 +67,7 @@ ssh -T git@github.com
 rejection until you have seen it once:
 
 ```text
-Hi nyxlocke! You've successfully authenticated, but GitHub does not provide shell access.
+Hi yourname! You've successfully authenticated, but GitHub does not provide shell access.
 ```
 
 That is the answer you want. GitHub is confirming who you are and declining to give you a
@@ -149,7 +149,7 @@ The choice is per repository, stored in the remote URL (Uniform Resource Locator
 changing it is one command:
 
 ```powershell
-git remote set-url origin git@github.com:nyxlocke/<repo>.git
+git remote set-url origin git@github.com:<yourname>/<repo>.git
 ```
 
 Swap `<repo>` for the repository name. Run `git remote -v` again to confirm it changed.

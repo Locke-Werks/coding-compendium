@@ -23,7 +23,7 @@ flags:
 
 expect: >
   A block naming `github.com`, a check line reading `Logged in to github.com account
-  nyxlocke`, the protocol in use, and a `Token scopes:` line. If it says `You are not logged
+  <yourname>`, the protocol in use, and a `Token scopes:` line. If it says `You are not logged
   into any GitHub hosts`, run `gh auth login`.
 
 see_also:

@@ -11,8 +11,8 @@ category: conflict
 verify: git log --oneline --graph -10
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git pull origin main
-  From https://github.com/nyxlocke/scraper
+  PS C:\Users\you\dev\scraper> git pull origin main
+  From https://github.com/yourname/scraper
    * branch            main       -> FETCH_HEAD
   fatal: refusing to merge unrelated histories
 
@@ -67,7 +67,7 @@ fix_ladder:
       way you want, `git add` it, and commit.
 
   - try: Throw away the local folder and clone the GitHub copy instead.
-    command: git clone https://github.com/nyxlocke/<repo>.git
+    command: git clone https://github.com/<yourname>/<repo>.git
     shell: powershell
     why: >
       Assumes the local repository holds nothing worth keeping, which is true when you

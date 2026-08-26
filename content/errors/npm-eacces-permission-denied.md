@@ -18,13 +18,13 @@ danger: >
   any other folder, and never at your project root.
 
 sample: |
-  PS C:\Users\nyx\dev\site> npm install
+  PS C:\Users\you\dev\site> npm install
   npm error code EPERM
   npm error syscall rename
-  npm error path C:\Users\nyx\dev\site\node_modules\esbuild
-  npm error dest C:\Users\nyx\dev\site\node_modules\.esbuild-Xk3mQp
+  npm error path C:\Users\you\dev\site\node_modules\esbuild
+  npm error dest C:\Users\you\dev\site\node_modules\.esbuild-Xk3mQp
   npm error errno -4048
-  npm error Error: EPERM: operation not permitted, rename 'C:\Users\nyx\dev\site\node_modules\esbuild' -> 'C:\Users\nyx\dev\site\node_modules\.esbuild-Xk3mQp'
+  npm error Error: EPERM: operation not permitted, rename 'C:\Users\you\dev\site\node_modules\esbuild' -> 'C:\Users\you\dev\site\node_modules\.esbuild-Xk3mQp'
   npm error   [Error: EPERM: operation not permitted, rename] {
   npm error   errno: -4048,
   npm error   code: 'EPERM',

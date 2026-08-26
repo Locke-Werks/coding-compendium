@@ -22,8 +22,8 @@
       "description": "How fast this card's claims rot. Drives the stale badge, which only appears once a card passes its own budget. low: data models, language syntax. quarterly: file layouts, conventions. weekly: install commands, model names, agent CLI flags."
     },
     "track": {
-      "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
-      "description": "A orientation, B setup, C how code runs, D git and GitHub, E working with agents, F reading failure, G the supply chain, H proving it works, I shipping, J recognition"
+      "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"],
+      "description": "A orientation, B setup, C how code runs, D git and GitHub, E working with agents, F reading failure, G the supply chain, H proving it works, I shipping, J recognition, K the console, L first runs"
     },
     "base": {
       "type": "object",
@@ -42,7 +42,7 @@
         "volatility": { "$ref": "#/$defs/volatility" },
         "verify": {
           "type": "string",
-          "description": "A command Nyx can run to test this card's central claim herself. Required by the linter on any card containing an install command. Generalizes the seed doc's 'if it prints a version number, you are done'."
+          "description": "A command the reader can run to test this card's central claim themselves. Required by the linter on any card containing an install command. Generalizes the seed doc's 'if it prints a version number, you are done'."
         },
         "see_also": {
           "type": "array",

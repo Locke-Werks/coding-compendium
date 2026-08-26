@@ -7,7 +7,7 @@ Recorded 2026-08-02, after reading the measurements below.
 The gate report recommends GO conditional on six things. Three of them cannot be
 met, and the reason is a squeeze the abstention number alone does not show:
 
-**The quantization that fits her GPU is the one that fails the safety gate.**
+**The quantization that fits the target GPU is the one that fails the safety gate.**
 Q4_K_M needs 2,017 MiB of VRAM and emitted a third status value, `ANSWER_SOURCE`,
 six times, breaking the machine-readable contract the entire design rests on.
 Q8_0 holds the contract and needs 2,686 MiB. Her card is a 2060-class laptop
@@ -17,7 +17,7 @@ also using it, and Q4 is the option that does not work.
 **Twenty seconds is not a reference tool.** 20.6 s median on CPU, measured on a
 16-core Ryzen 9 7950X. Her machine is a 4-core or 6-core laptop, so expect worse.
 A beginner watching a spinner for twenty seconds concludes the app is broken, and
-she would be right to: the extractive path returns in milliseconds.
+they would be right to: the extractive path returns in milliseconds.
 
 **The one failure is the wrong kind of failure.** Asked about connecting Prisma
 to Postgres, which the corpus does not cover, it answered from
@@ -36,7 +36,7 @@ confabulation that flipped.
 
 A correct status is also not a correct answer. Three of the 35 answerable
 responses were meaningfully degraded against the cards they came from. The worst
-told her how to kill a process while dropping the card's "try Ctrl+C first" step
+told the reader how to kill a process while dropping the card's "try Ctrl+C first" step
 and inverting its ordering. The gate measured whether the model knows when to
 stay quiet. It does. It did not establish that what it says when it speaks is as
 good as the card it is paraphrasing, and on this evidence it is not.
@@ -50,10 +50,10 @@ for a feature that answers more slowly than reading.
 retrieved cards that match the question, and pull the two or three most relevant
 verbatim sentences into an attributed quote block. Zero hallucination risk by
 construction, because nothing is generated. It cannot invert a warning into
-advice, because it can only show her what a card already says, with the card's
+advice, because it can only show the reader what a card already says, with the card's
 name attached.
 
-**What would reopen this:** a measurement on Nyx's actual laptop, a widened
+**What would reopen this:** a measurement on a real target laptop, a widened
 abstention set of 50+ uncoverable questions, and a tuned `--parallel 1` server
 with a 2048-token context, which the report projects would cut both the KV
 allocation and the latency substantially. The trait boundary in
@@ -104,7 +104,7 @@ than out of design preference:
 5. **Budget for 20 seconds, not 2.** CPU-only median end-to-end was 20.6 s per
    question on a 16-core desktop. The 1.7 s Vulkan figure is an RTX 4090 number
    and does not transfer. See "Latency is the real constraint".
-6. **Re-measure on Nyx's actual machine.** Everything here was measured on a
+6. **Re-measure on a real target machine.** Everything here was measured on a
    Ryzen 9 7950X with an RTX 4090, which is not the machine described in the
    brief. See "Hardware, and why these numbers are optimistic".
 
@@ -535,7 +535,7 @@ listed twice. Content correct, presentation degraded.
 
 This is the quieter risk. The gate was built around confabulation on
 out-of-corpus questions, and the model largely passes that. It is weaker at
-faithfully compressing a card it did have, and Nyx cannot check that either.
+faithfully compressing a card it did have, and the reader cannot check that either.
 It is a strong argument for showing the source sentences next to the generated
 answer rather than instead of them.
 
@@ -654,11 +654,11 @@ each line carrying its card id, linked.
 
 The property that matters: **zero hallucination risk by construction**. Nothing
 is generated, so nothing can be invented. The worst failure is an irrelevant
-quote, which Nyx can see is irrelevant. That is categorically different from a
-fluent wrong answer, which she cannot.
+quote, which the reader can see is irrelevant. That is categorically different from a
+fluent wrong answer, which they cannot.
 
 It is also strictly better than the model on the three degraded answers in
-section 5. Quoting the ERESOLVE card verbatim tells her two packages disagree
+section 5. Quoting the ERESOLVE card verbatim tells the reader two packages disagree
 about a version. The model's paraphrase does not.
 
 ---

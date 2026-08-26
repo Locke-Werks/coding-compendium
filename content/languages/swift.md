@@ -249,8 +249,8 @@ func greet(_ user: User) -> String {
     return "hello \(name)"
 }
 
-let nyx = User(id: 1, name: "nyx")
-print(greet(nyx))
+let ada = User(id: 1, name: "ada")
+print(greet(ada))
 ```
 
 Comments are `//` for a line and `/* */` for a block. The backslash inside the last string

@@ -12,7 +12,7 @@ category: not-found
 verify: git rev-parse --show-toplevel
 
 sample: |
-  PS C:\Users\nyx\dev> git status
+  PS C:\Users\you\dev> git status
   fatal: not a git repository (or any of the parent directories): .git
 
 patterns:
@@ -60,7 +60,7 @@ fix_ladder:
       changes none of your files.
 
   - try: Clone the project from GitHub instead.
-    command: git clone https://github.com/nyxlocke/<repo>.git
+    command: git clone https://github.com/<yourname>/<repo>.git
     shell: powershell
     why: >
       Assumes the real repository is on GitHub and this folder is a stray copy of the files

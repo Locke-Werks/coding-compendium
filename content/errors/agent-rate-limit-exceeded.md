@@ -8,7 +8,7 @@ volatility: weekly
 category: network
 
 sample: |
-  PS C:\Users\nyx\dev\site> claude
+  PS C:\Users\you\dev\site> claude
   API Error: 429 {"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 40,000 input tokens per minute. For details, refer to: https://docs.anthropic.com/en/api/rate-limits."}}
 
 patterns:

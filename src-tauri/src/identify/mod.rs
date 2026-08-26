@@ -12,7 +12,7 @@
 //!   ::        the separator between modules and types
 //! ```
 //!
-//! means that next time she recognizes it herself and does not need the app. A
+//! means that next time they recognize it themselves and do not need the app. A
 //! reference tool that makes itself unnecessary is doing its job.
 //!
 //! Nothing here uses a model. It is pattern matching over weights compiled from
@@ -75,7 +75,7 @@ pub struct Identification {
     /// The card explaining this specific error, when the paste matches one.
     ///
     /// This is what closes the loop. "This is a Python crash" is half an answer.
-    /// The half she wanted is what the error means and what to try first.
+    /// The half they wanted is what the error means and what to try first.
     pub known_error: Option<KnownError>,
 }
 

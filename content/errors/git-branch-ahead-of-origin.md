@@ -12,7 +12,7 @@ category: config
 verify: git status -sb
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git status
+  PS C:\Users\you\dev\scraper> git status
   On branch main
   Your branch is ahead of 'origin/main' by 3 commits.
     (use "git push" to publish your local commits)

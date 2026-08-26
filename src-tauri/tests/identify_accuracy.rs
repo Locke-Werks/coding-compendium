@@ -63,13 +63,13 @@ fn assert_identifies(snippet: &str, expected: &str) {
 }
 
 // --------------------------------------------------------------------------
-// The languages Nyx is most likely to meet
+// The languages the reader is most likely to meet
 // --------------------------------------------------------------------------
 
 #[test]
 fn identifies_python() {
     assert_identifies(
-        "def greet(name):\n    if name:\n        return f\"hello {name}\"\n    return None\n\nif __name__ == \"__main__\":\n    print(greet(\"nyx\"))",
+        "def greet(name):\n    if name:\n        return f\"hello {name}\"\n    return None\n\nif __name__ == \"__main__\":\n    print(greet(\"ada\"))",
         "python",
     );
 }
@@ -77,7 +77,7 @@ fn identifies_python() {
 #[test]
 fn identifies_rust() {
     assert_identifies(
-        "use std::collections::HashMap;\n\nfn main() {\n    let mut scores: HashMap<String, i32> = HashMap::new();\n    scores.insert(\"nyx\".to_string(), 10);\n    println!(\"{:?}\", scores);\n}",
+        "use std::collections::HashMap;\n\nfn main() {\n    let mut scores: HashMap<String, i32> = HashMap::new();\n    scores.insert(\"ada\".to_string(), 10);\n    println!(\"{:?}\", scores);\n}",
         "rust",
     );
 }
@@ -167,7 +167,7 @@ fn tells_bash_from_powershell() {
 }
 
 // --------------------------------------------------------------------------
-// The formats that are not code, which nobody tells her about
+// The formats that are not code, which nobody explains
 // --------------------------------------------------------------------------
 
 #[test]
@@ -191,7 +191,7 @@ fn a_traceback_is_reported_as_a_crash_and_still_names_its_language() {
     let out = identifier().identify(
         "Traceback (most recent call last):\n  File \"C:\\dev\\app\\main.py\", line 12, in <module>\n    import requests\nModuleNotFoundError: No module named 'requests'",
     );
-    assert_eq!(out.format, Format::StackTrace, "she pasted a crash, not source");
+    assert_eq!(out.format, Format::StackTrace, "they pasted a crash, not source");
     assert_eq!(
         out.candidates.first().map(|c| c.language_id.as_str()),
         Some("python"),

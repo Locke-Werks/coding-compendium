@@ -15,7 +15,7 @@
 # Renaming an id after ship breaks links and search history. Add, do not rename.
 
 meta:
-  count: 76
+  count: 88
   tracks:
     A: Orientation
     B: Setup
@@ -27,6 +27,8 @@ meta:
     H: Proving it works
     I: Shipping
     J: Recognition
+    K: The console
+    L: First runs
 
 sections:
 
@@ -108,7 +110,7 @@ sections:
       Same neighborhood, different words. How to tell PowerShell from Command
       Prompt by the prompt itself. Why some commands only work in one. Every
       other card that says "run this in PowerShell" depends on this one.
-    see_also: [c4-path-and-command-not-found]
+    see_also: [k1-four-shells-one-console, k3-the-first-ten-commands, c4-path-and-command-not-found]
 
   - id: b2-install-git
     title: Install Git for Windows
@@ -189,7 +191,7 @@ sections:
     owns: [settings.json levels, config.toml location, precedence]
     brief: >
       User, project, and local levels, and that narrower wins. JSON and TOML
-      explained as formats, since this is where she meets both.
+      explained as formats, since this is where they meet both.
     see_also: [j2-the-config-formats-nobody-explains]
 
   # ---------------------------------------------------------------- C
@@ -231,7 +233,7 @@ sections:
     owns: [PATH, reopening the terminal, where executables live]
     brief: >
       The single most common beginner confusion on Windows. The fix is almost
-      always "close and reopen the terminal" and she should know why that works.
+      always "close and reopen the terminal" and they should know why that works.
     see_also: [b1-terminal-shell-command-line, f1-how-to-read-an-error-message]
 
   - id: c5-processes-and-killing-them
@@ -251,7 +253,7 @@ sections:
     owns: [ports, localhost, 127.0.0.1, EADDRINUSE]
     brief: >
       Why the dev server is at localhost:3000 and what to do when the port is
-      taken. She will hit EADDRINUSE within a week of starting.
+      taken. They will hit EADDRINUSE within a week of starting.
     see_also: [c5-processes-and-killing-them, j6-web-basics]
 
   - id: c7-files-folders-and-paths
@@ -822,7 +824,7 @@ sections:
     order: 20
     owns: [config formats as a family, why there are several]
     brief: >
-      She hits these constantly and nobody tells her they are not code. What
+      Readers hit these constantly and nobody tells them they are not code. What
       each looks like, where each is used, and the gotchas: YAML indentation,
       JSON trailing commas, JSON having no comments.
     see_also: [b9-where-settings-live, j1-how-to-recognize-a-language]
@@ -854,7 +856,7 @@ sections:
     order: 50
     owns: [table, row, query, SQL vs NoSQL, migration]
     brief: >
-      Enough to recognize what she is looking at and what a migration is. Not a
+      Enough to recognize what they are looking at and what a migration is. Not a
       SQL tutorial. The SQL language card handles syntax.
     see_also: [j1-how-to-recognize-a-language]
 
@@ -864,7 +866,7 @@ sections:
     order: 60
     owns: [HTTP, client and server, request and response, API, REST, status codes]
     brief: >
-      The vocabulary underneath every web-adjacent error she will see. 404 and
+      The vocabulary underneath every web-adjacent error they will see. 404 and
       500 explained as a category, not a list.
     see_also: [c6-ports-and-localhost, j2-the-config-formats-nobody-explains]
 
@@ -874,7 +876,154 @@ sections:
     order: 70
     owns: [the legacy language sidebar]
     brief: >
-      Fortran, COBOL, Perl, Visual Basic. Why they still exist, why she will not
+      Fortran, COBOL, Perl, Visual Basic. Why they still exist, why you will not
       touch them, and one joke each. This is the only place in the corpus where
       the joke is the point. Keep it short and keep it dry.
     see_also: [j1-how-to-recognize-a-language]
+
+  # ---------------------------------------------------------------- K
+  - id: k1-four-shells-one-console
+    title: Four shells, and why the same command is not the same command
+    track: K
+    order: 10
+    owns: [the two shell families, Zsh, bash outside Git Bash, where each shell is met]
+    brief: >
+      PowerShell, Command Prompt, Bash and Zsh as two families with two
+      ancestors, and what family membership predicts. b1 owns telling which one
+      you are sitting in and must not be repeated. This card owns why they
+      differ at all, and where each one shows up: Windows, Git Bash, WSL, a
+      server, a container, a CI log.
+    see_also: [b1-terminal-shell-command-line, k2-anatomy-of-a-command, k8-the-translation-table]
+
+  - id: k2-anatomy-of-a-command
+    title: The parts of a command
+    track: K
+    order: 20
+    owns: [command anatomy, flags and switches, reading a usage line, asking a command for help]
+    brief: >
+      Program, subcommand, flags, values, arguments, and the three flag styles
+      they will meet: single dash, double dash, and Windows slash. PowerShell's
+      Verb-Noun naming and named parameters. How to make any command explain
+      itself. Quoting is c7's, so link it.
+    see_also: [k3-the-first-ten-commands, c7-files-folders-and-paths, k1-four-shells-one-console]
+
+  - id: k3-the-first-ten-commands
+    title: The first ten commands, in all four shells
+    track: K
+    order: 30
+    owns: [the day-one command set]
+    brief: >
+      The quick-start. Where am I, what is here, go there, show me this file,
+      make a folder, copy, move, delete, clear, print. Each one in all four
+      shells with a check step. Deleting is destructive and carries the
+      annotation. Paths belong to c7.
+    see_also: [c7-files-folders-and-paths, k4-finding-things, k8-the-translation-table]
+
+  - id: k4-finding-things
+    title: Finding a file, finding text, finding a program
+    track: K
+    order: 40
+    owns: [searching from the console, searching inside files]
+    brief: >
+      Three different searches people run together and confuse: by filename, by
+      content, and for the program behind a command name. Get-ChildItem
+      -Recurse, grep, Select-String, findstr, Get-Command, where.exe. PATH
+      itself is c4's.
+    see_also: [k3-the-first-ten-commands, c4-path-and-command-not-found, k5-pipes-and-chaining]
+
+  - id: k5-pipes-and-chaining
+    title: Pipes, and running one command after another
+    track: K
+    order: 50
+    owns: [the pipe, chaining operators, objects versus text]
+    brief: >
+      The pipe as plumbing, then the four ways to run commands in sequence and
+      which shells accept which. The one genuine conceptual split in this track:
+      PowerShell pipes objects, everything else pipes text. Redirection and the
+      streams belong to f3.
+    see_also: [f3-exit-codes-and-streams, k4-finding-things, k1-four-shells-one-console]
+
+  - id: k6-history-completion-and-keys
+    title: Tab, arrow keys, and the rest of the keyboard
+    track: K
+    order: 60
+    owns: [command history, tab completion, the console key bindings, copy and paste in a terminal]
+    brief: >
+      The keys that turn the console from typing into driving. Tab completion
+      first, because it also prevents typos in paths. Then history, reverse
+      search, and copy and paste, which behaves differently here than anywhere
+      else in Windows. Ctrl+C as an interrupt is c5's.
+    see_also: [c5-processes-and-killing-them, k2-anatomy-of-a-command, k3-the-first-ten-commands]
+
+  - id: k7-same-word-different-program
+    title: When the same word runs a different program
+    track: K
+    order: 70
+    owns: [alias traps, the exe suffix, why a copied command behaves differently]
+    brief: >
+      The failure that reads as a broken tutorial and is not. curl, ls, echo,
+      sort, where and test all exist in more than one shell and do different
+      things. How to find out what a name actually resolves to before you trust
+      it.
+    see_also: [k4-finding-things, k1-four-shells-one-console, c4-path-and-command-not-found]
+
+  - id: k8-the-translation-table
+    title: The translation table
+    track: K
+    order: 80
+    owns: [the four-shell translation table, what is identical everywhere]
+    brief: >
+      One table, task by task, across PowerShell, Command Prompt, Bash and Zsh,
+      plus the short list of things that are genuinely identical in all four.
+      The card they pin. No new concepts: everything here is owned by an earlier
+      card in this track and linked.
+    see_also: [k3-the-first-ten-commands, k7-same-word-different-program, k1-four-shells-one-console]
+
+  # ---------------------------------------------------------------- L
+  - id: l1-your-first-repository
+    title: Your first repository, start to finish
+    track: L
+    order: 10
+    owns: [the first repository walkthrough, the order of the first commands]
+    brief: >
+      One unbroken walkthrough: empty folder to code visible on github.com, with
+      a check step after every command. Owns the sequence and nothing else. d1
+      owns what git stores, d2 owns remotes, d4 owns writing a commit message,
+      b4 owns installing gh. Link all four rather than restating them.
+    see_also: [b4-github-and-gh, d2-repo-remote-clone-origin, d4-commit-well, l4-your-first-day-in-order]
+
+  - id: l2-your-first-claude-code-session
+    title: Your first session with Claude Code
+    track: L
+    order: 20
+    owns: [the first Claude Code session, the permission prompt in practice]
+    brief: >
+      What actually happens between typing `claude` and having a change you can
+      commit. The permission prompt, the first request, reading what came back,
+      and stopping it. b6 owns installing and the slash-command list, e3 owns
+      plan mode, e5 owns prompting. Volatility weekly.
+    see_also: [b6-install-claude-code, e3-plan-mode, e5-prompting-that-works, l1-your-first-repository]
+
+  - id: l3-your-first-codex-session
+    title: Your first session with Codex
+    track: L
+    order: 30
+    owns: [the first Codex session, approval in practice]
+    brief: >
+      The same walkthrough for OpenAI's agent, and the one real difference: the
+      sandbox and the approval prompt are separate things and both show up in
+      the first five minutes. b7 owns installing and the config keys. Volatility
+      weekly.
+    see_also: [b7-install-codex, l2-your-first-claude-code-session, e10-using-two-agents, l1-your-first-repository]
+
+  - id: l4-your-first-day-in-order
+    title: Your first day, in order
+    track: L
+    order: 40
+    owns: [the day-one checklist]
+    brief: >
+      A checklist, not an explanation. Every step is one line with a link to the
+      card that owns it. a4 owns the rhythm as an idea and must not be repeated;
+      this is the version you keep open on a second monitor while doing it for
+      the first time.
+    see_also: [a4-the-loop, l1-your-first-repository, l2-your-first-claude-code-session, k3-the-first-ten-commands]

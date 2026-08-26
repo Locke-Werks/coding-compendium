@@ -13,19 +13,19 @@ category: not-found
 verify: node -e "require('express'); console.log('found')"
 
 sample: |
-  PS C:\Users\nyx\dev\site> node index.js
+  PS C:\Users\you\dev\site> node index.js
   node:internal/modules/cjs/loader:1215
     throw err;
     ^
 
   Error: Cannot find module 'express'
   Require stack:
-  - C:\Users\nyx\dev\site\index.js
+  - C:\Users\you\dev\site\index.js
       at Module._resolveFilename (node:internal/modules/cjs/loader:1212:15)
       at Module._load (node:internal/modules/cjs/loader:1043:27)
       at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12) {
     code: 'MODULE_NOT_FOUND',
-    requireStack: [ 'C:\\Users\\nyx\\dev\\site\\index.js' ]
+    requireStack: [ 'C:\\Users\\you\\dev\\site\\index.js' ]
   }
 
 patterns:

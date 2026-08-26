@@ -28,7 +28,7 @@ flags:
 
 expect: >
   Counting and compressing lines, then a summary such as
-  `To github.com:nyxlocke/myproject.git` and `3f2a1b9..8c4d2e1  main -> main`.
+  `To github.com:yourname/myproject.git` and `3f2a1b9..8c4d2e1  main -> main`.
   `Everything up-to-date` means you had nothing new to send.
 
 see_also:

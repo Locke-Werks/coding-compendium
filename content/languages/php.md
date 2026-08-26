@@ -272,7 +272,7 @@ next to a `$`.
 
 ```php
 <?php
-$scores = ['nyx' => 10];
+$scores = ['ada' => 10];
 
 foreach ($scores as $name => $points) {
     echo "$name: $points\n";

@@ -12,7 +12,7 @@ category: config
 verify: git branch --show-current
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git checkout 4f2a1c9
+  PS C:\Users\you\dev\scraper> git checkout 4f2a1c9
   Note: switching to '4f2a1c9'.
 
   You are in 'detached HEAD' state. You can look around, make experimental

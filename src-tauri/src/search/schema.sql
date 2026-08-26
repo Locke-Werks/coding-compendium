@@ -6,7 +6,7 @@
 --
 -- The app opens this file READ-ONLY and ATTACHes a separate notes.db for
 -- anything the user writes. Two files rather than one so that shipping an app
--- update can replace the corpus wholesale without touching her notes, and so
+-- update can replace the corpus wholesale without touching the reader's notes, and so
 -- that "the shipped content is unmodified" is a property of the filesystem
 -- rather than a promise.
 
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS chunk_vectors (
 -- --------------------------------------------------------------------------
 
 -- Plain-language goals mapped to the card that answers them. These exist because
--- a beginner does not know the topic word: she knows she wants to undo
+-- a beginner does not know the topic word: they know they want to undo
 -- something, not that the word is `revert`. Each intent carries many phrasings,
 -- including the panicked and ungrammatical ones, and all of them are indexed.
 CREATE TABLE IF NOT EXISTS intents (
@@ -169,8 +169,8 @@ CREATE INDEX IF NOT EXISTS glossary_by_term ON glossary(term COLLATE NOCASE);
 -- --------------------------------------------------------------------------
 
 -- Compiled from the `tells` and `rules_out` fields on the language cards, so the
--- cards stay the single source of truth for both the prose Nyx reads and the
--- classifier that guesses for her. Editing a tell in the markdown changes the
+-- cards stay the single source of truth for both the prose the reader sees and the
+-- classifier that guesses on their behalf. Editing a tell in the markdown changes the
 -- classifier on the next build, which is the property that keeps the two from
 -- drifting apart.
 CREATE TABLE IF NOT EXISTS language_signals (
@@ -205,8 +205,8 @@ CREATE TABLE IF NOT EXISTS language_tiebreaks (
 
 -- Regexes that route a pasted error to the card explaining it.
 --
--- This is what closes the loop on the identifier. Telling Nyx "this is a Python
--- crash" is half an answer; the half she wanted is what the error means and what
+-- This is what closes the loop on the identifier. Telling the reader "this is a Python
+-- crash" is half an answer; the half they wanted is what the error means and what
 -- to try first. Compiled from the `patterns` field on every error card.
 CREATE TABLE IF NOT EXISTS error_patterns (
     card_id TEXT NOT NULL REFERENCES cards(id) ON DELETE CASCADE,

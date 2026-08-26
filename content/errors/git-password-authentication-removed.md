@@ -12,10 +12,10 @@ category: permission
 verify: gh auth status
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git push
+  PS C:\Users\you\dev\scraper> git push
   remote: Support for password authentication was removed on August 13, 2021.
   remote: Please see https://docs.github.com/get-started/getting-started-with-git/about-remote-repositories#cloning-with-https-urls for information on currently recommended modes of authentication.
-  fatal: Authentication failed for 'https://github.com/nyxlocke/scraper.git/'
+  fatal: Authentication failed for 'https://github.com/yourname/scraper.git/'
 
 patterns:
   - "Support for password authentication was removed"
@@ -60,7 +60,7 @@ fix_ladder:
       is one.
 
   - try: Switch this repository to SSH instead.
-    command: git remote set-url origin git@github.com:nyxlocke/<repo>.git
+    command: git remote set-url origin git@github.com:<yourname>/<repo>.git
     shell: powershell
     why: >
       Assumes you already have an SSH (Secure Shell) key set up on your GitHub account. SSH

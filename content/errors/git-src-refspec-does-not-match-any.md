@@ -12,9 +12,9 @@ category: not-found
 verify: git branch --show-current
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git push -u origin main
+  PS C:\Users\you\dev\scraper> git push -u origin main
   error: src refspec main does not match any
-  error: failed to push some refs to 'https://github.com/nyxlocke/scraper.git'
+  error: failed to push some refs to 'https://github.com/yourname/scraper.git'
 
 patterns:
   - "src refspec .* does not match any"

@@ -161,7 +161,7 @@ const BANNED_WORDS: Array<[RegExp, string]> = [
   [/\brobust\b/i, "Say what it actually withstands."],
   [/\bseamless(ly)?\b/i, "Say what does not break."],
   [/\bcomprehensive(ly)?\b/i, "Say the scope instead of claiming completeness."],
-  [/\bsimply\b/i, "Never tell her it is easy. Say the step."],
+  [/\bsimply\b/i, "Never tell the reader it is easy. Say the step."],
   [/\bit'?s worth noting\b/i, "If it is worth noting, note it."],
   [/\bthat said\b/i, "Start the sentence."],
   [/\bin today'?s landscape\b/i, "Cut it."],

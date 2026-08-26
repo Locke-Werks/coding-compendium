@@ -8,7 +8,7 @@ volatility: weekly
 category: broke-at-runtime
 
 sample: |
-  PS C:\Users\nyx\dev\site> claude
+  PS C:\Users\you\dev\site> claude
   API Error: 400 {"type":"error","error":{"type":"invalid_request_error","message":"prompt is too long: 217483 tokens > 200000 maximum"}}
 
 patterns:

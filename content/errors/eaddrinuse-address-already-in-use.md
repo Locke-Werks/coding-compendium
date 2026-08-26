@@ -12,7 +12,7 @@ category: conflict
 verify: Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue
 
 sample: |
-  PS C:\Users\nyx\dev\site> npm run dev
+  PS C:\Users\you\dev\site> npm run dev
 
   > site@0.1.0 dev
   > node server.js

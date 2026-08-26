@@ -12,7 +12,7 @@ category: config
 verify: git config --get core.longpaths
 
 sample: |
-  PS C:\Users\nyx\dev> git clone https://github.com/nyxlocke/scraper.git
+  PS C:\Users\you\dev> git clone https://github.com/yourname/scraper.git
   Cloning into 'scraper'...
   remote: Enumerating objects: 1284, done.
   Receiving objects: 100% (1284/1284), 2.11 MiB | 4.02 MiB/s, done.
@@ -49,7 +49,7 @@ fix_ladder:
       inside the cloned folder.
 
   - try: Clone into a shorter folder path.
-    command: git clone https://github.com/nyxlocke/<repo>.git C:\dev\<repo>
+    command: git clone https://github.com/<yourname>/<repo>.git C:\dev\<repo>
     shell: powershell
     why: >
       Assumes your folder location is eating the budget. `C:\Users\<yourname>\Documents\projects\`

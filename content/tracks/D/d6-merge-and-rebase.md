@@ -189,7 +189,7 @@ for the same branch, and git stops you:
 
 ```text
 ! [rejected]        feature/login -> feature/login (non-fast-forward)
-error: failed to push some refs to 'https://github.com/nyxlocke/sandbox.git'
+error: failed to push some refs to 'https://github.com/yourname/sandbox.git'
 ```
 
 This is git protecting the copy on GitHub, and it is correct to stop. If the branch is

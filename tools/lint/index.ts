@@ -167,7 +167,7 @@ function buildValidators(): Map<string, ValidateFunction> {
  *   - regexes and match patterns, where `--` and odd spellings are meaningful
  *   - commands, whose flags read like banned words
  *   - `sample`, which is verbatim error output we do not control
- *   - `phrasings`, deliberately ungrammatical because that is how she types
+ *   - `phrasings`, deliberately ungrammatical because that is how they type
  */
 const LITERAL_KEYS = new Set([
   "id", "pattern", "patterns", "command", "verify", "safer_first", "sample",
@@ -354,7 +354,7 @@ function checkLinks(card: Card, knownIds: Set<string>): Finding[] {
 }
 
 /**
- * Anything that can lose work has to say so, in the card, before she runs it.
+ * Anything that can lose work has to say so, in the card, before they run it.
  *
  * The command schema has a `destructive` flag, but a destructive command can also
  * appear inside a prose section or a panic tree, so the check is textual and
@@ -393,8 +393,8 @@ function checkDangerAnnotation(card: Card): Finding[] {
 /**
  * Every panic tree must be walkable end to end.
  *
- * A `goto` naming a node that does not exist strands her mid-recovery, on the
- * one surface where being stranded is worst: she reached it because something is
+ * A `goto` naming a node that does not exist strands the reader mid-recovery, on the
+ * one surface where being stranded is worst: they reached it because something is
  * already broken. The schema cannot catch this, because `goto` is just a string
  * and the node map is `additionalProperties`.
  *
@@ -446,7 +446,7 @@ function checkPanicTree(card: Card): Finding[] {
         message: `node "${key}" cannot be reached from the root, so nobody will ever see it.`,
       });
     }
-    // The cost has to be stated. She will run the command; whether she was told
+    // The cost has to be stated. They will run the command; whether they were told
     // what it destroys first is the whole design of this surface.
     if (node?.resolve && !node.resolve.destroys) {
       err(`node "${key}" resolves with a command but does not say what it destroys.`);
@@ -469,7 +469,7 @@ function checkPanicTree(card: Card): Finding[] {
  * pair was one-directional, so the disagreement survived until a human read both
  * cards side by side.
  *
- * A warning rather than an error, and only between two languages Nyx is actually
+ * A warning rather than an error, and only between two languages the reader is actually
  * likely to meet. One-directional pairings are usually deliberate: you hold the
  * obscure thing and wonder whether it is the common one, not the reverse, so
  * Zig naming C is expected and C naming Zig would be clutter. Checking every
@@ -507,7 +507,7 @@ function checkConfusableReciprocity(card: Card, byId: Map<string, Card>): Findin
   return findings;
 }
 
-/** A card with an install command should give her a way to confirm it worked. */
+/** A card with an install command should give the reader a way to confirm it worked. */
 function checkVerifyPresent(card: Card): Finding[] {
   if (typeof card.frontmatter.verify === "string") return [];
   const installs = /\b(winget install|npm i(nstall)? -g|pnpm add -g|cargo install|pip install|irm .*\| ?iex)\b/;

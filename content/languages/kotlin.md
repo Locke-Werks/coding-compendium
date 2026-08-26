@@ -244,7 +244,7 @@ fun greet(user: User?): String {
 }
 
 fun main() {
-    val users = mutableListOf(User(1, "nyx"))
+    val users = mutableListOf(User(1, "ada"))
     println(greet(users.firstOrNull()))
 }
 ```

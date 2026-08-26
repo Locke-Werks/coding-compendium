@@ -12,7 +12,7 @@
 #
 # Three categories qualify, and only three.
 
-# 1. Not actually acronyms. Literal identifiers she will type or read on screen,
+# 1. Not actually acronyms. Literal identifiers they will type or read on screen,
 #    where spelling them out would be wrong rather than helpful. PATH is an
 #    environment variable name. HEAD is a git pointer. Neither stands for
 #    anything.
@@ -41,7 +41,7 @@ identifiers:
   - MORE
   - FULL
 
-# 2. Error constants. Same category as PATH: a literal string she reads on
+# 2. Error constants. Same category as PATH: a literal string they read on
 #    screen. ENOENT technically abbreviates "error, no entry", but nobody has
 #    ever said that out loud and printing it would confuse rather than help.
 #    Gloss them in prose instead ("ENOENT, which is how Node spells 'no such

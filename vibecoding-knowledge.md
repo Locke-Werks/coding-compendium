@@ -1,6 +1,6 @@
 # Vibe Coding with Claude Code and OpenAI Codex (Windows Edition)
 
-A complete, no-guesswork guide for Nyx.
+A complete, no-guesswork guide.
 
 This is written for someone who has touched code before but has not lived inside git, the terminal, or AI (Artificial Intelligence) coding agents day to day. It assumes nothing about those three things and builds up from the floor. Everything here targets Windows specifically. There are no Mac or Linux detours to wade through.
 
@@ -32,7 +32,7 @@ So the real loop is: describe, generate, review the change, test it, save a chec
 
 2. **The place the code lives.** Your code sits in folders on your computer. A folder that git is tracking is called a **repository**, or **repo**. Everything the agent builds goes into a repo.
 
-3. **The backup and collaboration layer.** GitHub is a website that stores copies of your repos in the cloud. It is where your work is backed up, where a history of every change lives, and where, if you ever work with someone, you combine your changes with theirs. Your GitHub account is `nyxlocke`.
+3. **The backup and collaboration layer.** GitHub is a website that stores copies of your repos in the cloud. It is where your work is backed up, where a history of every change lives, and where, if you ever work with someone, you combine your changes with theirs.
 
 ### Each tool has three "surfaces"
 
@@ -76,7 +76,7 @@ If it prints a version number, you are done.
 
 Every saved change (a commit) is stamped with a name and email. Set yours once, globally, so it applies to all projects. Use the email tied to your GitHub account.
 ```
-git config --global user.name "Nyx Locke"
+git config --global user.name "Your Name"
 git config --global user.email "you@example.com"
 ```
 Confirm it took:
@@ -92,7 +92,7 @@ git config --global pull.rebase false
 
 ### 2.3 Confirm your GitHub account
 
-You have `nyxlocke`. Log in at https://github.com and make sure you can see your account. That is all you need from the website side for now. Everything else you will drive from the terminal.
+Create an account at https://github.com if you do not have one, log in, and make sure you can see it. That is all you need from the website side for now. Everything else you will drive from the terminal.
 
 ### 2.4 Install the GitHub CLI (Command-Line Interface), the `gh` tool
 
@@ -107,7 +107,7 @@ winget install GitHub.cli
 gh --version
 ```
 
-### 2.5 Authenticate `gh` to the `nyxlocke` account
+### 2.5 Authenticate `gh` to your GitHub account
 
 This is the step that links your computer to GitHub so you can push code and open pull requests without typing a password every time.
 ```
@@ -118,11 +118,11 @@ Answer the prompts like this:
 - **Protocol:** SSH (Secure Shell), recommended and explained below. HTTPS (Hypertext Transfer Protocol Secure) also works.
 - **Authenticate:** "Login with a web browser." It shows you a one-time code, opens GitHub in your browser, you paste the code, done.
 
-When it finishes, `gh` has stored credentials for `nyxlocke` and, if you chose SSH, uploaded an SSH key to your GitHub account automatically. Confirm:
+When it finishes, `gh` has stored your credentials and, if you chose SSH, uploaded an SSH key to your GitHub account automatically. Confirm:
 ```
 gh auth status
 ```
-It should say you are logged in as `nyxlocke`.
+It should say you are logged in as your account name.
 
 **SSH (Secure Shell) vs HTTPS (Hypertext Transfer Protocol Secure), in one breath:** these are two ways your machine proves to GitHub that it is allowed to push. HTTPS uses a token, which is a long password-like string. SSH uses a key pair: a private key that stays on your machine and a public key GitHub knows about. SSH means you set it up once and never think about it again, which is why it is the default recommendation. If `gh auth login` set up SSH for you, you are done. If you ever need to make an SSH key by hand, run this in PowerShell:
 ```
@@ -191,13 +191,13 @@ Claude scans the folder and writes a `CLAUDE.md` file. This file is Claude's sta
 
 Two different connections, do not confuse them:
 
-1. **Local push and pull, which you already have.** Because `gh` is authenticated to `nyxlocke`, Claude Code can run git and `gh` commands on your behalf: it can commit, push, and open pull requests using your existing credentials. Nothing more to set up. Just ask it, for example, "commit this and open a pull request."
+1. **Local push and pull, which you already have.** Because `gh` is authenticated as you, Claude Code can run git and `gh` commands on your behalf: it can commit, push, and open pull requests using your existing credentials. Nothing more to set up. Just ask it, for example, "commit this and open a pull request."
 
 2. **The GitHub App, optional, for automation.** If you want to mention `@claude` inside a GitHub pull request or issue and have it respond on GitHub's servers, run this inside a Claude session:
 ```
 /install-github-app
 ```
-It walks you through installing Anthropic's GitHub App on your `nyxlocke` repos. This is a convenience for later, not required to code locally. Skip it until you want it.
+It walks you through installing Anthropic's GitHub App on your repositories. This is a convenience for later, not required to code locally. Skip it until you want it.
 
 ### 3.6 Where Claude Code keeps its settings
 
@@ -264,7 +264,7 @@ Codex's equivalent of `CLAUDE.md` is **`AGENTS.md`**. Same idea: a plain-text fi
 
 ### 4.5 Connect Codex to GitHub
 
-Same as Claude Code: because `gh` is already authenticated to `nyxlocke`, Codex can run git and `gh` commands to commit, push, and open pull requests using your credentials. For the cloud version, Codex Web, there is extra setup to give the remote environment GitHub access, but for local terminal work you are already connected.
+Same as Claude Code: because `gh` is already authenticated as you, Codex can run git and `gh` commands to commit, push, and open pull requests using your credentials. For the cloud version, Codex Web, there is extra setup to give the remote environment GitHub access, but for local terminal work you are already connected.
 
 ### 4.6 Codex's settings file: `config.toml`
 
@@ -343,9 +343,9 @@ The clean sequence, which you can do by hand in PowerShell or hand to an agent:
 mkdir ~/dev/my-project
 cd ~/dev/my-project
 git init
-gh repo create nyxlocke/my-project --private --source=. --remote=origin
+gh repo create my-project --private --source=. --remote=origin
 ```
-That last command creates the repo on GitHub under `nyxlocke`, marks it private, and links your local folder to it. The link is called a **remote**, and it is named `origin` by convention. Now local and GitHub are connected. Launch `claude` or `codex` and start building.
+That last command creates the repo on GitHub under your account, marks it private, and links your local folder to it. The link is called a **remote**, and it is named `origin` by convention. Now local and GitHub are connected. Launch `claude` or `codex` and start building.
 
 ---
 
@@ -560,7 +560,7 @@ Supporting cast: a **tag** marks a specific point, usually a version like `v1.0.
 
 **Git Bash.** A bash shell bundled with Git for Windows. Useful for a few bash-only tasks and preferred by Claude Code as its shell.
 
-**GitHub.** The website that hosts repos in the cloud, backs up your work, and enables collaboration. Your account: `nyxlocke`. Not the same thing as git.
+**GitHub.** The website that hosts repos in the cloud, backs up your work, and enables collaboration. Not the same thing as git.
 
 **.gitignore.** A file listing paths git should never track (secrets, build output, dependencies).
 
@@ -672,10 +672,10 @@ Supporting cast: a **tag** marks a specific point, usually a version like `v1.0.
 
 If it helps to have a concrete on-ramp rather than the whole map at once:
 
-1. Do Part 2 in full: Git for Windows, identity, GitHub CLI, authenticated as `nyxlocke`. Confirm each step with the check command given.
+1. Do Part 2 in full: Git for Windows, identity, GitHub CLI, authenticated as yourself. Confirm each step with the check command given.
 2. Install Claude Code (Part 3) and Codex (Part 4). Run `claude --version` and `codex --version` to confirm.
 3. Set the attribution settings from Part 6 for both tools and Claude Desktop, right away, so you never generate an attributed commit.
-4. Make one throwaway project (`~/dev/sandbox`), run `git init`, then `gh repo create nyxlocke/sandbox --private --source=. --remote=origin`, and ask Claude to build something tiny end to end: a plan, a branch, a commit, a push, a pull request. Do it once with Claude, once with Codex, so the loop is in your hands.
+4. Make one throwaway project (`~/dev/sandbox`), run `git init`, then `gh repo create sandbox --private --source=. --remote=origin`, and ask Claude to build something tiny end to end: a plan, a branch, a commit, a push, a pull request. Do it once with Claude, once with Codex, so the loop is in your hands.
 5. Only then start the real thing, with a `docs\SPEC.md` and plan mode.
 
 The tools are powerful and the safety net is real. Move in small steps, read the diffs, keep the tests honest, and git will forgive almost anything you do wrong along the way.

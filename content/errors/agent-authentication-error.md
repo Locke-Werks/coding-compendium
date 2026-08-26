@@ -12,7 +12,7 @@ category: permission
 verify: '[bool]$env:ANTHROPIC_API_KEY'
 
 sample: |
-  PS C:\Users\nyx\dev\site> claude
+  PS C:\Users\you\dev\site> claude
   API Error: 401 {"type":"error","error":{"type":"authentication_error","message":"invalid x-api-key"}}
 
 patterns:

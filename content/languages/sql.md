@@ -20,7 +20,7 @@ danger: >
   backup before anything starting with `DROP`. Inside a transaction you can
   `ROLLBACK`, which is the closest thing to an undo this language has.
 
-# Notes contrast against the neighbors she will actually confuse it with: the
+# Notes contrast against the neighbors they will actually confuse it with: the
 # other query language in the deck, and the host language it is embedded in.
 tells:
   - pattern: 'SELECT\s+[\s\S]{0,200}?\bFROM\b'

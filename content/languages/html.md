@@ -246,7 +246,7 @@ folder are.
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Nyx's shop</title>
+    <title>Ada's shop</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>

@@ -31,8 +31,8 @@ import ResultList from "./components/ResultList";
  *    the list does not empty out between keystrokes.
  * 3. **The answer is on screen without clicking.** A search engine makes you
  *    click. That round trip is the thing being beaten.
- * 4. **Pasting something switches modes automatically.** Nyx should never have
- *    to know she wanted "identify" rather than "search". If it looks like she
+ * 4. **Pasting something switches modes automatically.** The reader should never have
+ *    to know they wanted "identify" rather than "search". If it looks like they
  *    pasted a thing rather than asked a question, it gets identified.
  */
 
@@ -107,7 +107,7 @@ export default function App() {
   }, []);
 
   // Summoning selects the existing query instead of clearing it. Typing
-  // replaces it, which is what she wants nearly every time, and the rest of the
+  // replaces it, which is what they want nearly every time, and the rest of the
   // time the previous question is still there to edit rather than retype.
   useEffect(() => {
     if (!inTauri()) return;
@@ -162,7 +162,7 @@ export default function App() {
 
             // Sentence extraction runs after the results are already on screen,
             // never before. The result list is the answer; this is a shortcut
-            // into it, and it must never delay what she can already read.
+            // into it, and it must never delay what they can already read.
             if (r.length > 0) {
               extract(text, r.slice(0, 4).map((h) => h.card_id))
                 .then((x) => seq === seqRef.current && setExcerpt(x))
@@ -335,7 +335,7 @@ export default function App() {
         <span className="flex items-center gap-3">
           {!IS_SIDECAR && (
             // Presence beats findability. A strip left open beside the terminal
-            // is read; a window she has to remember to open is not.
+            // is read; a window they have to remember to open is not.
             <button
               type="button"
               onClick={() => void toggleSidecar()}

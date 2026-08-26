@@ -44,7 +44,7 @@ built front end and the compiled Rust binary into an `.msi` package under
 
 The hard half is what happens on the other person's machine. Windows checks whether the
 installer carries a digital signature naming a verified publisher. This one does not, so
-Nyx, or anyone else you send it to, gets a full-screen blue box:
+Whoever you send it to gets a full-screen blue box:
 
 ```text
 Windows protected your PC

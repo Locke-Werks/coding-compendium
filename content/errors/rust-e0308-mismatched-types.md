@@ -13,8 +13,8 @@ category: wont-compile
 verify: cargo check
 
 sample: |
-  PS C:\Users\nyx\dev\tool> cargo run
-     Compiling tool v0.1.0 (C:\Users\nyx\dev\tool)
+  PS C:\Users\you\dev\tool> cargo run
+     Compiling tool v0.1.0 (C:\Users\you\dev\tool)
   error[E0308]: mismatched types
    --> src/main.rs:4:18
     |

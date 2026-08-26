@@ -22,7 +22,7 @@ danger: >
 
 # Every note below is stated against the neighbor it gets confused with, because
 # the neighbor is bash and the confusion happens daily. A tell with no contrast
-# tells her nothing she can act on at a prompt.
+# tells the reader nothing they can act on at a prompt.
 tells:
   - pattern: '$env:'
     kind: sigil
@@ -179,11 +179,11 @@ confusable_with:
 
 errors_look_like:
   sample: |
-    Get-ChildItem : Cannot find path 'C:\Users\nyx\nope' because it does not exist.
+    Get-ChildItem : Cannot find path 'C:\Users\you\nope' because it does not exist.
     At line:1 char:1
-    + Get-ChildItem C:\Users\nyx\nope
+    + Get-ChildItem C:\Users\you\nope
     + ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        + CategoryInfo          : ObjectNotFound: (C:\Users\nyx\nope:String) [Get-ChildItem], ItemNotFoundException
+        + CategoryInfo          : ObjectNotFound: (C:\Users\you\nope:String) [Get-ChildItem], ItemNotFoundException
         + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetChildItemCommand
   recognize_by: >
     A block of red text several lines tall, containing `At line:N char:N`, a copy
@@ -259,10 +259,10 @@ Comments are `#` for one line and `<# #>` for a block. The escape character is a
 backtick, because the backslash is already the path separator on Windows.
 
 ```powershell
-$name = 'nyx'                       # single quotes: literal text
+$name = 'ada'                       # single quotes: literal text
 $greeting = "hello $name"           # double quotes: $name expands
 $env:MY_KEY = 'abc123'              # environment variable, this session only
-if ($name -eq 'nyx') { 'match' }    # -eq, never ==
+if ($name -eq 'ada') { 'match' }    # -eq, never ==
 Get-ChildItem -Path . -Filter *.md | Select-Object Name, Length
 ```
 

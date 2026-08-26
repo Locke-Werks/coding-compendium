@@ -13,7 +13,7 @@ extensions: ['.json', '.jsonc', '.json5', '.geojson']
 
 # Every note contrasts against the format standing next to it in a real project
 # folder. "JSON quotes its keys" is trivia. "JSON quotes its keys, YAML does not,
-# TOML uses an equals sign" is the thing that lets her tell three files apart.
+# TOML uses an equals sign" is the thing that lets a reader tell three files apart.
 tells:
   - pattern: '"[^"\n]+"\s*:'
     kind: regex

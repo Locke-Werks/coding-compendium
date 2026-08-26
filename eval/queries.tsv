@@ -1,11 +1,11 @@
 # Retrieval evaluation set.
 #
-# One query per line: the words Nyx would actually type, a tab, then the card
+# One query per line: the words a reader would actually type, a tab, then the card
 # ids that would be a good answer. Any one of them counts as correct, because
 # several cards can legitimately answer the same question and forcing a single
 # right answer measures the fixture rather than the search.
 #
-# These are written as she types: lowercase, conversational, occasionally
+# These are written as they type: lowercase, conversational, occasionally
 # misspelled. A query set of tidy keywords would score beautifully and tell us
 # nothing, since keyword search is the case that already works.
 #

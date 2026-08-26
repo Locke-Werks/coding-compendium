@@ -10,14 +10,14 @@
 //! Pressing the key with the app already in front hides it. That makes one key
 //! the whole interaction: press to ask, press to dismiss, without moving to the
 //! mouse or hunting for a close button. A summon-only binding leaves a window
-//! she then has to get rid of.
+//! they then have to get rid of.
 //!
 //! # It selects rather than clears
 //!
 //! Summoning selects whatever is in the box instead of emptying it. Typing
-//! replaces it, which is what she wants nine times in ten, and the tenth time
+//! replaces it, which is what they want nine times in ten, and the tenth time
 //! the previous question is still there to press End and edit. Clearing outright
-//! would throw away a query she may have spent effort phrasing.
+//! would throw away a query they may have spent effort phrasing.
 
 use tauri::{AppHandle, Emitter, Manager};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
@@ -26,7 +26,7 @@ use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut,
 ///
 /// Ctrl+Shift+Space is deliberately awkward to press by accident and is not
 /// claimed by Windows, Visual Studio Code, or a browser. Ctrl+Space alone is
-/// taken by IntelliSense in every editor she is likely to have open, and
+/// taken by IntelliSense in every editor they are likely to have open, and
 /// Alt+Space opens the window menu on Windows.
 /// A function rather than a const, because `Shortcut::new` is not const.
 fn toggle() -> Shortcut {
@@ -38,8 +38,8 @@ pub const TOGGLE_LABEL: &str = "Ctrl+Shift+Space";
 
 /// Docks or hides the narrow always-on-top strip.
 ///
-/// A binding as well as a button, because the strip is something she will toggle
-/// while her hands are already on the keyboard and mid-task. Reaching for the
+/// A binding as well as a button, because the strip is something they will toggle
+/// while their hands are already on the keyboard and mid-task. Reaching for the
 /// mouse to dismiss a reference window is exactly the friction it exists to
 /// remove.
 fn dock() -> Shortcut {
@@ -66,8 +66,8 @@ pub fn register(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
         let Some(window) = app.get_webview_window("main") else { return };
 
         // Hide only when it is both visible AND focused. A visible-but-buried
-        // window should come forward, not disappear: she pressed the key because
-        // she could not see it.
+        // window should come forward, not disappear: they pressed the key because
+        // they could not see it.
         let visible = window.is_visible().unwrap_or(false);
         let focused = window.is_focused().unwrap_or(false);
 
@@ -90,7 +90,7 @@ pub fn register(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
             return;
         }
         // A failure here costs the strip, not the app. The main window is
-        // untouched and she can still search in it.
+        // untouched and they can still search in it.
         let _ = crate::sidecar::toggle(app);
     })?;
 

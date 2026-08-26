@@ -12,8 +12,8 @@ category: wont-compile
 verify: python -m py_compile main.py
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> python main.py
-    File "C:\Users\nyx\dev\scraper\main.py", line 8
+  PS C:\Users\you\dev\scraper> python main.py
+    File "C:\Users\you\dev\scraper\main.py", line 8
       if count = 3:
          ^^^^^^^^^
   SyntaxError: invalid syntax. Maybe you meant '==' or ':=' instead of '='?

@@ -27,14 +27,14 @@ keywords:
   - connect to github
   - gh not recognized
   - authenticate github
-  - nyxlocke
+  - github username
 ---
 
 ## More
 
-You have a GitHub account, `nyxlocke`. Log in at https://github.com once and confirm you can
-see it. That is everything the website side needs from you today; the rest is driven from the
-terminal.
+Create a GitHub account at https://github.com if you do not have one, log in once, and
+confirm you can see it. That is everything the website side needs from you today; the rest is
+driven from the terminal.
 
 `gh` is GitHub's official command-line tool. It is the cleanest way to connect this machine to
 that account, and it is what the agents use when you ask one to open a pull request. Install
@@ -77,7 +77,7 @@ Confirm:
 gh auth status
 ```
 
-It should report that you are logged in to github.com as `nyxlocke`.
+It should report that you are logged in to github.com as your account name.
 
 ## Full
 
@@ -101,7 +101,7 @@ years ago, which is why an old tutorial that says to type your password produces
 ### The commands you will actually use
 
 ```powershell
-gh repo create nyxlocke/my-project --private --source=. --remote=origin
+gh repo create my-project --private --source=. --remote=origin
 ```
 
 Creates the repository on GitHub under your account, marks it private, links it to the folder
@@ -156,7 +156,7 @@ in a half-authenticated state.
 
 Claude Code and Codex do not have their own GitHub accounts. When you say "commit this and
 open a pull request," the agent runs the same `git` and `gh` commands you would, using the
-credentials you set up here. Everything appears under `nyxlocke`, because it was you.
+credentials you set up here. Everything appears under your account, because it was you.
 
 There is no separate approval step on GitHub's side.
 Anything you can do from this terminal, an agent with permission to run commands can do too,

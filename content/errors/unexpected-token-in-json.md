@@ -13,9 +13,9 @@ category: wont-compile
 verify: Get-Content package.json -Raw | ConvertFrom-Json
 
 sample: |
-  PS C:\Users\nyx\dev\site> npm install
+  PS C:\Users\you\dev\site> npm install
   npm error code EJSONPARSE
-  npm error path C:\Users\nyx\dev\site\package.json
+  npm error path C:\Users\you\dev\site\package.json
   npm error JSON.parse Unexpected token "}" (0x7D) in JSON at position 412 while parsing near "...\"vite\": \"^8.2.0\",\n  }\n}"
   npm error JSON.parse Failed to parse JSON data.
   npm error JSON.parse Note: package.json must be actual JSON, not just JavaScript.

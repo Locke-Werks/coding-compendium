@@ -17,8 +17,8 @@ danger: >
   never delete anything else inside `.git`.
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git add .
-  fatal: Unable to create 'C:/Users/nyx/dev/scraper/.git/index.lock': File exists.
+  PS C:\Users\you\dev\scraper> git add .
+  fatal: Unable to create 'C:/Users/you/dev/scraper/.git/index.lock': File exists.
 
   Another git process seems to be running in this repository, e.g.
   an editor opened by 'git commit'. Please make sure all processes

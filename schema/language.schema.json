@@ -28,7 +28,7 @@
     },
     "likelihood": {
       "enum": ["certain", "likely", "possible", "unlikely"],
-      "description": "How probably Nyx meets this. Drives the deck's 'you will meet this' filter and breaks classifier ties toward the common answer, which is the right prior for a beginner."
+      "description": "How probably the reader meets this. Drives the deck's 'you will meet this' filter and breaks classifier ties toward the common answer, which is the right prior for a beginner."
     },
     "extensions": {
       "type": "array",
@@ -107,7 +107,7 @@
         "build_dirs": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "Generated output. Large, git-ignored, safe to delete, will be rebuilt. Nyx asks this constantly."
+          "description": "Generated output. Large, git-ignored, safe to delete, will be rebuilt. Readers ask this constantly."
         },
         "entry_points": { "type": "array", "items": { "type": "string" } }
       }
@@ -142,7 +142,7 @@
 
     "confusable_with": {
       "type": "array",
-      "description": "The pairs that actually trip people: Java/C#, JS/TS, C/C++, Rust/Go, Python/Ruby. Each settle_it must be a decision she can make in two seconds by looking at the snippet.",
+      "description": "The pairs that actually trip people: Java/C#, JS/TS, C/C++, Rust/Go, Python/Ruby. Each settle_it must be a decision they can make in two seconds by looking at the snippet.",
       "items": {
         "type": "object",
         "required": ["language", "settle_it"],
@@ -165,7 +165,7 @@
 
     "errors_look_like": {
       "type": "object",
-      "description": "How to recognize this language from its failure output alone, which is often all Nyx has.",
+      "description": "How to recognize this language from its failure output alone, which is often all the reader has.",
       "properties": {
         "sample": { "type": "string" },
         "recognize_by": { "type": "string" },
@@ -180,7 +180,7 @@
     "meet_it_when": {
       "type": "string",
       "minLength": 40,
-      "description": "The concrete situations Nyx encounters it: an agent picks it, she clones a tool to build, she reads the source of something misbehaving."
+      "description": "The concrete situations the reader encounters it: an agent picks it, they clone a tool to build, they read the source of something misbehaving."
     },
 
     "what_agents_get_wrong": {
@@ -196,7 +196,7 @@
 
     "joke": {
       "type": "string",
-      "description": "Reserved for the 'you will not meet these' sidebar. Fortran, COBOL, Perl. At the technology's expense, never at Nyx's, and once only."
+      "description": "Reserved for the 'you will not meet these' sidebar. Fortran, COBOL, Perl. At the technology's expense, never at the reader's, and once only."
     }
   }
 }

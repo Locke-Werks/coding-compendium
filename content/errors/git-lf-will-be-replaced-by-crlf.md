@@ -11,7 +11,7 @@ category: config
 verify: git config --get core.autocrlf
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git add .
+  PS C:\Users\you\dev\scraper> git add .
   warning: in the working copy of 'src/app.py', LF will be replaced by CRLF the next time Git touches it
   warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
 

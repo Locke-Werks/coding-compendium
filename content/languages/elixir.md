@@ -24,7 +24,7 @@ tells:
     kind: regex
     weight: 9
     note: >
-      A percent sign followed by a brace opens a map, as in `%{name: "nyx"}`.
+      A percent sign followed by a brace opens a map, as in `%{name: "ada"}`.
       Ruby and Python write a bare `{` for the same idea. Nothing else prefixes
       it.
   - pattern: 'def \w+.*\sdo$'
@@ -163,7 +163,7 @@ defmodule Scores do
   end
 end
 
-Scores.report(%{"nyx" => 10, "ada" => 4})
+Scores.report(%{"ada" => 10, "kai" => 4})
 ```
 
 Read the `|>` chain top to bottom: each line takes the result above it as its

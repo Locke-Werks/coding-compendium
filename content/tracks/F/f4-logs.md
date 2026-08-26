@@ -55,7 +55,7 @@ npm makes this easy by telling you. The last line of a failed install is almost 
 
 ```text
 npm ERR! A complete log of this run can be found in:
-npm ERR!     C:\Users\nyx\AppData\Local\npm-cache\_logs\2026-08-02T14_22_09_881Z-debug-0.log
+npm ERR!     C:\Users\you\AppData\Local\npm-cache\_logs\2026-08-02T14_22_09_881Z-debug-0.log
 ```
 
 That path is the answer to "where are the logs", and people scroll past it every day.

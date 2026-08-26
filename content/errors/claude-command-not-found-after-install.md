@@ -12,12 +12,12 @@ category: not-found
 verify: claude --version
 
 sample: |
-  PS C:\Users\nyx> irm https://claude.ai/install.ps1 | iex
+  PS C:\Users\you> irm https://claude.ai/install.ps1 | iex
   Downloading Claude Code...
-  Installing to C:\Users\nyx\.local\bin
+  Installing to C:\Users\you\.local\bin
   Installation complete. Run 'claude' to get started.
 
-  PS C:\Users\nyx> claude
+  PS C:\Users\you> claude
   claude : The term 'claude' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
   At line:1 char:1
   + claude

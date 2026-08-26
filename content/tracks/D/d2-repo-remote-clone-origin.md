@@ -49,7 +49,7 @@ Turns the folder you are standing in into a repo. Check it worked with `git stat
 prints `On branch main` instead of `fatal: not a git repository`.
 
 ```powershell
-git clone https://github.com/nyxlocke/sandbox.git
+git clone https://github.com/<yourname>/sandbox.git
 ```
 
 Downloads an existing repo from GitHub, complete with every commit ever made to it, into a
@@ -65,8 +65,8 @@ git remote -v
 ```
 
 ```text
-origin  https://github.com/nyxlocke/sandbox.git (fetch)
-origin  https://github.com/nyxlocke/sandbox.git (push)
+origin  https://github.com/yourname/sandbox.git (fetch)
+origin  https://github.com/yourname/sandbox.git (push)
 ```
 
 Two lines for one remote, because git records where it reads from and where it writes to
@@ -91,7 +91,7 @@ If you ran `git init` first and made a repository on GitHub afterward, the two d
 about each other yet. Introduce them:
 
 ```powershell
-git remote add origin https://github.com/nyxlocke/sandbox.git
+git remote add origin https://github.com/<yourname>/sandbox.git
 ```
 
 `add` means create a new nickname, `origin` is the nickname, and the rest is the address.
@@ -118,8 +118,8 @@ A repository address is a URL (Uniform Resource Locator), a web-style address, a
 offers it in two shapes for the same repository:
 
 ```text
-https://github.com/nyxlocke/sandbox.git
-git@github.com:nyxlocke/sandbox.git
+https://github.com/yourname/sandbox.git
+git@github.com:yourname/sandbox.git
 ```
 
 The first uses HTTPS (Hypertext Transfer Protocol Secure) and authenticates with a token.

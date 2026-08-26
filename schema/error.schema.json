@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://lockewerks.dev/compendium/error.schema.json",
   "title": "Error card",
-  "description": "One error message Nyx is likely to hit. Reached by pasting the error into Identify, so `patterns` is what makes the card findable and must match real terminal output rather than an idealized version of it.",
+  "description": "One error message the reader is likely to hit. Reached by pasting the error into Identify, so `patterns` is what makes the card findable and must match real terminal output rather than an idealized version of it.",
   "type": "object",
   "allOf": [{ "$ref": "common.schema.json#/$defs/base" }],
   "required": ["id", "title", "type", "verified", "volatility", "patterns", "means", "fix_ladder"],
@@ -14,7 +14,7 @@
     },
     "sample": {
       "type": "string",
-      "description": "The real message, copied verbatim from a real terminal including surrounding noise. Idealized samples do not match what she pastes."
+      "description": "The real message, copied verbatim from a real terminal including surrounding noise. Idealized samples do not match what they paste."
     },
     "patterns": {
       "type": "array",
@@ -29,12 +29,12 @@
     },
     "category": {
       "enum": ["not-found", "broke-at-runtime", "wont-compile", "permission", "network", "conflict", "config"],
-      "description": "not-found errors (command not found, No module named, ENOENT) mean something is missing or a path is wrong, and are cheap. broke-at-runtime errors mean the code hit a case it did not expect, and need an actual change. Nyx should learn to sort them at a glance."
+      "description": "not-found errors (command not found, No module named, ENOENT) mean something is missing or a path is wrong, and are cheap. broke-at-runtime errors mean the code hit a case it did not expect, and need an actual change. The reader should learn to sort them at a glance."
     },
     "fix_ladder": {
       "type": "array",
       "minItems": 1,
-      "description": "Ordered cheapest-and-most-likely first. She works down until it stops.",
+      "description": "Ordered cheapest-and-most-likely first. They work down until it stops.",
       "items": {
         "type": "object",
         "required": ["try", "why"],
@@ -42,13 +42,13 @@
           "try": { "type": "string" },
           "command": { "type": "string" },
           "shell": { "enum": ["powershell", "bash", "cmd"] },
-          "why": { "type": "string", "description": "What this step assumes the cause is. She should know which hypothesis she just tested." }
+          "why": { "type": "string", "description": "What this step assumes the cause is. They should know which hypothesis they just tested." }
         }
       }
     },
     "if_none_worked": {
       "type": "string",
-      "description": "What to paste into the agent, and what to include that she would otherwise trim off. The parts she would trim are the parts the agent uses."
+      "description": "What to paste into the agent, and what to include that they would otherwise trim off. The parts they would trim are the parts the agent uses."
     }
   }
 }

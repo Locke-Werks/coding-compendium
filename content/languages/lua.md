@@ -142,7 +142,7 @@ Blocks close with `end`, as in Ruby. Variables need `local` or they go global.
 Comments are two hyphens. Not-equal is `~=`, which no other language does.
 
 ```lua
-local scores = { nyx = 10 }
+local scores = { ada = 10 }
 
 for name, points in pairs(scores) do
   if points ~= 0 then

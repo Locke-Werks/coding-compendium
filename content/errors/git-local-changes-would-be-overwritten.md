@@ -18,7 +18,7 @@ danger: >
   read the diff and decided the changes are worthless.
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git pull
+  PS C:\Users\you\dev\scraper> git pull
   Updating 4f2a1c9..8b31e02
   error: Your local changes to the following files would be overwritten by merge:
           src/app.py

@@ -4,7 +4,7 @@ import type { Extract } from "../api";
  * The answer, assembled from sentences the corpus already contains.
  *
  * Nothing here was generated. Every line is verbatim from a card, and the card
- * is named beside it, which is the entire safety argument: she can click through
+ * is named beside it, which is the entire safety argument: they can click through
  * and read the sentence in its original context in one move. A generated answer
  * cannot offer that, because there is nothing to click through to.
  *

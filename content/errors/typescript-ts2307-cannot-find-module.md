@@ -13,7 +13,7 @@ category: not-found
 verify: npx tsc --noEmit
 
 sample: |
-  PS C:\Users\nyx\dev\site> npx tsc --noEmit
+  PS C:\Users\you\dev\site> npx tsc --noEmit
   src/App.tsx:3:24 - error TS2307: Cannot find module './components/Header' or its corresponding type declarations.
 
   3 import { Header } from './components/Header';

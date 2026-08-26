@@ -182,7 +182,7 @@ fn the_corpus_compiles_and_chunks() {
     assert_eq!(index.card_count().unwrap(), 3);
 }
 
-/// An intent has no body. It exists to catch a query in her words and point at
+/// An intent has no body. It exists to catch a query in the reader's words and point at
 /// the card that answers it, so opening one must land on the answer rather than
 /// an empty page.
 #[test]

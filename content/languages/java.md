@@ -226,7 +226,7 @@ the line that starts the program is six words long before it reaches a name you 
 Blocks use curly braces. Every statement ends with a semicolon. Indentation is four
 spaces and means nothing to the compiler, unlike Python where it means everything.
 
-The type comes before the name: `String name = "nyx";` reads as type, name, value. Hold
+The type comes before the name: `String name = "ada";` reads as type, name, value. Hold
 on to that reading order, because it is what separates Java from Kotlin and Swift, which
 put the name first and the type after a colon.
 
@@ -238,7 +238,7 @@ import java.util.List;
 
 public class App {
     public static void main(String[] args) {
-        String name = "nyx";
+        String name = "ada";
         final int max = 100;               // final means it cannot be reassigned
         List<String> names = new ArrayList<>();
         names.add(name);

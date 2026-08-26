@@ -26,8 +26,8 @@
 //! benchmarked against a 50-question gate and did not ship. See
 //! `docs/PHASE0-LLM-GATE.md`.
 //!
-//! The consequence worth stating plainly: every sentence this app shows Nyx was
-//! written by a human and appears verbatim in a card she can open. Nothing here
+//! The consequence worth stating plainly: every sentence this app shows the reader was
+//! written by a human and appears verbatim in a card they can open. Nothing here
 //! can invent a flag, invert a warning, or cite a card it did not read.
 
 pub mod compile;
@@ -48,7 +48,7 @@ use tauri::Manager;
 ///
 /// The corpus is behind a Mutex because rusqlite's `Connection` is not `Sync`.
 /// That is not a bottleneck here: a query takes well under a millisecond and
-/// there is exactly one user, so contention would require her to type faster
+/// there is exactly one user, so contention would require them to type faster
 /// than the database can answer.
 struct AppState {
     corpus: Mutex<Option<Index>>,
@@ -93,7 +93,7 @@ struct Capabilities {
     /// See docs/PHASE0-LLM-GATE.md.
     synthesis: bool,
     /// The global shortcut that summons the window, or None when another
-    /// program already claimed the binding. Shown in the footer so she knows
+    /// program already claimed the binding. Shown in the footer so they know
     /// the key, and so its absence is visible rather than mysterious.
     hotkey: Option<String>,
 }

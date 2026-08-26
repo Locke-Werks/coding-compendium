@@ -19,7 +19,7 @@ danger: >
   runs afterward.
 
 sample: |
-  PS C:\Users\nyx\dev\site> npm install react-chartjs-2
+  PS C:\Users\you\dev\site> npm install react-chartjs-2
   npm error code ERESOLVE
   npm error ERESOLVE unable to resolve dependency tree
   npm error

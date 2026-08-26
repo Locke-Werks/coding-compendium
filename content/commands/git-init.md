@@ -21,7 +21,7 @@ flags:
       `git init -b main` if you want to be certain.
 
 expect: >
-  One line, `Initialized empty Git repository in C:/Users/nyx/dev/myproject/.git/`. A
+  One line, `Initialized empty Git repository in C:/Users/you/dev/myproject/.git/`. A
   hidden `.git` folder now exists in that directory. Run `git status` and it answers
   instead of complaining that this is not a repository.
 

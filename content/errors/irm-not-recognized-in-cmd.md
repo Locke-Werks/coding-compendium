@@ -13,7 +13,7 @@ category: not-found
 verify: $PSVersionTable.PSVersion
 
 sample: |
-  C:\Users\nyx>irm https://claude.ai/install.ps1 | iex
+  C:\Users\you>irm https://claude.ai/install.ps1 | iex
   'irm' is not recognized as an internal or external command,
   operable program or batch file.
 
@@ -32,8 +32,8 @@ fix_ladder:
   - try: Look at the prompt you are typing into.
     why: >
       Assumes you are in the wrong shell and have not noticed. Command Prompt shows a path
-      followed by a greater-than sign, like `C:\Users\nyx>`. PowerShell shows the same path
-      with `PS` in front, like `PS C:\Users\nyx>`. That prefix is the whole tell.
+      followed by a greater-than sign, like `C:\Users\you>`. PowerShell shows the same path
+      with `PS` in front, like `PS C:\Users\you>`. That prefix is the whole tell.
 
   - try: Open PowerShell and run the command there.
     command: powershell

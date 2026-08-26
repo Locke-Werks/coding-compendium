@@ -12,7 +12,7 @@ category: config
 verify: git config --global user.name; git config --global user.email
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git commit -m "feat: add scraper"
+  PS C:\Users\you\dev\scraper> git commit -m "feat: add scraper"
   Author identity unknown
 
   *** Please tell me who you are.
@@ -25,7 +25,7 @@ sample: |
   to set your account's default identity.
   Omit --global to set the identity only in this repository.
 
-  fatal: unable to auto-detect email address (got 'nyx@DESKTOP-4K2M.(none)')
+  fatal: unable to auto-detect email address (got 'you@DESKTOP-4K2M.(none)')
 
 patterns:
   - "Please tell me who you are"
@@ -40,7 +40,7 @@ means: >
 
 fix_ladder:
   - try: Set your name and email once, for every repository on this machine.
-    command: git config --global user.name "Nyx"; git config --global user.email "you@example.com"
+    command: git config --global user.name "<Your Name>"; git config --global user.email "<you@example.com>"
     shell: powershell
     why: >
       Assumes this is a fresh Git install and it has never been told. `--global` writes to
@@ -72,7 +72,7 @@ fix_ladder:
       file, where it overrides the global one.
 
   - try: Use GitHub's no-reply address if you would rather not publish your email.
-    command: git config --global user.email "12345678+nyxlocke@users.noreply.github.com"
+    command: git config --global user.email "12345678+<yourname>@users.noreply.github.com"
     shell: powershell
     why: >
       Assumes you noticed that every commit email is public forever on a public repository.

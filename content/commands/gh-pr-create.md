@@ -37,7 +37,7 @@ flags:
 
 expect: >
   The address of the new pull request printed on its own line, such as
-  `https://github.com/nyxlocke/myproject/pull/12`. Ctrl+click it to open.
+  `https://github.com/yourname/myproject/pull/12`. Ctrl+click it to open.
 
 see_also:
   - gh-pr-list

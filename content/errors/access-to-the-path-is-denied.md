@@ -12,11 +12,11 @@ category: permission
 verify: Get-Acl .\<file> | Format-List
 
 sample: |
-  Remove-Item : Access to the path 'C:\Users\nyx\dev\scraper\dist\app.exe' is denied.
+  Remove-Item : Access to the path 'C:\Users\you\dev\scraper\dist\app.exe' is denied.
   At line:1 char:1
   + Remove-Item .\dist -Recurse -Force
   + ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      + CategoryInfo          : PermissionDenied: (C:\Users\nyx\...\dist\app.exe:FileInfo) [Remove-Item], UnauthorizedAccessException
+      + CategoryInfo          : PermissionDenied: (C:\Users\you\...\dist\app.exe:FileInfo) [Remove-Item], UnauthorizedAccessException
       + FullyQualifiedErrorId : RemoveFileSystemItemUnAuthorizedAccess,Microsoft.PowerShell.Commands.RemoveItemCommand
 
 patterns:

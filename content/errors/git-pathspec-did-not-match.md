@@ -17,7 +17,7 @@ danger: >
   lose, or `git stash` to set the edits aside instead of destroying them.
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git checkout feature/login
+  PS C:\Users\you\dev\scraper> git checkout feature/login
   error: pathspec 'feature/login' did not match any file(s) known to git
 
 patterns:

@@ -17,6 +17,8 @@ owns:
   - PowerShell vs CMD vs Git Bash
   - telling them apart
 see_also:
+  - k1-four-shells-one-console
+  - k3-the-first-ten-commands
   - c4-path-and-command-not-found
   - b2-install-git
   - c7-files-folders-and-paths
@@ -47,9 +49,9 @@ works. Tell which one you are in by looking at the prompt, the text sitting to t
 your cursor:
 
 ```text
-PS C:\Users\nyx>                                   PowerShell
-C:\Users\nyx>                                      Command Prompt
-nyx@DESKTOP MINGW64 ~/dev/my-project (main)        Git Bash
+PS C:\Users\you>                                   PowerShell
+C:\Users\you>                                      Command Prompt
+you@DESKTOP MINGW64 ~/dev/my-project (main)        Git Bash
 ```
 
 `PS` at the front means PowerShell. A bare drive letter means Command Prompt. A username, an

@@ -170,7 +170,7 @@ not need.
 
 ### Connecting it to GitHub
 
-Nothing to do. Because `gh` is authenticated as `nyxlocke` from [b4](#b4-github-and-gh),
+Nothing to do. Because `gh` is authenticated as `yourname` from [b4](#b4-github-and-gh),
 Codex can run `git` and `gh` commands with your credentials to commit, push, and open pull
 requests. The cloud version has its own setup for giving a remote environment access to your
 repositories; local terminal work needs none of it.

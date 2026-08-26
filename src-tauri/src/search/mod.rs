@@ -424,7 +424,7 @@ impl Index {
 
     /// Fetch a whole card for the reader, following intents to their target.
     ///
-    /// An intent has no body: it exists only to catch a query in Nyx's words
+    /// An intent has no body: it exists only to catch a query in the reader's words
     /// ("oops", "i wrecked it") and point at the card that answers it. Opening
     /// one would show an empty page, so it forwards instead. Resolved here
     /// rather than in the UI so every caller gets the same behavior.

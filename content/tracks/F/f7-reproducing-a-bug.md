@@ -132,7 +132,7 @@ worth being honest with yourself about.
 different one. Short of that, a clean copy is close:
 
 ```powershell
-git clone https://github.com/nyxlocke/site.git C:\Users\<yourname>\temp\site-check
+git clone https://github.com/<yourname>/site.git C:\Users\<yourname>\temp\site-check
 ```
 
 Install and run in that folder. If it works there and not in your normal folder, the cause is

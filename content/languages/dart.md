@@ -44,7 +44,7 @@ tells:
     kind: regex
     weight: 4
     note: >
-      Dart puts the type before the name (`String name = "nyx"`) or omits it with
+      Dart puts the type before the name (`String name = "ada"`) or omits it with
       `var` and `final`. TypeScript puts the type after the name with a colon, which
       is the fastest way to separate the two.
 

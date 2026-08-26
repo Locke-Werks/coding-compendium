@@ -18,10 +18,10 @@ danger: >
   exactly what is on the remote and have decided it should go.
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git push
-  To https://github.com/nyxlocke/scraper.git
+  PS C:\Users\you\dev\scraper> git push
+  To https://github.com/yourname/scraper.git
    ! [rejected]        main -> main (fetch first)
-  error: failed to push some refs to 'https://github.com/nyxlocke/scraper.git'
+  error: failed to push some refs to 'https://github.com/yourname/scraper.git'
   hint: Updates were rejected because the remote contains work that you do
   hint: not have locally. This is usually caused by another repository pushing
   hint: to the same ref. You may want to first integrate the remote changes

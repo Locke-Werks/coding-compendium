@@ -154,7 +154,7 @@ object Main:
   def greet(user: User): String = s"hello ${user.name}"
 
   def main(args: Array[String]): Unit =
-    println(greet(User(1, "nyx")))
+    println(greet(User(1, "ada")))
 ```
 
 Three things in there settle it. `case class` is Scala where Kotlin says `data class`.

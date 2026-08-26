@@ -30,7 +30,7 @@ flags:
 expect: >
   A table with a number column, the title, the branch name, and how long ago it was updated.
   If there are none it prints
-  `no open pull requests in nyxlocke/myproject`.
+  `no open pull requests in yourname/myproject`.
 
 see_also:
   - gh-pr-create

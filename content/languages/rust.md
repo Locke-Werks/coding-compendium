@@ -137,7 +137,7 @@ errors_look_like:
     error[E0382]: borrow of moved value: `name`
      --> src/main.rs:5:20
       |
-    3 |     let name = String::from("nyx");
+    3 |     let name = String::from("ada");
       |         ---- move occurs because `name` has type `String`
   recognize_by: >
     Three things: an error code in square brackets like `error[E0382]`, an arrow line
@@ -212,8 +212,8 @@ use std::collections::HashMap;
 
 fn main() {
     let mut scores: HashMap<String, i32> = HashMap::new();
-    scores.insert("nyx".to_string(), 10);
-    println!("{:?}", scores.get("nyx"));
+    scores.insert("ada".to_string(), 10);
+    println!("{:?}", scores.get("ada"));
 }
 ```
 

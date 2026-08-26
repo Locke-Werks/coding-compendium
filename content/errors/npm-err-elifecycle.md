@@ -13,7 +13,7 @@ category: broke-at-runtime
 verify: npm run <script-name>
 
 sample: |
-  PS C:\Users\nyx\dev\site> npm run build
+  PS C:\Users\you\dev\site> npm run build
 
   > site@0.1.0 build
   > tsc -b && vite build
@@ -24,7 +24,7 @@ sample: |
 
   npm error code ELIFECYCLE
   npm error errno 2
-  npm error path C:\Users\nyx\dev\site
+  npm error path C:\Users\you\dev\site
   npm error command failed
   npm error command C:\WINDOWS\system32\cmd.exe /d /s /c tsc -b && vite build
 

@@ -13,7 +13,7 @@ category: permission
 verify: Get-ExecutionPolicy -List
 
 sample: |
-  .\.venv\Scripts\Activate.ps1 : File C:\Users\nyx\dev\scraper\.venv\Scripts\Activate.ps1 cannot be loaded because running scripts is disabled on this system. For more information, see about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170.
+  .\.venv\Scripts\Activate.ps1 : File C:\Users\you\dev\scraper\.venv\Scripts\Activate.ps1 cannot be loaded because running scripts is disabled on this system. For more information, see about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170.
   At line:1 char:1
   + .\.venv\Scripts\Activate.ps1
   + ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

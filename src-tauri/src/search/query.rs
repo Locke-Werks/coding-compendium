@@ -1,4 +1,4 @@
-//! Turning what Nyx types into something FTS5 will accept.
+//! Turning what the reader types into something FTS5 will accept.
 //!
 //! This is the part most likely to be wrong, so it lives in its own module with
 //! its own tests and touches no database.
@@ -38,7 +38,7 @@
 
 /// English function words, dropped before searching.
 ///
-/// Nyx types questions, not keywords: "how do i know if this is python", not
+/// Readers type questions, not keywords: "how do i know if this is python", not
 /// "python identification". Every word in that question except the last is a
 /// function word that appears in half the corpus, contributes nothing to
 /// relevance, and actively hurts when terms are combined.
@@ -204,7 +204,7 @@ pub fn to_match_expression(raw: &str, prefix_last: bool) -> Option<String> {
     // OR, not AND.
     //
     // Space-separated terms are an implicit AND in FTS5, and AND is wrong for
-    // this audience. Nyx types "how do i know if this is python", and requiring
+    // this audience. A reader types "how do i know if this is python", and requiring
     // every word to appear in one card returns nothing at all, which reads as
     // the app being broken rather than the query being conversational.
     //
@@ -353,7 +353,7 @@ mod tests {
         assert_eq!(to_match_expression(r#""""#, true), None, "an empty phrase is not a search");
     }
 
-    /// `C++` and `C#` are real things Nyx will search for. They must not error,
+    /// `C++` and `C#` are real things a reader will search for. They must not error,
     /// and they must reduce to something that finds the card.
     #[test]
     fn language_names_with_symbols_survive() {

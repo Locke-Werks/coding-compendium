@@ -223,7 +223,7 @@ same job, and C# puts attributes in square brackets.
 const std = @import("std");
 
 pub fn main() !void {
-    const name = "nyx";
+    const name = "ada";
     var count: u8 = 3;
     count += 1;
     std.debug.print("{s} {d}\n", .{ name, count });

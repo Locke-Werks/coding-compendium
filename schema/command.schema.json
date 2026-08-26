@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://lockewerks.dev/compendium/command.schema.json",
   "title": "Command card",
-  "description": "One terminal command, explained flag by flag. She will paste it without reading it, so it has to be correct standing alone.",
+  "description": "One terminal command, explained flag by flag. They will paste it without reading it, so it has to be correct standing alone.",
   "type": "object",
   "allOf": [{ "$ref": "common.schema.json#/$defs/base" }],
   "required": ["id", "title", "type", "verified", "volatility", "command", "shell", "does"],
@@ -10,7 +10,7 @@
     "type": { "const": "command" },
     "command": {
       "type": "string",
-      "description": "The command as typed. Mark anything she must substitute with angle brackets, e.g. <branch-name>, so it is never pasted literally by mistake."
+      "description": "The command as typed. Mark anything they must substitute with angle brackets, e.g. <branch-name>, so it is never pasted literally by mistake."
     },
     "shell": { "enum": ["powershell", "bash", "cmd", "any"] },
     "tool": {
@@ -20,7 +20,7 @@
     "does": { "type": "string", "minLength": 20 },
     "flags": {
       "type": "array",
-      "description": "Every flag that is not self-evident. Nyx does not know what -u does, and nobody ever tells her.",
+      "description": "Every flag that is not self-evident. The reader does not know what -u does, and nobody ever tells them.",
       "items": {
         "type": "object",
         "required": ["flag", "means"],

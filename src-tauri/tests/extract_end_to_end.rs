@@ -3,7 +3,7 @@
 //! The unit tests in `synth` prove the selection logic with a stub embedder.
 //! This proves the thing that actually matters and that a stub cannot: that
 //! against 686 real cards, a real question pulls sentences that answer it, and
-//! every one of them appears verbatim in a card she can open.
+//! every one of them appears verbatim in a card they can open.
 //!
 //! Ignored by default because it loads the embedding model. Run deliberately:
 //!
@@ -140,6 +140,6 @@ fn an_uncovered_question_returns_nothing_rather_than_something() {
         // requirement is only that nothing is fabricated, which `answer`
         // asserts on every excerpt above. An empty result is the ideal outcome
         // and a verbatim-but-tangential sentence is an acceptable one, because
-        // she can see the card it came from and judge it herself.
+        // they can see the card it came from and judge it themselves.
     }
 }

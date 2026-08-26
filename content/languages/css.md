@@ -176,7 +176,7 @@ confusable_with:
 errors_look_like:
   sample: |
     [vite:css] [postcss] Unclosed block
-    file: C:/Users/nyx/shop/src/styles.css:42:1
+    file: C:/Users/you/shop/src/styles.css:42:1
 
     GET http://localhost:5173/styles.css
     Failed to load resource: the server responded with a status of 404 (Not Found)

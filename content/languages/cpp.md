@@ -168,7 +168,7 @@ confusable_with:
 errors_look_like:
   sample: |
     main.cpp:7:17: error: no matching function for call to 'std::vector<int>::push_back(const char [4])'
-        7 |     numbers.push_back("nyx");
+        7 |     numbers.push_back("ada");
           |     ~~~~~~~~~~~~~~~~~^~~~~~~
     /usr/include/c++/13/bits/stl_vector.h:1287:7: note: candidate: 'void std::vector<_Tp, _Alloc>::push_back(const value_type&)'
   recognize_by: >
@@ -246,7 +246,7 @@ the language, which makes a single one decisive.
 #include <string>
 
 int main() {
-    std::vector<std::string> names{"nyx"};
+    std::vector<std::string> names{"ada"};
     names.push_back("locke");
     std::cout << names.size() << "\n";
     return 0;
@@ -271,7 +271,7 @@ struct Session {
     explicit Session(std::string u) : user(std::move(u)) {}
 };
 
-auto s = std::make_unique<Session>("nyx");
+auto s = std::make_unique<Session>("ada");
 ```
 
 `auto` tells the compiler to work out the type from the right-hand side.

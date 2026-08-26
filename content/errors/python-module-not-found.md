@@ -14,13 +14,13 @@ verify: python -c "import requests; print(requests.__version__)"
 
 sample: |
   Traceback (most recent call last):
-    File "C:\Users\nyx\dev\scraper\main.py", line 1, in <module>
+    File "C:\Users\you\dev\scraper\main.py", line 1, in <module>
       import requests
   ModuleNotFoundError: No module named 'requests'
 
 # Anchored on the stable wording only. Never match the module name, the file
 # path, or the line number: those change on every machine and every run, and a
-# pattern that includes them matches nothing she actually pastes.
+# pattern that includes them matches nothing they actually paste.
 patterns:
   - "ModuleNotFoundError: No module named"
   - "ImportError: No module named"

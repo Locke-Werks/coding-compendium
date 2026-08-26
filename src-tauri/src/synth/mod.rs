@@ -5,7 +5,7 @@
 //! The plan was for a small local model to read the retrieved cards and write a
 //! short cited answer. It was gated on a measurement, the measurement was taken,
 //! and the answer was no. `docs/PHASE0-LLM-GATE.md` has the numbers; the short
-//! version is that the quantization small enough for her GPU broke the
+//! version is that the quantization small enough for a target GPU broke the
 //! machine-readable abstention contract, the one that held it needed 2.7 GB of
 //! VRAM or twenty seconds of CPU, and the single failure in fifteen answered a
 //! question about database connection strings out of the card that exists to warn
@@ -18,7 +18,7 @@
 //! An extracted sentence cannot be wrong about the corpus, because it *is* the
 //! corpus. It cannot invert a warning into advice, cannot cite a card it did not
 //! read, and cannot invent a flag. The worst case is that it picks a less
-//! relevant sentence than a human would, which she can see immediately because
+//! relevant sentence than a human would, which they can see immediately because
 //! the card it came from is named right there.
 //!
 //! It also returns in about a millisecond rather than twenty seconds, which for
@@ -35,7 +35,7 @@ pub struct Excerpt {
     pub card_title: String,
     /// The sentence, verbatim. Never rewritten, never summarized.
     pub text: String,
-    /// The heading it sits under, so she can find it in the card.
+    /// The heading it sits under, so they can find it in the card.
     pub heading_path: String,
     pub score: f64,
 }
@@ -46,7 +46,7 @@ pub struct Extract {
     pub excerpts: Vec<Excerpt>,
     /// True when nothing scored well enough to be worth showing. The UI shows
     /// the plain result list in that case, which is the honest outcome: the
-    /// cards are there, and we do not claim one of them answers her.
+    /// cards are there, and we do not claim one of them answers the question.
     pub weak: bool,
 }
 

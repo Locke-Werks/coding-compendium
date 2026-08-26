@@ -11,7 +11,7 @@ category: permission
 verify: Get-Process | Where-Object { $_.Modules.FileName -like "*<filename>*" }
 
 sample: |
-  The process cannot access the file 'C:\Users\nyx\dev\scraper\target\debug\scraper.exe' because it is being used by another process. (os error 32)
+  The process cannot access the file 'C:\Users\you\dev\scraper\target\debug\scraper.exe' because it is being used by another process. (os error 32)
   error: could not compile `scraper` (bin "scraper") due to 1 previous error
 
 patterns:

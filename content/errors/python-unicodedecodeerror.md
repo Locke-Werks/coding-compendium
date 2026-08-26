@@ -13,12 +13,12 @@ category: broke-at-runtime
 verify: python -c "open('data.csv', encoding='utf-8').read(); print('ok')"
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> python main.py
+  PS C:\Users\you\dev\scraper> python main.py
   Traceback (most recent call last):
-    File "C:\Users\nyx\dev\scraper\main.py", line 4, in <module>
+    File "C:\Users\you\dev\scraper\main.py", line 4, in <module>
       text = open("data.csv").read()
              ~~~~~~~~~~~~~~~~~~~~~~~
-    File "C:\Users\nyx\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 23, in decode
+    File "C:\Users\you\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 23, in decode
       return codecs.charmap_decode(input,self.errors,decoding_table)[0]
              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 1425: character maps to <undefined>

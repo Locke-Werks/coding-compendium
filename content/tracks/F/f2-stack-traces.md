@@ -68,9 +68,9 @@ context you paste along with them ([f5](#f5-what-to-paste-and-what-not-to)).
 
 ```text
 Traceback (most recent call last):
-  File "C:\Users\nyx\project\app.py", line 20, in <module>
+  File "C:\Users\you\project\app.py", line 20, in <module>
     main()
-  File "C:\Users\nyx\project\app.py", line 12, in total
+  File "C:\Users\you\project\app.py", line 12, in total
     return price * quantity
 TypeError: can't multiply sequence by non-int of type 'str'
 ```
@@ -93,13 +93,13 @@ which helps when one line contains four function calls.
 ### JavaScript and Node: the answer is at the top
 
 ```text
-C:\Users\nyx\shop\server.js:12
+C:\Users\you\shop\server.js:12
   const total = cart.items.length;
                      ^
 
 TypeError: Cannot read properties of undefined (reading 'items')
-    at checkout (C:\Users\nyx\shop\server.js:12:22)
-    at Object.<anonymous> (C:\Users\nyx\shop\index.js:4:1)
+    at checkout (C:\Users\you\shop\server.js:12:22)
+    at Object.<anonymous> (C:\Users\you\shop\index.js:4:1)
     at Module._compile (node:internal/modules/cjs/loader:1356:14)
 ```
 

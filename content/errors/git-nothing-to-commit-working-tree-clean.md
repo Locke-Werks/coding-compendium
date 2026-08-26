@@ -12,7 +12,7 @@ category: not-found
 verify: git status --porcelain
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git commit -m "feat: add retry logic"
+  PS C:\Users\you\dev\scraper> git commit -m "feat: add retry logic"
   On branch main
   nothing to commit, working tree clean
 

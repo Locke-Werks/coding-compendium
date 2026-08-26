@@ -129,7 +129,7 @@ list in [e11](#e11-what-to-never-let-an-agent-do) stays manual.
 
 ### The trust boundary
 
-The agent runs with your identity. Because `gh` is authenticated as `nyxlocke`, a `gh`
+The agent runs with your identity. Because `gh` is authenticated as `yourname`, a `gh`
 command from the agent is you opening a pull request. Commits carry the name and email you
 set in [b3](#b3-tell-git-who-you-are). Nothing marks the work as machine-written unless you
 configure it to, and [b8](#b8-turn-off-ai-attribution) is about deliberately removing what

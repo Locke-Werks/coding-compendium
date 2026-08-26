@@ -11,7 +11,7 @@ Run it after `pnpm tauri build` and after signing the executable, then forge.
 
 .PARAMETER AllowUnsigned
 Stage an unsigned executable anyway. Payload members are extracted verbatim, so
-an unsigned binary going in is an unsigned binary on her disk: SmartScreen on
+an unsigned binary going in is an unsigned binary on the user's disk: SmartScreen on
 first run and no publisher on the file. For local testing only.
 #>
 [CmdletBinding()]

@@ -78,7 +78,7 @@ def test_get_user():
 
 This passes if `get_user` returns the wrong user, an empty object, or the string "banana."
 It proves the function returned something. The stronger version names the answer:
-`assert user.email == "nyx@example.com"`.
+`assert user.email == "ada@example.com"`.
 
 ```javascript
 expect(saveMock).toHaveBeenCalled();

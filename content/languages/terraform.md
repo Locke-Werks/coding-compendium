@@ -161,7 +161,7 @@ commas, no quoted keys, and `=` between a name and its value.
 
 ```hcl
 resource "aws_s3_bucket" "assets" {
-  bucket = "nyx-assets-prod"
+  bucket = "app-assets-prod"
   tags = {
     Environment = var.environment
   }

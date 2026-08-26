@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://lockewerks.dev/compendium/panic.schema.json",
   "title": "Panic decision tree",
-  "description": "A guided recovery for someone who has broken something and does not know what. One question at a time, plain language, large targets, no jargon in the questions themselves. The design constraint that shapes everything here: she is stressed, so she is not reading carefully, so every branch must state its cost before she can pick it.",
+  "description": "A guided recovery for someone who has broken something and does not know what. One question at a time, plain language, large targets, no jargon in the questions themselves. The design constraint that shapes everything here: they are stressed, so they are not reading carefully, so every branch must state its cost before they can pick it.",
   "type": "object",
   "allOf": [{ "$ref": "common.schema.json#/$defs/base" }],
   "required": ["id", "title", "type", "verified", "volatility", "symptom", "root", "nodes"],
@@ -10,11 +10,11 @@
     "type": { "const": "panic" },
     "symptom": {
       "type": "string",
-      "description": "How it looks from her side, not what it is called. 'My changes disappeared', not 'detached HEAD recovery'."
+      "description": "How it looks from the reader's side, not what it is called. 'My changes disappeared', not 'detached HEAD recovery'."
     },
     "reassurance": {
       "type": "string",
-      "description": "Opens the tree. Honest, not soothing: if the work is almost certainly recoverable, say so and say why, because that is true of most git disasters and knowing it changes how carefully she proceeds."
+      "description": "Opens the tree. Honest, not soothing: if the work is almost certainly recoverable, say so and say why, because that is true of most git disasters and knowing it changes how carefully they proceed."
     },
     "backup_first": {
       "type": "string",
@@ -37,7 +37,7 @@
           },
           "how_to_tell": {
             "type": "string",
-            "description": "The command that answers the question for her when she cannot tell. She often does not know which branch she is on, and that is the normal case, not a failure."
+            "description": "The command that answers the question for them when they cannot tell. People often do not know which branch they are on, and that is the normal case, not a failure."
           },
           "branches": {
             "type": "array",
@@ -60,11 +60,11 @@
               "does": { "type": "string" },
               "destroys": {
                 "type": "string",
-                "description": "Required whenever anything is lost. Stated before she runs it, in the same view as the button. 'Nothing' is a valid and reassuring answer."
+                "description": "Required whenever anything is lost. Stated before they run it, in the same view as the button. 'Nothing' is a valid and reassuring answer."
               },
               "verify": {
                 "type": "string",
-                "description": "How she confirms it worked. Without this she cannot tell recovery from further breakage, which is the worst moment to be uncertain."
+                "description": "How they confirm it worked. Without this they cannot tell recovery from further breakage, which is the worst moment to be uncertain."
               },
               "if_it_did_not_work": { "type": "string" }
             }

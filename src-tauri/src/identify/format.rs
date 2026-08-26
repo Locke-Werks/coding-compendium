@@ -1,11 +1,11 @@
 //! Deciding what KIND of thing was pasted, before asking which language it is.
 //!
-//! This runs first, and it matters more than it sounds. Nyx pastes whatever is
-//! on her clipboard: a stack trace, a terminal command she was told to run, a
+//! This runs first, and it matters more than it sounds. The reader pastes whatever is
+//! on their clipboard: a stack trace, a terminal command they were told to run, a
 //! config file, a diff, an error line. Scoring all of those against language
 //! tells produces confident nonsense, because a Python traceback is full of
-//! Python-shaped tokens while not being Python source at all. Telling her "this
-//! is Python" when she pasted a crash is answering a question she did not ask.
+//! Python-shaped tokens while not being Python source at all. Telling them "this
+//! is Python" when they pasted a crash is answering a question they did not ask.
 //!
 //! So the router classifies the shape first and the language second, and some
 //! shapes short-circuit language detection entirely. A `git status` command is
@@ -24,7 +24,7 @@ pub enum Format {
     StackTrace,
     /// A single error line, no stack.
     ErrorMessage,
-    /// A command she is being told to run.
+    /// A command they are being told to run.
     ShellCommand,
     /// Unified diff or patch output.
     Diff,
@@ -34,7 +34,7 @@ pub enum Format {
     Log,
     /// A file listing or directory tree.
     FileListing,
-    /// Prose. Usually means she pasted the wrong thing.
+    /// Prose. Usually means they pasted the wrong thing.
     Prose,
 }
 
@@ -179,7 +179,7 @@ pub fn detect(text: &str) -> FormatVerdict {
 
 /// Remove a copied shell prompt from the front of a line.
 ///
-/// People paste straight out of a tutorial, prompt and all: `PS C:\Users\nyx>
+/// People paste straight out of a tutorial, prompt and all: `PS C:\Users\you>
 /// git status` or `$ npm install`. Without stripping it the first word is the
 /// prompt rather than the command, and nothing is ever recognized.
 ///
@@ -331,7 +331,7 @@ mod tests {
     #[test]
     fn commands_are_recognized_with_and_without_a_pasted_prompt() {
         assert_eq!(f("git status"), Format::ShellCommand);
-        assert_eq!(f("PS C:\\Users\\nyx> git status"), Format::ShellCommand);
+        assert_eq!(f("PS C:\\Users\\ada> git status"), Format::ShellCommand);
         assert_eq!(f("$ npm install"), Format::ShellCommand);
         assert_eq!(f("Get-ChildItem -Recurse"), Format::ShellCommand);
         assert_eq!(f("cargo build --release"), Format::ShellCommand);
@@ -368,7 +368,7 @@ mod tests {
 
     #[test]
     fn prompt_stripping_only_fires_on_real_prompts() {
-        assert_eq!(strip_prompt("PS C:\\Users\\nyx> git status"), "git status");
+        assert_eq!(strip_prompt("PS C:\\Users\\ada> git status"), "git status");
         assert_eq!(strip_prompt("C:\\dev\\app> npm run dev"), "npm run dev");
         assert_eq!(strip_prompt("$ cargo build"), "cargo build");
         assert_eq!(strip_prompt("git status"), "git status");

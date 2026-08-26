@@ -86,7 +86,7 @@ Here is a real one, with the parts labelled:
 
 ```text
 Traceback (most recent call last):
-  File "C:\Users\nyx\dev\scraper\main.py", line 12, in <module>
+  File "C:\Users\you\dev\scraper\main.py", line 12, in <module>
     import requests
 ModuleNotFoundError: No module named 'requests'
 ```
@@ -133,7 +133,7 @@ Error: listen EADDRINUSE: address already in use :::3000
     at Server.setupListenHandle [as _listen2] (node:net:1817:16)
     at listenInCluster (node:net:1865:12)
     at Server.listen (node:net:1953:7)
-    at C:\Users\nyx\dev\site\server.js:14:8
+    at C:\Users\you\dev\site\server.js:14:8
 ```
 
 Four steps.

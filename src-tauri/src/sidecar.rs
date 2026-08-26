@@ -22,14 +22,14 @@ use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
 /// Width of the strip, in logical pixels.
 ///
 /// Wide enough for a sentence at a comfortable measure, narrow enough to sit
-/// beside a maximized editor without covering the code she is reading. Going
-/// wider defeats the point: at that size she may as well use the main window.
+/// beside a maximized editor without covering the code they are reading. Going
+/// wider defeats the point: at that size they may as well use the main window.
 const WIDTH: f64 = 400.0;
 
 /// Show the sidecar, creating it the first time.
 ///
 /// Docks to the right edge of whichever monitor the main window is on, because
-/// that is the monitor she is looking at. Guessing the primary display puts the
+/// that is the monitor they are looking at. Guessing the primary display puts the
 /// strip on the wrong screen for anyone with two.
 pub fn toggle(app: &AppHandle) -> tauri::Result<()> {
     if let Some(existing) = app.get_webview_window("sidecar") {

@@ -168,13 +168,13 @@ labels and jumps. The whole language is case-insensitive, so `ECHO`, `echo`, and
 ```cmd
 @echo off
 setlocal
-set NAME=nyx
+set NAME=ada
 echo Hello %NAME%
 if not exist build mkdir build
 if errorlevel 1 echo Something failed
 ```
 
-`set NAME=nyx` has no spaces around the `=` on purpose. Adding them puts the spaces
+`set NAME=ada` has no spaces around the `=` on purpose. Adding them puts the spaces
 inside the value, and nothing warns you.
 
 A batch file runs the moment you double-click it, in a window that closes when it

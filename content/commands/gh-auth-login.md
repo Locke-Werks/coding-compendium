@@ -35,7 +35,7 @@ flags:
 
 expect: >
   A series of questions, then a browser opens. After you paste the code and approve, the
-  terminal prints a success line ending with `Logged in as nyxlocke`.
+  terminal prints a success line ending with `Logged in as <yourname>`.
 
 see_also:
   - gh-auth-status

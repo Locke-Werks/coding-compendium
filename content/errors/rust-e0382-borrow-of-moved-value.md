@@ -13,12 +13,12 @@ category: wont-compile
 verify: cargo check
 
 sample: |
-  PS C:\Users\nyx\dev\tool> cargo run
-     Compiling tool v0.1.0 (C:\Users\nyx\dev\tool)
+  PS C:\Users\you\dev\tool> cargo run
+     Compiling tool v0.1.0 (C:\Users\you\dev\tool)
   error[E0382]: borrow of moved value: `name`
    --> src/main.rs:6:20
     |
-  3 |     let name = String::from("nyx");
+  3 |     let name = String::from("ada");
     |         ---- move occurs because `name` has type `String`, which does not implement the `Copy` trait
   4 |     let greeting = build(name);
     |                          ---- value moved here

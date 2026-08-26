@@ -2,7 +2,7 @@
 id: what-should-i-not-commit
 title: "What should never go into git"
 type: intent
-verified: 2026-08-02
+verified: 2026-08-25
 volatility: low
 
 goal: "I want to know which files should never go into git."
@@ -10,8 +10,10 @@ target: d12-gitignore-and-what-not-to-commit
 urgency: calm
 
 phrasings:
+  - "what should i not commit"
   - "what is gitignore"
   - "what shouldnt i commit"
+  - "what should never go in git"
   - "why is node modules in my commit"
   - "stop committing build files"
   - "ignore files in git"

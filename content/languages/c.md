@@ -257,7 +257,7 @@ Comments are `/* */` everywhere and `//` since 1999. The program starts at
 
 int main(void) {
     char *name = malloc(16);
-    snprintf(name, 16, "nyx");
+    snprintf(name, 16, "ada");
     printf("hello %s\n", name);
     free(name);
     return 0;

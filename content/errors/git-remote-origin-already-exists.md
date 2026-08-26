@@ -12,7 +12,7 @@ category: config
 verify: git remote -v
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git remote add origin https://github.com/nyxlocke/scraper.git
+  PS C:\Users\you\dev\scraper> git remote add origin https://github.com/yourname/scraper.git
   error: remote origin already exists.
 
 patterns:
@@ -35,7 +35,7 @@ fix_ladder:
       add, there is nothing to do.
 
   - try: Point origin at the new address instead of adding it.
-    command: git remote set-url origin https://github.com/nyxlocke/<repo>.git
+    command: git remote set-url origin https://github.com/<yourname>/<repo>.git
     shell: powershell
     why: >
       Assumes the existing address is wrong or outdated. `set-url` replaces the address on a
@@ -43,7 +43,7 @@ fix_ladder:
       files and no commits.
 
   - try: Remove the old remote and add it again.
-    command: git remote remove origin; git remote add origin https://github.com/nyxlocke/<repo>.git
+    command: git remote remove origin; git remote add origin https://github.com/<yourname>/<repo>.git
     shell: powershell
     why: >
       Assumes you want a clean slate. This is equivalent to `set-url` with more steps.

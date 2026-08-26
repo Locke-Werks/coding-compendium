@@ -13,7 +13,7 @@ category: not-found
 verify: which <name>
 
 sample: |
-  nyx@DESKTOP-4K2M MINGW64 ~/dev/scraper (main)
+  you@DESKTOP-4K2M MINGW64 ~/dev/scraper (main)
   $ pnpm dev
   bash: pnpm: command not found
 

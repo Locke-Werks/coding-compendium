@@ -155,7 +155,7 @@ thousand look the same.
 library(dplyr)
 
 scores <- c(10, 8, 6)
-names <- c("nyx", "ada", "grace")
+names <- c("ada", "kai", "grace")
 
 results <- data.frame(names, scores) %>%
   filter(scores > 6)

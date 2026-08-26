@@ -17,8 +17,8 @@ flags:
   - flag: "<repository-url>"
     means: >
       The address of the repository. Two forms exist. HTTPS (Hypertext Transfer Protocol
-      Secure) looks like `https://github.com/nyxlocke/myproject.git` and asks for
-      credentials. SSH (Secure Shell) looks like `git@github.com:nyxlocke/myproject.git`
+      Secure) looks like `https://github.com/yourname/myproject.git` and asks for
+      credentials. SSH (Secure Shell) looks like `git@github.com:yourname/myproject.git`
       and uses a key you set up once.
   - flag: "<folder-name>, added at the end"
     means: >

@@ -170,7 +170,7 @@ confusable_with:
   - language: dart
     settle_it: >
       Both use braces, semicolons, and `=>`. Dart puts the type before the name
-      (`String name = 'nyx'`) where JavaScript puts no type at all, and Dart files
+      (`String name = 'ada'`) where JavaScript puts no type at all, and Dart files
       end in `.dart` beside a `pubspec.yaml`.
     tiebreak: { pattern: '\brequired\s+this\.', kind: regex, favors: dart }
   - language: css
@@ -196,13 +196,13 @@ confusable_with:
 
 errors_look_like:
   sample: |
-    C:\Users\nyx\shop\server.js:12
+    C:\Users\you\shop\server.js:12
       const total = cart.items.length;
                          ^
 
     TypeError: Cannot read properties of undefined (reading 'items')
-        at checkout (C:\Users\nyx\shop\server.js:12:22)
-        at Object.<anonymous> (C:\Users\nyx\shop\index.js:4:1)
+        at checkout (C:\Users\you\shop\server.js:12:22)
+        at Object.<anonymous> (C:\Users\you\shop\index.js:4:1)
         at Module._compile (node:internal/modules/cjs/loader:1356:14)
   recognize_by: >
     Lines beginning with `at `, each ending in `file:line:column`, stacked newest

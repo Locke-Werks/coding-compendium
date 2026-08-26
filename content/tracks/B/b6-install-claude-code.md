@@ -153,7 +153,7 @@ git ([b2](#b2-install-git)) and restart the session.
 ### Connecting it to GitHub
 
 Nothing to do, if you finished [b4](#b4-github-and-gh). Because `gh` is authenticated as
-`nyxlocke`, Claude Code can run `git` and `gh` commands with your credentials: commit, push,
+`yourname`, Claude Code can run `git` and `gh` commands with your credentials: commit, push,
 open a pull request. Ask for it in plain language.
 
 A separate, optional thing is the GitHub App, which lets you mention Claude inside a GitHub

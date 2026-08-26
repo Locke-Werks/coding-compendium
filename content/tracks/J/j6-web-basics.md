@@ -87,7 +87,7 @@ Host: example.com
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOi...
 
-{"email":"nyx@example.com","name":"Nyx"}
+{"email":"ada@example.com","name":"Ada"}
 ```
 
 Method, path, and version on the first line. Headers next, one per line. A blank line. Then
@@ -97,7 +97,7 @@ the body, which here is JSON.
 201 Created
 Content-Type: application/json
 
-{"id":42,"email":"nyx@example.com"}
+{"id":42,"email":"ada@example.com"}
 ```
 
 Status code first, headers, blank line, body. Every web interaction you ever have is this,

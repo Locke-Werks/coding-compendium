@@ -13,17 +13,17 @@ category: not-found
 verify: npm ls <name>
 
 sample: |
-  PS C:\Users\nyx\dev\site> node index.js
+  PS C:\Users\you\dev\site> node index.js
   node:internal/process/esm_loader:40
         internalBinding('errors').triggerUncaughtException(
         ^
 
-  Error [ERR_MODULE_NOT_FOUND]: Cannot find module 'C:\Users\nyx\dev\site\src\utils' imported from C:\Users\nyx\dev\site\src\index.js
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module 'C:\Users\you\dev\site\src\utils' imported from C:\Users\you\dev\site\src\index.js
   Did you mean to import "./utils.js"?
       at finalizeResolution (node:internal/modules/esm/resolve:265:11)
       at moduleResolve (node:internal/modules/esm/resolve:933:10) {
     code: 'ERR_MODULE_NOT_FOUND',
-    url: 'file:///C:/Users/nyx/dev/site/src/utils'
+    url: 'file:///C:/Users/you/dev/site/src/utils'
   }
 
 patterns:

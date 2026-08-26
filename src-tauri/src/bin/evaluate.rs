@@ -246,7 +246,7 @@ impl Metrics {
 fn rank_of(index: &Index, ids: &[String], acceptable: &HashSet<String>) -> Result<Option<usize>> {
     for (i, id) in ids.iter().enumerate() {
         // An intent forwards to its target, so a hit on either is correct: what
-        // she sees on opening it is the same card.
+        // they see on opening it is the same card.
         let resolved = index.card(id)?.map(|c| c.id);
         if acceptable.contains(id) || resolved.is_some_and(|r| acceptable.contains(&r)) {
             return Ok(Some(i + 1));

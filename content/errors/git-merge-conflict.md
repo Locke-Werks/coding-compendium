@@ -19,7 +19,7 @@ danger: >
   about sitting in the same file.
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> git merge feature/login
+  PS C:\Users\you\dev\scraper> git merge feature/login
   Auto-merging src/app.py
   CONFLICT (content): Merge conflict in src/app.py
   Automatic merge failed; fix conflicts and then commit the result.

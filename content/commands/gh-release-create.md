@@ -35,7 +35,7 @@ flags:
 
 expect: >
   The address of the release page printed on its own line, such as
-  `https://github.com/nyxlocke/myproject/releases/tag/v1.2.0`.
+  `https://github.com/yourname/myproject/releases/tag/v1.2.0`.
 
 see_also:
   - git-tag

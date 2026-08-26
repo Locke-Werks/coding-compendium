@@ -9,9 +9,9 @@ language: python
 category: broke-at-runtime
 
 sample: |
-  PS C:\Users\nyx\dev\scraper> python main.py
+  PS C:\Users\you\dev\scraper> python main.py
   Traceback (most recent call last):
-    File "C:\Users\nyx\dev\scraper\main.py", line 9, in <module>
+    File "C:\Users\you\dev\scraper\main.py", line 9, in <module>
       timeout = config["timeout"]
                 ~~~~~~^^^^^^^^^^^
   KeyError: 'timeout'

@@ -36,7 +36,7 @@ flags:
       local folder. Do not combine it with `--source`.
 
 expect: >
-  A line confirming creation such as `Created repository nyxlocke/myproject on GitHub`, then
+  A line confirming creation such as `Created repository yourname/myproject on GitHub`, then
   a line adding the remote, then push output. Confirm with `git remote -v`.
 
 see_also:
