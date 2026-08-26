@@ -7,15 +7,20 @@ on:
 
 jobs:
   content:
-    # The corpus is 686 cards written by many hands. The linter is the only
-    # thing standing between that and 686 slightly different voices, so it
+    # The corpus is 713 cards written by many hands. The linter is the only
+    # thing standing between that and 713 slightly different voices, so it
     # blocks rather than warns.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Must match the pnpm that wrote pnpm-workspace.yaml. That file carries
+      # `allowBuilds` and no `packages` key, which pnpm 9 rejects outright with
+      # "packages field missing or empty" the moment setup-node's cache probe
+      # shells out to `pnpm store path`. The job died there, before installing
+      # anything, on every run since the file was added.
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 11
       - uses: actions/setup-node@v4
         with:
           node-version: 22
