@@ -1,0 +1,195 @@
+name: release
+
+# Cutting a tag builds, signs and publishes. Every release before 0.2.0 was made
+# by hand on one machine with the Azure credentials in that shell, which is why
+# 0.1.0 shipped an installer that could not run: nothing but a person checked it.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to build and publish'
+        required: true
+
+env:
+  # Pinned, not tracking latest, so a Forge release cannot change what this job
+  # produces without someone choosing it. v0.3.0 is the first with [[options]],
+  # `when` and `as = "user"`; older tools accept those keys and silently invert
+  # them. See Forge docs/using-forge-in-ci.md.
+  FORGE_VERSION: v0.3.0
+
+jobs:
+  release:
+    runs-on: windows-latest
+    environment: release
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      # 67 MB of ONNX weights from HuggingFace, fetched by build:content on a
+      # cold cache. They are also the largest thing in the payload, so this is
+      # the difference between a two minute step and a ten minute one.
+      - name: Cache the embedding weights
+        uses: actions/cache@v4
+        with:
+          path: .fastembed_cache
+          key: fastembed-bge-small-en-v1.5-onnx-q
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Frontend
+        run: pnpm build
+
+      - name: Corpus
+        run: pnpm build:content
+
+      # --features custom-protocol is not optional. Without it Tauri builds a
+      # binary that loads the frontend from the dev server, so an installed copy
+      # opens to a connection error. It is optimized, stripped and signable, and
+      # indistinguishable from a working build until someone runs it.
+      # stage-payload.ps1 greps the image for the hashed asset names to catch
+      # exactly this, and that check is the reason it is worth stating twice.
+      - name: Release binary
+        run: >
+          cargo build --release
+          --manifest-path src-tauri/Cargo.toml
+          --bin coding-compendium
+          --features custom-protocol
+
+      # Sign the payload BEFORE staging. Forge hashes payload members into the
+      # container and extracts them verbatim, so an unsigned binary going in is
+      # an unsigned binary on the customer's disk, and signing the finished
+      # installer does nothing for it.
+      - name: Sign the payload binary
+        uses: azure/trusted-signing-action@v0
+        with:
+          azure-tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          azure-client-id: ${{ vars.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: https://eus.codesigning.azure.net
+          trusted-signing-account-name: specterpoint
+          certificate-profile-name: specterpoint
+          files-folder: src-tauri/target/release
+          files-folder-filter: exe
+          file-digest: SHA256
+          # Certificates are valid for three days. Without the timestamp the
+          # signature stops validating within the week. Not optional.
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      # lwstub.exe ships signed, which is what makes the embedded uninstaller
+      # signed without a second pass here. Forge is public, so the default token
+      # reads its releases: no PAT, no FORGE_TOKEN. gh still refuses to run with
+      # no GH_TOKEN at all, which reads like a permissions failure and is not.
+      - name: Fetch Forge
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          New-Item -ItemType Directory -Force installer/tools | Out-Null
+          gh release download $env:FORGE_VERSION --repo Locke-Werks/Forge `
+            --pattern 'lwforge.exe' --pattern 'lwstub.exe' --dir installer/tools
+          if ($LASTEXITCODE) { throw "could not download Forge $env:FORGE_VERSION" }
+          foreach ($name in 'lwforge.exe', 'lwstub.exe') {
+            $sig = Get-AuthenticodeSignature "installer/tools/$name"
+            "$name : $($sig.Status)"
+            # An unsigned stub means an unsigned uninstaller, permanently, in
+            # Program Files, where Settings invokes it elevated.
+            if ($sig.Status -ne 'Valid') { throw "installer/tools/$name is $($sig.Status)" }
+          }
+
+      # Verifies the signature and the embedded frontend, then assembles the
+      # exe, the corpus and the flattened weights into installer/payload.
+      - name: Stage the payload
+        shell: pwsh
+        run: ./scripts/stage-payload.ps1
+
+      # No --sign. That flag makes lwforge shell out to scripts/sign.ps1
+      # resolved against the working directory, which exists only in the Forge
+      # repo, and the failure reads like a certificate problem. Signing is the
+      # next step.
+      #
+      # Run from installer/tools with relative paths, because product.icon
+      # resolves against the config file's directory and is opened through the
+      # \\?\ prefix, which does not collapse the `..` in '..\src-tauri\icons'.
+      - name: Forge the installer
+        shell: pwsh
+        run: |
+          $version = (Select-String -Path installer/installer.toml `
+                        -Pattern '^version\s*=\s*"(.+)"').Matches[0].Groups[1].Value
+          "version: $version"
+          "SETUP_NAME=CodingCompendium-Setup-$version.exe" |
+            Out-File -Append $env:GITHUB_ENV
+          New-Item -ItemType Directory -Force installer/dist | Out-Null
+          Push-Location installer/tools
+          try {
+            ./lwforge.exe build `
+              --config  ..\installer.toml `
+              --payload ..\payload `
+              --stub    .\lwstub.exe `
+              --out     "..\dist\CodingCompendium-Setup-$version.exe"
+            if ($LASTEXITCODE) { throw 'lwforge failed' }
+          } finally { Pop-Location }
+
+      # Last, after resource stamping and the container append have finished
+      # rewriting the image. The signature is what makes the bytes immutable.
+      - name: Sign the installer
+        uses: azure/trusted-signing-action@v0
+        with:
+          azure-tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          azure-client-id: ${{ vars.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: https://eus.codesigning.azure.net
+          trusted-signing-account-name: specterpoint
+          certificate-profile-name: specterpoint
+          files-folder: installer/dist
+          files-folder-filter: exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      - name: Verify
+        shell: pwsh
+        run: |
+          $out = "installer/dist/$env:SETUP_NAME"
+          $sig = Get-AuthenticodeSignature $out
+          "installer: $($sig.Status)  $($sig.SignerCertificate.Subject)"
+          # The action exiting zero is not the same as the file being signed.
+          if ($sig.Status -ne 'Valid') { throw "installer is $($sig.Status)" }
+
+          # Signing appended a certificate table after the container. Appended
+          # data before that table is inside the Authenticode digest by design,
+          # so the payload stays under the signature, but prove it per release
+          # rather than trusting the design note.
+          ./installer/tools/lwforge.exe inspect $out
+          if ($LASTEXITCODE -ne 0) {
+            throw 'the signed installer cannot read its own container'
+          }
+
+      - name: Publish
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ inputs.tag || github.ref_name }}"
+          gh release create $tag "installer/dist/$env:SETUP_NAME" `
+            --repo "${{ github.repository }}" `
+            --title "Coding Compendium $($tag.TrimStart('v'))" `
+            --generate-notes
+          if ($LASTEXITCODE) { throw "gh release create failed" }
