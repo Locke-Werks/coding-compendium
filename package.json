@@ -1,7 +1,7 @@
 {
   "name": "coding-compendium",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "Offline Windows reference app for software development in the age of coding agents",
   "author": "Locke Werks",

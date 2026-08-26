@@ -1,6 +1,6 @@
 [package]
 name = "coding-compendium"
-version = "0.2.0"
+version = "0.2.1"
 description = "Offline reference for software development in the age of coding agents"
 authors = ["Locke Werks"]
 # Proprietary. See LICENSE at the repo root.
