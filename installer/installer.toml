@@ -8,7 +8,7 @@
 
 [product]
 name        = "Coding Compendium"
-version     = "0.1.1"
+version     = "0.2.0"
 publisher   = "Locke Werks"
 description = "Offline Windows reference for software development in the age of coding agents."
 copyright   = "Copyright (c) 2026 Locke Werks"
@@ -26,7 +26,7 @@ dir   = '{ProgramFiles}\Coding Compendium'
 # required stamps requireAdministrator, so UAC arrives before the wizard does.
 # The alternative, on-demand, stamps asInvoker and the stub has no self-elevation
 # path: a machine-scope install would then die at the first write to Program
-# Files unless the person knew to right-click and run as administrator. Nyx will
+# Files unless the person knew to right-click and run as administrator. A first-time user will
 # double-click it. The license is still read before anything is installed, just
 # after the prompt rather than before it.
 elevation = "required"
@@ -62,8 +62,8 @@ fail = "Windows 10 version 1809 or later is required."
 [[preflight]]
 type = "free_disk_space"
 # Measured payload is 111 MB: 37.3 MB exe, 6.3 MB content.db, and 67 MB of
-# embedding weights. The weights are the reason search understands what she
-# meant rather than only what she typed, and shipping them is what keeps the
+# embedding weights. The weights are the reason search understands what they
+# meant rather than only what they typed, and shipping them is what keeps the
 # app from reaching for the network on first run. This leaves room for
 # extraction and a future version without gating installs on space the app
 # does not need.
